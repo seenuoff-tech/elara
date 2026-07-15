@@ -6,7 +6,7 @@ import { mensProducts } from '../../../data/mensProducts';
 
 export function generateStaticParams() {
   const allProducts = [...newArrivalsData, ...mensProducts];
-  const params = [];
+  const params: { id: string }[] = [];
   
   allProducts.forEach(product => {
     // Generate the path for the actual product ID
