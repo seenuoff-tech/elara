@@ -64,8 +64,9 @@ const storage = multer.diskStorage({
     cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
-    // Generate a unique filename using timestamp to avoid overwrites
-    cb(null, Date.now() + '-' + file.originalname.replace(/\s+/g, '-'));
+    // Keep exact original filename (replacing spaces with dashes for safety)
+    // Note: If a file with the same name exists, it will be overwritten
+    cb(null, file.originalname.replace(/\s+/g, '-'));
   },
 });
 const upload = multer({ storage });
