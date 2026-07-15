@@ -48,9 +48,87 @@ app.post('/api/razorpay', async (req, res) => {
   }
 });
 
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+
+// Ensure uploads directory exists
+const uploadDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir);
+}
+
+// Multer config
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    // Generate a unique filename using timestamp to avoid overwrites
+    cb(null, Date.now() + '-' + file.originalname.replace(/\s+/g, '-'));
+  },
+});
+const upload = multer({ storage });
+
+// Serve static files from 'uploads' directory
+app.use('/images', express.static(uploadDir));
+
 // ---------------------------------------------------------
-// TODO: Port checkout, images, and upload routes here!
+// ROUTE: UPLOAD IMAGES
 // ---------------------------------------------------------
+app.post('/api/upload', upload.single('file'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ success: false, error: 'No file uploaded' });
+  }
+  
+  // The frontend needs the URL relative to the images directory
+  // or absolute URL. We return the filename so it can be appended to backend URL.
+  const fileUrl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
+  
+  res.json({
+    success: true,
+    url: fileUrl,
+    filename: req.file.filename
+  });
+});
+
+// ---------------------------------------------------------
+// ROUTE: MANAGE IMAGES (LIST & DELETE)
+// ---------------------------------------------------------
+app.get('/api/images', (req, res) => {
+  fs.readdir(uploadDir, (err, files) => {
+    if (err) {
+      return res.status(500).json({ success: false, error: 'Unable to read directory' });
+    }
+    
+    const images = files.map(file => {
+      const stats = fs.statSync(path.join(uploadDir, file));
+      return {
+        name: file,
+        url: `${req.protocol}://${req.get('host')}/images/${file}`,
+        size: stats.size,
+        createdAt: stats.birthtime
+      };
+    }).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); // Newest first
+
+    res.json({ success: true, images });
+  });
+});
+
+app.delete('/api/images', (req, res) => {
+  const filename = req.query.filename;
+  if (!filename) {
+    return res.status(400).json({ success: false, error: 'Filename is required' });
+  }
+
+  const filePath = path.join(uploadDir, filename);
+  if (fs.existsSync(filePath)) {
+    fs.unlinkSync(filePath);
+    res.json({ success: true, message: 'File deleted' });
+  } else {
+    res.status(404).json({ success: false, error: 'File not found' });
+  }
+});
 
 // Basic root route
 app.get('/', (req, res) => {

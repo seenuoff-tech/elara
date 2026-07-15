@@ -33,7 +33,8 @@ export default function ProductsManagement() {
         const formData = new FormData();
         formData.append('file', files[i]);
         
-        const res = await fetch('/api/upload', {
+        const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+        const res = await fetch(`${API_BASE}/api/upload`, {
           method: 'POST',
           body: formData,
         });

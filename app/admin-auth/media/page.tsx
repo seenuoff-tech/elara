@@ -17,7 +17,8 @@ export default function MediaGallery() {
 
   const fetchImages = async () => {
     try {
-      const res = await fetch('/api/images');
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const res = await fetch(`${API_BASE}/api/images`);
       const data = await res.json();
       if (data.success) {
         setImages(data.images);
@@ -44,7 +45,8 @@ export default function MediaGallery() {
         const formData = new FormData();
         formData.append('file', files[i]);
         
-        const res = await fetch('/api/upload', {
+        const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+        const res = await fetch(`${API_BASE}/api/upload`, {
           method: 'POST',
           body: formData,
         });
@@ -71,7 +73,8 @@ export default function MediaGallery() {
     if (!confirm(`Are you sure you want to delete ${filename}?`)) return;
 
     try {
-      const res = await fetch(`/api/images?filename=${encodeURIComponent(filename)}`, {
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const res = await fetch(`${API_BASE}/api/images?filename=${encodeURIComponent(filename)}`, {
         method: 'DELETE'
       });
       const data = await res.json();

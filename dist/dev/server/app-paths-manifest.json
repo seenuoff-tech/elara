@@ -1,3 +1,8 @@
 {
+  "/_not-found/page": "app/_not-found/page.js",
+  "/admin-auth/categories/page": "app/admin-auth/categories/page.js",
+  "/admin-auth/media/page": "app/admin-auth/media/page.js",
+  "/admin-auth/page": "app/admin-auth/page.js",
+  "/admin-auth/products/page": "app/admin-auth/products/page.js",
   "/page": "app/page.js"
 }
