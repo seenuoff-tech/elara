@@ -26,6 +26,13 @@ interface PricingContextType {
 
 const PricingContext = createContext<PricingContextType | undefined>(undefined);
 
+// Currency formatter created once outside to prevent slow re-instantiation in loops
+const currencyFormatter = new Intl.NumberFormat('en-IN', {
+  style: 'currency',
+  currency: 'INR',
+  maximumFractionDigits: 0,
+});
+
 export function PricingProvider({ children }: { children: ReactNode }) {
   const [silverRates, setSilverRates] = useState<Record<string, number>>(defaultRates);
   const [gstPercentage, setGstPercentage] = useState<number>(3); // Default to 3% GST
@@ -56,27 +63,31 @@ export function PricingProvider({ children }: { children: ReactNode }) {
     }
   }, [silverRates, gstPercentage, isLoaded]);
 
-  const updateCategoryRate = (category: string, rate: number) => {
+  const updateCategoryRate = React.useCallback((category: string, rate: number) => {
     setSilverRates(prev => ({
       ...prev,
       [category]: rate
     }));
-  };
+  }, []);
 
   // Helper to instantly calculate price based on weight and category
-  const calculatePrice = (weightInGrams: number, category: string = '') => {
+  const calculatePrice = React.useCallback((weightInGrams: number, category: string = '') => {
     const rate = silverRates[category] || 85; // Fallback to 85 if category not found
     const basePrice = weightInGrams * rate;
     const finalPrice = basePrice + (basePrice * (gstPercentage / 100));
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      maximumFractionDigits: 0,
-    }).format(finalPrice);
-  };
+    return currencyFormatter.format(finalPrice);
+  }, [silverRates, gstPercentage]);
+
+  const contextValue = React.useMemo(() => ({
+    silverRates,
+    updateCategoryRate,
+    gstPercentage,
+    setGstPercentage,
+    calculatePrice
+  }), [silverRates, updateCategoryRate, gstPercentage, calculatePrice]);
 
   return (
-    <PricingContext.Provider value={{ silverRates, updateCategoryRate, gstPercentage, setGstPercentage, calculatePrice }}>
+    <PricingContext.Provider value={contextValue}>
       {children}
     </PricingContext.Provider>
   );
