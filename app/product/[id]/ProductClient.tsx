@@ -105,12 +105,12 @@ export default function ProductClient() {
           
           {/* Left Column: Image Gallery */}
           <div className="w-full md:w-1/2 flex flex-col gap-4">
-            <div className="aspect-[4/5] md:aspect-square relative bg-white rounded-2xl p-8 shadow-sm border border-gray-100 flex items-center justify-center">
+            <div className="aspect-[4/5] md:aspect-square relative bg-gray-50 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-center overflow-hidden">
               <Image 
                 src={gallery[activeImageIndex]?.url || gallery[0]?.url}
                 alt={gallery[activeImageIndex]?.alt || product.name || 'Product Image'}
                 fill
-                className="object-contain p-8"
+                className="object-cover"
               />
               <button className="absolute bottom-4 right-4 bg-white/80 backdrop-blur border border-black/10 text-xs px-3 py-1.5 rounded-full flex items-center gap-2 hover:bg-white transition-colors">
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -131,9 +131,9 @@ export default function ProductClient() {
                   <button 
                     key={idx}
                     onClick={() => setActiveImageIndex(idx)}
-                    className={`relative w-20 h-20 shrink-0 bg-white rounded-xl border ${activeImageIndex === idx ? 'border-black' : 'border-gray-200'} p-2 hover:border-black/50 transition-colors`}
+                    className={`relative w-20 h-20 shrink-0 bg-gray-50 rounded-xl border overflow-hidden ${activeImageIndex === idx ? 'border-black' : 'border-gray-200'} hover:border-black/50 transition-colors`}
                   >
-                    <Image src={img.url} alt={img.alt} fill className="object-contain p-2" />
+                    <Image src={img.url} alt={img.alt} fill className="object-cover" />
                   </button>
                 ))}
               </div>
