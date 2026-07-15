@@ -343,15 +343,29 @@ export default function ProductsManagement() {
                           const [id, name, category, weightInGrams, stock, status, image, galleryStr] = row;
                           
                           // Process main image
-                          const mainImage = image ? `/images/${String(image).trim()}` : '';
+                          let mainImage = '';
+                          if (image) {
+                            const imgStr = String(image).trim();
+                            if (imgStr.startsWith('http') || imgStr.startsWith('/uploads/')) {
+                              mainImage = imgStr;
+                            } else {
+                              mainImage = `/images/${imgStr}`;
+                            }
+                          }
                           
                           // Process gallery (sub images separated by '|')
                           let gallery: any[] = [];
                           if (galleryStr) {
-                            gallery = String(galleryStr).split('|').map(img => ({
-                              url: `/images/${img.trim()}`,
-                              alt: name || 'Subimage'
-                            }));
+                            gallery = String(galleryStr).split('|').map(img => {
+                              const imgStr = img.trim();
+                              let url = '';
+                              if (imgStr.startsWith('http') || imgStr.startsWith('/uploads/')) {
+                                url = imgStr;
+                              } else {
+                                url = `/images/${imgStr}`;
+                              }
+                              return { url, alt: name || 'Subimage' };
+                            });
                           }
 
                           return {
