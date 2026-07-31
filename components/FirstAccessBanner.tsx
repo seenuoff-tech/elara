@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export default function FirstAccessBanner() {
   return (
-    <section className="relative w-full my-12 z-10 px-4 md:px-12 max-w-[1400px] mx-auto">
+    <section className="relative w-full mt-12 mb-4 z-10 px-4 md:px-12 max-w-[1400px] mx-auto">
       <div 
         className="relative w-full overflow-hidden rounded-2xl bg-[#0B5E64] shadow-xl flex flex-col md:flex-row items-center justify-center min-h-[300px] md:min-h-[400px] bg-no-repeat bg-cover bg-center"
         style={{ backgroundImage: `url('/images/first_access_banner.png')` }}

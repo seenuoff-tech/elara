@@ -40,7 +40,7 @@ export default function ProductClient() {
   // Fallbacks for data structures that might not be present on all products
   const gallery = product.gallery && product.gallery.length > 0 
     ? product.gallery 
-    : [{ url: product.image || '/images/Logoorg.png', alt: product.name }];
+    : [{ url: product.image || '/images/elaralogo.png', alt: product.name }];
     
   const finishes = product.finishes || [];
   
@@ -154,7 +154,14 @@ export default function ProductClient() {
                   </span>
                   {product.oldPrice && <span className="text-lg text-gray-400 line-through mb-1">₹{product.oldPrice}</span>}
                 </div>
-                <p className="text-[10px] text-gray-400 uppercase tracking-widest">MRP Incl. of all taxes</p>
+                <p className="text-[10px] text-gray-400 uppercase tracking-widest mb-3">MRP Incl. of all taxes</p>
+                
+                {/* Reward Points */}
+                <div className="inline-flex items-center gap-2 bg-[#fdf5e6] border border-[#f5d08e] px-3 py-1.5 rounded-md">
+                  <span className="text-xs text-[#b8860b] font-medium tracking-wide">
+                    Buy this product and earn <span className="font-bold">{Math.floor((parseFloat((product.newPrice ? String(product.newPrice) : (product.price ? String(product.price) : calculatePrice(product.weightInGrams || 0, product.category))).replace(/[^\d.]/g, '')) || 0) * 0.05)} Points</span>
+                  </span>
+                </div>
               </div>
               
               <div className="flex items-center gap-4">
@@ -261,7 +268,7 @@ export default function ProductClient() {
                 <div className="text-sm text-gray-700 space-y-4">
                   <div>
                     <h4 className="font-bold text-black mb-1">{descDesign ? 'The Inspiration:' : 'Details:'}</h4>
-                    <p className="leading-relaxed">
+                    <p className="leading-relaxed whitespace-pre-line">
                       {isDescriptionExpanded 
                         ? descInspiration 
                         : `${descInspiration.substring(0, 100)}...`}
@@ -271,7 +278,7 @@ export default function ProductClient() {
                   {isDescriptionExpanded && descDesign && (
                     <div className="mt-4">
                       <h4 className="font-bold text-black mb-1">The Design:</h4>
-                      <p className="leading-relaxed">{descDesign}</p>
+                      <p className="leading-relaxed whitespace-pre-line">{descDesign}</p>
                     </div>
                   )}
                   

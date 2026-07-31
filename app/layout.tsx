@@ -26,6 +26,8 @@ import { AuthProvider } from '../context/AuthContext';
 
 import { ProductsProvider } from '../context/ProductsContext';
 import { PricingProvider } from '../components/PricingProvider';
+import { FaqProvider } from '../context/FaqContext';
+import { CategoriesProvider } from '../context/CategoriesContext';
 
 export default function RootLayout({
   children,
@@ -40,7 +42,11 @@ export default function RootLayout({
             <ProductsProvider>
               <WishlistProvider>
                 <CartProvider>
-                  <ClientLayout>{children}</ClientLayout>
+                  <FaqProvider>
+                    <CategoriesProvider>
+                      <ClientLayout>{children}</ClientLayout>
+                    </CategoriesProvider>
+                  </FaqProvider>
                 </CartProvider>
               </WishlistProvider>
             </ProductsProvider>

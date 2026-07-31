@@ -3,20 +3,24 @@
 import React, { useRef, useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-
-const categories = [
-  { name: 'Bracelets', href: '/shop?category=bracelets', image: '/images/silver_bracelet.png' },
-  { name: 'Pendants', href: '/shop?category=pendants', image: '/images/silver_necklace.png' },
-  { name: 'Earrings', href: '/shop?category=earrings', image: '/images/cat_earrings.png' },
-  { name: 'Men In Silver', href: '/shop?category=men', image: '/images/silver_rings.png' },
-  { name: 'Sets', href: '/shop?category=sets', image: '/images/cat_necklaces.png' },
-  { name: 'Anklets', href: '/shop?category=anklets', image: '/images/cat_rings.png' },
-  { name: 'Silver Chains', href: '/shop?category=chains', image: '/images/silver_necklace.png' },
-  { name: 'Mangalsutras', href: '/shop?category=mangalsutras', image: '/images/cat_necklaces.png' },
-];
+import { useCategories } from '@/context/CategoriesContext';
 
 export default function ShopByCategory() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const { categories } = useCategories();
+  const preferredOrder = ["ring", "earring", "minimalist", "bracelet", "anklet", "toe ring", "men"];
+  
+  const activeCategories = [...categories]
+    .filter(c => c.status === 'Active' && !c.name.toLowerCase().includes('set'))
+    .sort((a, b) => {
+      const aName = a.name.toLowerCase();
+      const bName = b.name.toLowerCase();
+      let indexA = preferredOrder.findIndex(name => aName.includes(name));
+      let indexB = preferredOrder.findIndex(name => bName.includes(name));
+      if (indexA === -1) indexA = 999;
+      if (indexB === -1) indexB = 999;
+      return indexA - indexB;
+    });
   const [activeIndex, setActiveIndex] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(3);
 
@@ -39,7 +43,7 @@ export default function ShopByCategory() {
     }
   };
 
-  const maxIndex = Math.max(0, categories.length - itemsPerPage);
+  const maxIndex = Math.max(0, activeCategories.length - itemsPerPage);
 
   const scrollTo = (index: number) => {
     if (scrollContainerRef.current) {
@@ -62,13 +66,10 @@ export default function ShopByCategory() {
   };
 
   return (
-    <section className="pt-8 pb-20 px-6 md:px-12 bg-white max-w-7xl mx-auto z-10 relative">
-      <div className="flex flex-col items-center text-center mb-12 gap-6">
+    <section className="pt-8 pb-8 px-6 md:px-12 bg-white max-w-7xl mx-auto z-10 relative">
+      <div className="flex flex-col items-center text-center mb-4 gap-6">
         <div className="space-y-4">
-          <h2 className="text-2xl md:text-3xl font-bold tracking-tight uppercase text-black">
-            Shop by Category
-          </h2>
-          <div className="w-24 h-[1px] bg-black/10 mx-auto mt-6" />
+          <div className="w-24 h-[1px] bg-black/10 mx-auto mt-2" />
         </div>
       </div>
 
@@ -101,10 +102,10 @@ export default function ShopByCategory() {
           className="grid grid-cols-4 gap-x-2 gap-y-6 md:flex md:gap-10 md:overflow-x-auto scrollbar-hide md:snap-x md:snap-mandatory pb-4 pt-2 px-1"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          {categories.map((category, index) => (
+          {activeCategories.map((category, index) => (
             <Link 
-              key={index}
-              href={category.href}
+              key={category.id}
+              href={`/shop?category=${encodeURIComponent(category.name.toLowerCase())}`}
               className="flex flex-col items-center gap-2 md:gap-4 md:snap-start shrink-0 group/item w-full md:w-auto"
             >
               {/* Image Container (Squircle) */}

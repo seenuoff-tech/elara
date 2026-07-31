@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 
 export default function StoreFront() {
   return (
-    <section className="relative bg-gray-50 py-24 px-6 md:px-12 z-10 overflow-hidden">
+    <section className="relative bg-gray-50 pt-8 pb-24 px-6 md:px-12 z-10 overflow-hidden">
       <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-16">
         
         {/* Left Side: Heading & Content */}
@@ -46,7 +46,7 @@ export default function StoreFront() {
           className="w-full lg:w-1/2 relative rounded-2xl overflow-hidden shadow-2xl"
         >
           <Image
-            src="/images/store-front.jpg"
+            src="/images/elaraorg.png"
             alt="Elara Silver Store Front"
             width={1200}
             height={800}

@@ -4,9 +4,9 @@ import React, { useState } from 'react';
 
 export default function HeroSliderManagement() {
   const [slides, setSlides] = useState([
-    { id: 1, title: 'THE ETERNITY COLLECTION', subtitle: 'Crafted for Eternity', image: '/images/slider1.jpg', status: 'Active' },
-    { id: 2, title: 'LIQUID SILVER', subtitle: 'Embrace the Flow', image: '/images/slider2.jpg', status: 'Active' },
-    { id: 3, title: 'MINIMALIST LUXURY', subtitle: 'Everyday Brilliance', image: '/images/slider3.jpg', status: 'Draft' },
+    { id: 1, title: 'The Elegance Collection', subtitle: 'Discover our new signature silver necklaces.', image: '/images/silver_necklace.png', status: 'Active' },
+    { id: 2, title: 'Premium Silver Rings', subtitle: 'Handcrafted perfection for every occasion.', image: '/images/silver_rings.png', status: 'Active' },
+    { id: 3, title: 'Luxury Bracelets', subtitle: 'Timeless designs that make a statement.', image: '/images/silver_bracelet.png', status: 'Active' },
   ]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);

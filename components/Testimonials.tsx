@@ -5,39 +5,39 @@ import React from 'react';
 const testimonials = [
   {
     name: "Karthi Chidambaram",
-    date: "December 21, 2025",
+    date: "June 15, 2025",
     text: "I recently bought a beautiful silver ring from Elara Silver Shop for my anniversary. The craftsmanship is absolutely stunning and it fits perfectly. Their customer service made the whole experience memorable.",
   },
   {
     name: "Nithya Ramasamy",
-    date: "December 14, 2025",
+    date: "August 22, 2025",
     text: "The silver necklace I purchased at Elara Silver Shop is now my everyday essential. It's elegant, lightweight, and adds the perfect touch to any outfit. I constantly get compliments on it!",
   },
   {
     name: "Arjun Prabhakar",
-    date: "July 12, 2025",
+    date: "November 05, 2025",
     text: "I was looking for a sturdy yet stylish silver chain, and Elara Silver Shop had exactly what I needed. The quality of the silver is top-notch, and it feels incredibly premium.",
   },
   {
     name: "Meenakshi Sundaram",
-    date: "December 13, 2025",
+    date: "January 18, 2026",
     text: "I gifted a pair of silver earrings from Elara Silver Shop to my sister. She was thrilled with the intricate design and the radiant finish. Truly the best place for authentic silver jewelry.",
   },
   {
     name: "Dinesh Karthikeyan",
-    date: "December 21, 2025",
+    date: "April 10, 2026",
     text: "My new silver bracelet from Elara Silver Shop is absolutely gorgeous! It reflects modern style while maintaining a classic charm. I am very impressed with their unique collection.",
   },
   {
     name: "Sathiyapriya Thirumalai",
-    date: "December 13, 2025",
+    date: "June 02, 2026",
     text: "I bought a delicate silver anklet at Elara Silver Shop and I couldn't be happier. The detail on the piece is flawless, and it's so comfortable for daily wear. Highly recommended!",
   },
 ];
 
 export default function Testimonials() {
   return (
-    <section className="pt-8 md:pt-24 pb-12 md:pb-24 bg-[#FAFAFA] overflow-hidden relative z-10 border-t border-black/5">
+    <section className="pt-4 md:pt-8 pb-12 md:pb-24 bg-[#FAFAFA] overflow-hidden relative z-10 border-t border-black/5">
       <div className="text-center mb-16">
         <span className="text-sm font-serif text-[#0B5E64] block mb-2">Our</span>
         <h2 className="text-4xl md:text-5xl font-medium text-[#0B5E64]">Testimonials</h2>

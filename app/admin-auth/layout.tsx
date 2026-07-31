@@ -15,6 +15,7 @@ const navLinks = [
   { name: 'Reports', href: '/admin-auth/reports', icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' },
   { name: 'Invoices', href: '/admin-auth/invoices', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
   { name: 'Trash', href: '/admin-auth/trash', icon: 'M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16' },
+  { name: 'Chatbot FAQs', href: '/admin-auth/chatbot-faq', icon: 'M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z' },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -205,7 +206,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 </svg>
               </button>
               <div className="w-8 h-8 rounded-full bg-[#0B5E64] flex items-center justify-center text-white font-bold text-sm">
-                A
+                E
               </div>
             </div>
           </header>

@@ -8,7 +8,7 @@ import { useProducts, AppProduct } from '@/context/ProductsContext';
 
 export default function ProductsManagement() {
   const { calculatePrice } = usePricing();
-  const { products, setProducts, updateProduct } = useProducts();
+  const { products, setProducts, addProduct, updateProduct, deleteProduct, addBulkProducts } = useProducts();
 
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const [isBulkUploadOpen, setIsBulkUploadOpen] = useState(false);
@@ -91,18 +91,15 @@ export default function ProductsManagement() {
 
   const handleDelete = (id: string | number) => {
     if (confirm('Are you sure you want to move this product to trash?')) {
-      setProducts(products.filter(p => String(p.id) !== String(id)));
+      deleteProduct(id);
     }
   };
 
   const handleSaveProduct = () => {
     if (editingProduct) {
       if (editingProduct.id === '') {
-        // Add new
-        const newProduct = { ...editingProduct, id: Math.floor(Math.random() * 1000).toString() };
-        setProducts([...products, newProduct]);
+        addProduct(editingProduct);
       } else {
-        // Update existing
         updateProduct(editingProduct.id, editingProduct);
       }
       setEditingProduct(null);
@@ -315,7 +312,7 @@ export default function ProductsManagement() {
               </div>
               <div className="text-xs text-left text-gray-500 pt-4">
                 <a 
-                  href="data:text/csv;charset=utf-8,id,name,category,weightInGrams,stock,status,image,gallery%0APRD-NEW,Sample%20Silver%20Ring,Rings,5.5,10,Active,ring1.jpg,ring1_side.jpg|ring1_back.jpg" 
+                  href="data:text/csv;charset=utf-8,id,name,category,weightInGrams,stock,status,image,gallery,inspiration,design%0APRD-NEW,Sample%20Silver%20Ring,Rings,5.5,10,Active,ring1.jpg,ring1_side.jpg|ring1_back.jpg,Elegant inspiration text,Detailed design text" 
                   download="elara_products_template.csv" 
                   className="text-[#0B5E64] hover:underline"
                 >
@@ -348,7 +345,7 @@ export default function ProductsManagement() {
                         // Skip header row (index 0)
                         const rows = json.slice(1).filter(row => row.length > 0);
                         const newProducts = rows.map(row => {
-                          const [id, name, category, weightInGrams, stock, status, image, galleryStr] = row;
+                          const [id, name, category, weightInGrams, stock, status, image, galleryStr, inspiration, design] = row;
                           
                           // Process main image
                           let mainImage = '';
@@ -384,12 +381,16 @@ export default function ProductsManagement() {
                             stock: parseInt(stock) || 0,
                             status: String(status || 'Draft').trim(),
                             image: mainImage,
-                            gallery: gallery
+                            gallery: gallery,
+                            description: {
+                              inspiration: inspiration ? String(inspiration).trim() : '',
+                              design: design ? String(design).trim() : ''
+                            }
                           };
                         });
                         
                         if (newProducts.length > 0) {
-                          setProducts([...products, ...newProducts]);
+                          addBulkProducts(newProducts);
                           alert(`Successfully imported ${newProducts.length} products!`);
                         } else {
                           alert('No valid products found in the file.');
@@ -547,7 +548,7 @@ export default function ProductsManagement() {
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input 
                       type="checkbox"
-                      checked={editingProduct ? editingProduct.isBestSeller : false}
+                      checked={editingProduct ? !!editingProduct.isBestSeller : false}
                       onChange={(e) => editingProduct && setEditingProduct({...editingProduct, isBestSeller: e.target.checked})}
                       className="w-4 h-4 text-[#0B5E64] rounded border-gray-300 focus:ring-[#0B5E64]"
                     />

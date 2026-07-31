@@ -116,8 +116,7 @@ export default function HeroSlider() {
       {/* Navigation Arrows */}
       <button 
         onClick={prevSlide}
-        className="absolute z-30 w-12 h-12 md:w-16 md:h-16 bg-white text-black rounded-full flex items-center justify-center shadow-[0_4px_20px_rgba(0,0,0,0.15)] border border-gray-100 transition-all hover:scale-105 hover:bg-gray-50"
-        style={{ left: '5%', top: '50%', transform: 'translateY(-50%)' }}
+        className="absolute z-30 w-12 h-12 md:w-16 md:h-16 bg-white/40 backdrop-blur-md text-black rounded-full flex items-center justify-center shadow-[0_4px_20px_rgba(0,0,0,0.15)] border border-white/50 transition-all hover:scale-105 hover:bg-white/60 left-4 md:left-12 top-1/2 -translate-y-1/2 group"
         aria-label="Previous Slide"
       >
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
@@ -127,8 +126,7 @@ export default function HeroSlider() {
 
       <button 
         onClick={nextSlide}
-        className="absolute z-30 w-12 h-12 md:w-16 md:h-16 bg-white text-black rounded-full flex items-center justify-center shadow-[0_4px_20px_rgba(0,0,0,0.15)] border border-gray-100 transition-all hover:scale-105 hover:bg-gray-50"
-        style={{ right: '5%', top: '50%', transform: 'translateY(-50%)' }}
+        className="absolute z-30 w-12 h-12 md:w-16 md:h-16 bg-white/40 backdrop-blur-md text-black rounded-full flex items-center justify-center shadow-[0_4px_20px_rgba(0,0,0,0.15)] border border-white/50 transition-all hover:scale-105 hover:bg-white/60 right-4 md:right-12 top-1/2 -translate-y-1/2 group"
         aria-label="Next Slide"
       >
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">

@@ -29,7 +29,11 @@ export default function Navbar() {
 
   const navigationMenu = [
     {
-      name: 'Women jewellery',
+      name: 'New arrivals',
+      href: '/shop'
+    },
+    {
+      name: 'Women\'s jewellery',
       items: [
         { name: 'All', href: '/shop?gender=women' },
         { name: 'Rings', href: '/shop?category=rings' },
@@ -60,6 +64,10 @@ export default function Navbar() {
         { name: 'Bracelet', href: '/shop?category=kids-bracelet' },
         { name: 'Anklets', href: '/shop?category=kids-anklets' },
       ]
+    },
+    {
+      name: 'About us',
+      href: '/about'
     }
   ];
 
@@ -122,7 +130,7 @@ export default function Navbar() {
     >
       <div className="w-full max-w-full px-4 md:px-6 flex flex-col">
         {/* Top Row: Hamburger, Logo, Icons */}
-        <div className="flex items-center justify-between h-20 md:h-24">
+        <div className="flex items-center justify-between h-14 md:h-16">
           {/* Left: Hamburger (Always Visible based on image) */}
           <div className="flex items-center w-1/3">
             <button 
@@ -140,14 +148,16 @@ export default function Navbar() {
           <div className="flex justify-center items-center w-1/3">
             <Link href="/" className="hover:scale-105 transition-transform duration-500 flex items-center justify-center">
               {isScrolled ? (
-                <span className="text-2xl font-medium tracking-widest text-[#0B5E64] uppercase ml-2">
-                  ELARA
-                </span>
+                <img 
+                  src="/images/elaraa.PNG" 
+                  alt="Elara Silver Logo" 
+                  className="h-48 md:h-64 object-contain drop-shadow-sm transition-all duration-500 brightness-0 mix-blend-multiply" 
+                />
               ) : (
                 <img 
-                  src="/images/Logoorg.png" 
+                  src="/images/org.png" 
                   alt="Elara Silver Logo" 
-                  className="h-16 md:h-24 object-contain py-1 drop-shadow-sm transition-all duration-500 brightness-0" 
+                  className="h-12 md:h-16 object-contain drop-shadow-sm transition-all duration-500 brightness-0" 
                 />
               )}
             </Link>
@@ -258,22 +268,7 @@ export default function Navbar() {
               </svg>
             </div>
           </div>
-
-          {/* Mobile Material Toggle */}
-          <div className="flex items-center border border-[#D4AF37] rounded-full p-1 mt-3 mx-auto max-w-[300px]">
-            <button
-              onClick={() => setActiveMaterial('Silver')}
-              className={`flex-1 py-2 text-[11px] font-medium rounded-full transition-all duration-300 flex items-center justify-center ${activeMaterial === 'Silver' ? 'bg-[#0B5E64] text-white shadow-md' : 'bg-transparent text-gray-600 hover:text-black hover:bg-gray-50'}`}
-            >
-              Silver Jewellery
-            </button>
-            <button
-              onClick={() => setActiveMaterial('Sleet')}
-              className={`flex-1 py-2 text-[11px] font-medium rounded-full transition-all duration-300 flex items-center justify-center ${activeMaterial === 'Sleet' ? 'bg-[#0B5E64] text-white shadow-md' : 'bg-transparent text-gray-600 hover:text-black hover:bg-gray-50'}`}
-            >
-              Sleet Jewellery
-            </button>
-          </div>
+          {/* Mobile Material Toggle removed as per user request */}
 
           {/* Search Dropdown */}
           {isNavSearchActive && navSearchQuery.trim() !== '' && (
@@ -306,55 +301,66 @@ export default function Navbar() {
         {/* Bottom Row: Links — hidden on mobile, visible md+ */}
         <div 
           className={`hidden md:flex flex-col justify-center items-center transition-all duration-500 ease-in-out ${
-            showLinks ? 'max-h-40 opacity-100 pb-4 overflow-visible' : 'max-h-0 opacity-0 pb-0 overflow-hidden'
+            showLinks ? 'max-h-40 opacity-100 pb-2 overflow-visible' : 'max-h-0 opacity-0 pb-0 overflow-hidden'
           }`}
         >
-          <div className="flex items-center gap-8 md:gap-12 text-[13px] font-medium text-gray-800 tracking-widest uppercase relative mb-4 mt-2">
+          <div className="flex items-center gap-8 md:gap-12 text-[13px] font-medium text-gray-800 tracking-widest uppercase relative mb-2 mt-0">
             {navigationMenu.map((nav) => (
               <div key={nav.name} className="relative py-2 desktop-dropdown">
-                <span 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setDesktopExpandedCategory(desktopExpandedCategory === nav.name ? null : nav.name);
-                  }}
-                  className="hover:text-[#067964] transition-colors cursor-pointer hover:underline underline-offset-8 decoration-1 flex items-center gap-1"
-                >
-                  {nav.name}
-                  <svg className={`w-3 h-3 transition-transform ${desktopExpandedCategory === nav.name ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                  </svg>
-                </span>
-                
-                {/* Dropdown Menu */}
-                <div className={`absolute top-full left-0 pt-2 transition-all duration-300 z-50 ${desktopExpandedCategory === nav.name ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
-                  <div className="bg-white border border-gray-100 shadow-xl py-3 w-48 rounded-sm">
-                    {nav.items.map((subItem) => (
-                      <Link 
-                        key={subItem.name} 
-                        href={subItem.href}
-                        onClick={() => setDesktopExpandedCategory(null)}
-                        className="block px-5 py-2.5 text-xs text-gray-600 hover:bg-gray-50 hover:text-[#067964] transition-colors"
-                      >
-                        {subItem.name}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
+                {nav.href ? (
+                  <Link 
+                    href={nav.href}
+                    className="hover:text-[#067964] transition-colors cursor-pointer hover:underline underline-offset-8 decoration-1 flex items-center gap-1"
+                  >
+                    {nav.name}
+                  </Link>
+                ) : (
+                  <>
+                    <span 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDesktopExpandedCategory(desktopExpandedCategory === nav.name ? null : nav.name);
+                      }}
+                      className="hover:text-[#067964] transition-colors cursor-pointer hover:underline underline-offset-8 decoration-1 flex items-center gap-1"
+                    >
+                      {nav.name}
+                      <svg className={`w-3 h-3 transition-transform ${desktopExpandedCategory === nav.name ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </span>
+                    
+                    {/* Dropdown Menu */}
+                    <div className={`absolute top-full left-0 pt-2 transition-all duration-300 z-50 ${desktopExpandedCategory === nav.name ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
+                      <div className="bg-white border border-gray-100 shadow-xl py-3 w-48 rounded-sm">
+                        {nav.items?.map((subItem) => (
+                          <Link 
+                            key={subItem.name} 
+                            href={subItem.href}
+                            onClick={() => setDesktopExpandedCategory(null)}
+                            className="block px-5 py-2.5 text-xs text-gray-600 hover:bg-gray-50 hover:text-[#067964] transition-colors"
+                          >
+                            {subItem.name}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             ))}
           </div>
 
           {/* Material Toggle */}
-          <div className="flex items-center border border-[#D4AF37] rounded-full p-1 mb-2 mt-2">
+          <div className="flex items-center border border-[#D4AF37] rounded-full p-0.5 mb-1 mt-1">
             <button
               onClick={() => setActiveMaterial('Silver')}
-              className={`w-48 py-2.5 text-sm font-medium rounded-full transition-all duration-300 flex items-center justify-center ${activeMaterial === 'Silver' ? 'bg-[#0B5E64] text-white shadow-md' : 'bg-transparent text-gray-600 hover:text-black hover:bg-gray-50'}`}
+              className={`w-60 py-1.5 text-[13px] font-medium rounded-full transition-all duration-300 flex items-center justify-center ${activeMaterial === 'Silver' ? 'bg-[#0B5E64] text-white shadow-md' : 'bg-transparent text-gray-600 hover:text-black hover:bg-gray-50'}`}
             >
               Silver Jewellery
             </button>
             <button
               onClick={() => setActiveMaterial('Sleet')}
-              className={`w-48 py-2.5 text-sm font-medium rounded-full transition-all duration-300 flex items-center justify-center ${activeMaterial === 'Sleet' ? 'bg-[#0B5E64] text-white shadow-md' : 'bg-transparent text-gray-600 hover:text-black hover:bg-gray-50'}`}
+              className={`w-60 py-1.5 text-[13px] font-medium rounded-full transition-all duration-300 flex items-center justify-center ${activeMaterial === 'Sleet' ? 'bg-[#0B5E64] text-white shadow-md' : 'bg-transparent text-gray-600 hover:text-black hover:bg-gray-50'}`}
             >
               Sleet Jewellery
             </button>
@@ -390,67 +396,7 @@ export default function Navbar() {
             </button>
           </div>
 
-          {/* Sidebar Search Bar */}
-          <div className="px-8 py-5 border-b border-black/5 shrink-0">
-            <div className="relative flex items-center gap-3 bg-gray-50 border border-black/8 px-4 py-3 rounded-none focus-within:border-[#0B5E64] transition-colors duration-300">
-              <svg className="w-4 h-4 text-black/35 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-              <input
-                ref={sidebarInputRef}
-                type="text"
-                value={sidebarQuery}
-                onChange={(e) => setSidebarQuery(e.target.value)}
-                placeholder="Search pieces..."
-                className="w-full bg-transparent text-black placeholder-black/30 text-sm tracking-wide focus:outline-none font-light"
-              />
-              {sidebarQuery && (
-                <button
-                  onClick={() => setSidebarQuery('')}
-                  className="text-black/30 hover:text-black transition-colors shrink-0"
-                  aria-label="Clear search"
-                >
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              )}
-            </div>
-
-            {/* Search Results Dropdown */}
-            {sidebarQuery.trim() !== '' && (
-              <div className="mt-2 border border-black/8 bg-white shadow-lg max-h-60 overflow-y-auto">
-                {sidebarResults.length === 0 ? (
-                  <div className="px-4 py-5 text-xs text-black/40 tracking-widest uppercase text-center">
-                    No results found
-                  </div>
-                ) : (
-                  sidebarResults.map((p) => (
-                    <Link
-                      key={p.id}
-                      href="/shop"
-                      onClick={() => { setIsSidebarOpen(false); setSidebarQuery(''); }}
-                      className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 border-b border-black/5 last:border-0 transition-colors group"
-                    >
-                      {/* Mini product icon */}
-                      <div className="w-8 h-8 bg-gray-100 border border-black/8 flex items-center justify-center shrink-0">
-                        <svg className="w-3.5 h-3.5 text-[#D4AF37]" viewBox="0 0 100 100" fill="none">
-                          <path d="M50 5L63 38L96 50L63 62L50 95L37 62L4 50L37 38L50 5Z" stroke="currentColor" strokeWidth="3" />
-                        </svg>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs font-semibold uppercase tracking-wide text-black group-hover:text-[#067964] transition-colors truncate">
-                          {p.name}
-                        </p>
-                        <p className="text-[10px] text-black/40 tracking-widest uppercase truncate">{p.collection}</p>
-                      </div>
-                      <span className="text-xs font-bold text-black/70 shrink-0">{p.price}</span>
-                    </Link>
-                  ))
-                )}
-              </div>
-            )}
-          </div>
+          {/* Sidebar Search Bar Removed as per user request */}
           
           {/* Navigation Links */}
           <div className="flex-1 overflow-y-auto py-8 px-10 flex flex-col gap-6">
@@ -466,37 +412,49 @@ export default function Navbar() {
                     transition: `all 0.5s cubic-bezier(0.16,1,0.3,1) ${0.15 + i * 0.06}s`
                   }}
                 >
-                  <button 
-                    onClick={() => setExpandedCategory(expandedCategory === nav.name ? null : nav.name)}
-                    className="flex items-center justify-between text-xs font-bold tracking-[0.2em] uppercase text-black/80 hover:text-[#067964] transition-colors duration-300 w-full text-left"
-                  >
-                    {nav.name}
-                    <svg 
-                      className={`w-4 h-4 transition-transform duration-300 ${expandedCategory === nav.name ? 'rotate-180' : ''}`} 
-                      fill="none" 
-                      viewBox="0 0 24 24" 
-                      stroke="currentColor" 
-                      strokeWidth="2"
+                  {nav.href ? (
+                    <Link
+                      href={nav.href}
+                      onClick={() => { setIsSidebarOpen(false); setSidebarQuery(''); }}
+                      className="flex items-center justify-between text-xs font-bold tracking-[0.2em] uppercase text-black/80 hover:text-[#067964] transition-colors duration-300 w-full text-left"
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </button>
-                  
-                  {/* Subcategories */}
-                  <div className={`overflow-hidden transition-all duration-300 ease-in-out ${expandedCategory === nav.name ? 'max-h-96 opacity-100 mt-4' : 'max-h-0 opacity-0 mt-0'}`}>
-                    <div className="flex flex-col gap-3 pl-4 border-l-2 border-black/5">
-                      {nav.items.map((subItem) => (
-                        <Link 
-                          key={subItem.name} 
-                          href={subItem.href}
-                          onClick={() => { setIsSidebarOpen(false); setSidebarQuery(''); }}
-                          className="text-sm font-light tracking-widest uppercase text-gray-500 hover:text-[#067964] transition-colors py-1"
+                      {nav.name}
+                    </Link>
+                  ) : (
+                    <>
+                      <button 
+                        onClick={() => setExpandedCategory(expandedCategory === nav.name ? null : nav.name)}
+                        className="flex items-center justify-between text-xs font-bold tracking-[0.2em] uppercase text-black/80 hover:text-[#067964] transition-colors duration-300 w-full text-left"
+                      >
+                        {nav.name}
+                        <svg 
+                          className={`w-4 h-4 transition-transform duration-300 ${expandedCategory === nav.name ? 'rotate-180' : ''}`} 
+                          fill="none" 
+                          viewBox="0 0 24 24" 
+                          stroke="currentColor" 
+                          strokeWidth="2"
                         >
-                          {subItem.name}
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </button>
+                      
+                      {/* Subcategories */}
+                      <div className={`overflow-hidden transition-all duration-300 ease-in-out ${expandedCategory === nav.name ? 'max-h-96 opacity-100 mt-4' : 'max-h-0 opacity-0 mt-0'}`}>
+                        <div className="flex flex-col gap-3 pl-4 border-l-2 border-black/5">
+                          {nav.items?.map((subItem) => (
+                            <Link 
+                              key={subItem.name} 
+                              href={subItem.href}
+                              onClick={() => { setIsSidebarOpen(false); setSidebarQuery(''); }}
+                              className="text-sm font-light tracking-widest uppercase text-gray-500 hover:text-[#067964] transition-colors py-1"
+                            >
+                              {subItem.name}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               ))}
               
@@ -536,7 +494,7 @@ export default function Navbar() {
           {/* Bottom CTA */}
           <div className="p-8 border-t border-black/5 flex flex-col gap-4 bg-gray-50/50 shrink-0">
             <div className="flex justify-center mb-2">
-              <img src="/images/Logoorg.png" alt="Elara Silver Logo" className="h-12 object-contain drop-shadow-sm brightness-0" />
+              <img src="/images/elaralogo.png" alt="Elara Silver Logo" className="h-12 object-contain drop-shadow-sm brightness-0" />
             </div>
             {user ? (
               <>

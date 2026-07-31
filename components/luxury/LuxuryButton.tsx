@@ -51,48 +51,7 @@ export default function LuxuryButton({
     gsap.set(button, { transformPerspective: 1000 });
 
     const handleMouseMove = (e: MouseEvent) => {
-      if (isTouch) return;
-      const rect = container.getBoundingClientRect();
-      const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height / 2;
-      const dx = e.clientX - centerX;
-      const dy = e.clientY - centerY;
-      const distance = Math.hypot(dx, dy);
-
-      if (distance < magneticRange) {
-        // Magnetic pull
-        const pullX = dx * magneticStrength;
-        const pullY = dy * magneticStrength;
-
-        // 3D Tilt calculation
-        // Limit tilt to max 12 degrees
-        const tiltX = -dy * 0.12; 
-        const tiltY = dx * 0.12;
-
-        gsap.to(button, {
-          x: pullX,
-          y: pullY,
-          rotateX: tiltX,
-          rotateY: tiltY,
-          scale: 1.05,
-          duration: 0.5,
-          ease: 'power3.out',
-          overwrite: 'auto',
-        });
-
-        // Glow intensity slightly shifts with mouse
-        gsap.to(glowRef.current, {
-          opacity: 1,
-          scale: 1.08,
-          x: pullX * 0.5,
-          y: pullY * 0.5,
-          duration: 0.5,
-          ease: 'power3.out',
-          overwrite: 'auto',
-        });
-      } else {
-        resetButton();
-      }
+      // Magnetic hover effect removed as per user request
     };
 
     const resetButton = () => {
@@ -190,12 +149,7 @@ export default function LuxuryButton({
     };
 
     const handleMouseUp = (e: MouseEvent) => {
-      // Radial Click Particle Burst
-      const rect = button.getBoundingClientRect();
-      const clickX = e.clientX - rect.left;
-      const clickY = e.clientY - rect.top;
-
-      createClickBurst(clickX, clickY);
+      // Click burst animation removed as per user request
     };
 
     // Sparkles generator
@@ -279,50 +233,7 @@ export default function LuxuryButton({
     };
 
     const createClickBurst = (x: number, y: number) => {
-      const pContainer = particleContainerRef.current;
-      if (!pContainer) return;
-
-      const numParticles = 14;
-
-      for (let i = 0; i < numParticles; i++) {
-        const particle = document.createElement('div');
-        particle.style.position = 'absolute';
-        particle.style.left = `${x}px`;
-        particle.style.top = `${y}px`;
-        particle.style.pointerEvents = 'none';
-        particle.style.transform = 'translate(-50%, -50%) scale(1)';
-
-        const isStar = Math.random() > 0.4;
-        if (isStar) {
-          // Diamond star shape
-          particle.innerHTML = `
-            <svg viewBox="0 0 100 100" class="w-2 h-2" style="color: ${primaryColor}; fill: currentColor;">
-              <polygon points="50,15 62,38 88,42 68,58 75,85 50,70 25,85 32,58 12,42 38,38" />
-            </svg>
-          `;
-        } else {
-          // Small circular gold dust dot
-          particle.className = shimmerColor === 'gold' ? 'w-1 h-1 bg-[#D4AF37] rounded-full' : 'w-1 h-1 bg-white/80 rounded-full';
-        }
-
-        pContainer.appendChild(particle);
-
-        const angle = Math.random() * Math.PI * 2;
-        const distance = 25 + Math.random() * 55;
-        const targetX = Math.cos(angle) * distance;
-        const targetY = Math.sin(angle) * distance;
-
-        gsap.to(particle, {
-          x: targetX,
-          y: targetY,
-          scale: 0,
-          opacity: 0,
-          rotation: (Math.random() - 0.5) * 360,
-          duration: 0.6 + Math.random() * 0.6,
-          ease: 'power2.out',
-          onComplete: () => particle.remove(),
-        });
-      }
+      // Removed click burst implementation
     };
 
     // Attach events

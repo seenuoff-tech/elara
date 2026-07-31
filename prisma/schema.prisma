@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Faq {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  question  String
+  answer    String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Category {
+  id            String    @id @default(uuid())
+  name          String
+  description   String?   @db.Text
+  status        String    @default("Active")
+  productsCount Int       @default(0)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  products      Product[]
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id])
+  price       Float
+  stock       Int      @default(0)
+  status      String   @default("Active")
+  image       String?
+  gallery     Json?    // Array of { url, alt }
+  description String?  @db.Text
+  finishes    Json?    // Array of finish names
+  ringSizes   Json?    // Array of sizes
+  tags        Json?    // Array of strings
+  isNew       Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

@@ -5,49 +5,21 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
-
-const mensProducts = [
-  {
-    id: 101,
-    name: "Classic Cuban Chain",
-    image: "/images/men_product_1.png",
-    oldPrice: "7,499",
-    newPrice: "5,999",
-    rating: "4.8",
-    isBestSeller: true
-  },
-  {
-    id: 102,
-    name: "Onyx Signet Ring",
-    image: "/images/men_product_2.png",
-    oldPrice: "4,999",
-    newPrice: "3,499",
-    rating: "4.9",
-    isBestSeller: false
-  },
-  {
-    id: 103,
-    name: "Heavy Link Bracelet",
-    image: "/images/men_product_3.png",
-    oldPrice: "6,999",
-    newPrice: "4,999",
-    rating: "4.7",
-    isBestSeller: false
-  },
-  {
-    id: 104,
-    name: "Matte Silver Band",
-    image: "/images/men_product_4.png",
-    oldPrice: "3,499",
-    newPrice: "2,499",
-    rating: "4.9",
-    isBestSeller: true
-  }
-];
+import { useProducts } from '../context/ProductsContext';
+import { usePricing } from './PricingProvider';
 
 export default function MensCollection() {
   const { wishlist, toggleWishlist } = useWishlist();
   const { triggerPackagingAnimation } = useCart();
+  const { products } = useProducts();
+  const { calculatePrice } = usePricing();
+
+  // Filter dynamic products for Men's Category
+  const dynamicMensProducts = products.filter(p => 
+    p.category?.toLowerCase().includes('men') && p.status === 'Active'
+  );
+
+  const displayProducts = dynamicMensProducts.slice(0, 4);
 
   const handleToggleWishlist = (id: number, e: React.MouseEvent) => {
     e.preventDefault();
@@ -68,11 +40,11 @@ export default function MensCollection() {
   };
 
   return (
-    <section className="pt-8 md:pt-20 pb-8 md:pb-20 px-6 md:px-12 bg-white max-w-7xl mx-auto z-10 relative">
+    <section className="pt-2 md:pt-8 pb-8 md:pb-20 px-6 md:px-12 bg-white max-w-7xl mx-auto z-10 relative">
       <h2 className="text-2xl md:text-3xl font-medium mb-12 text-left text-black">Men's Collection</h2>
       
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-        {mensProducts.map((product, index) => (
+        {displayProducts.map((product: any, index) => (
           <div key={product.id} className="relative flex flex-col group">
             {/* Best Seller Ribbon */}
             {product.isBestSeller && (
@@ -129,11 +101,16 @@ export default function MensCollection() {
             {/* Details */}
             <div className="flex flex-col flex-grow px-2 mt-2">
               <h3 className="text-base font-semibold text-gray-900 mb-1 line-clamp-1">{product.name}</h3>
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-[15px] font-bold text-black">
-                  {product.newPrice ? `₹${product.newPrice}` : (product.price ? product.price : calculatePrice(product.weightInGrams || 0, product.category))}
-                </span>
-                {product.oldPrice && <span className="text-xs text-gray-400 line-through font-light">₹{product.oldPrice}</span>}
+              <div className="flex flex-col gap-1 mb-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-[15px] font-bold text-black">
+                    {product.newPrice ? `₹${product.newPrice}` : (product.price ? product.price : calculatePrice(product.weightInGrams || 0, product.category))}
+                  </span>
+                  {product.oldPrice && <span className="text-xs text-gray-400 line-through font-light">₹{product.oldPrice}</span>}
+                </div>
+                <div className="text-[10px] text-[#b8860b] font-medium tracking-wide bg-[#fdf5e6] border border-[#f5d08e] px-2 py-0.5 rounded-sm self-start inline-flex items-center gap-1">
+                  Earn <span className="font-bold">{Math.floor((parseFloat((product.newPrice ? String(product.newPrice) : (product.price ? String(product.price) : calculatePrice(product.weightInGrams || 0, product.category))).replace(/[^\d.]/g, '')) || 0) * 0.05)} Points</span>
+                </div>
               </div>
               
               <button 

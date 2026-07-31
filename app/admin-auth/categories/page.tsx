@@ -1,34 +1,51 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useCategories, Category } from '@/context/CategoriesContext';
 
 export default function CategoriesManagement() {
-  const [categories, setCategories] = useState([
-    { id: 'CAT-001', name: 'Rings', description: 'Handcrafted silver rings', status: 'Active', productsCount: 45 },
-    { id: 'CAT-002', name: 'Necklaces', description: 'Elegant silver necklaces', status: 'Active', productsCount: 32 },
-    { id: 'CAT-003', name: 'Bracelets', description: 'Minimalist cuffs and chains', status: 'Active', productsCount: 18 },
-    { id: 'CAT-004', name: 'Earrings', description: 'Timeless drops and studs', status: 'Active', productsCount: 24 },
-    { id: 'CAT-005', name: 'Men\'s Category', description: 'Silver accessories for men', status: 'Draft', productsCount: 0 },
-  ]);
+  const { categories, addCategory, updateCategory, deleteCategory } = useCategories();
 
   const [isAddCategoryOpen, setIsAddCategoryOpen] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<any>(null);
+  const [editingCategory, setEditingCategory] = useState<Partial<Category> & { id: string } | null>(null);
 
   const handleDelete = (id: string) => {
     if (confirm('Are you sure you want to delete this category?')) {
-      setCategories(categories.filter(c => c.id !== id));
+      deleteCategory(id);
     }
   };
 
   const handleSaveCategory = () => {
     if (editingCategory) {
       if (editingCategory.id === '') {
-        const newCategory = { ...editingCategory, id: `CAT-${Math.random().toString(36).substr(2, 5)}`.toUpperCase() };
-        setCategories([...categories, newCategory]);
+        addCategory({
+          name: editingCategory.name || '',
+          description: editingCategory.description || '',
+          status: editingCategory.status as 'Active' | 'Draft' || 'Active',
+          image: editingCategory.image || ''
+        });
       } else {
-        setCategories(categories.map(c => c.id === editingCategory.id ? editingCategory : c));
+        updateCategory(editingCategory.id, {
+          name: editingCategory.name,
+          description: editingCategory.description,
+          status: editingCategory.status as 'Active' | 'Draft',
+          image: editingCategory.image
+        });
       }
       setEditingCategory(null);
+    }
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (editingCategory) {
+          setEditingCategory({ ...editingCategory, image: reader.result as string });
+        }
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -40,7 +57,7 @@ export default function CategoriesManagement() {
           <p className="text-sm text-gray-500 mt-1">Organize your products into categories and collections.</p>
         </div>
         <button 
-          onClick={() => setEditingCategory({ id: '', name: '', description: '', status: 'Active', productsCount: 0 })}
+          onClick={() => setEditingCategory({ id: '', name: '', description: '', status: 'Active', productsCount: 0, image: '' })}
           className="px-4 py-2 bg-[#0B5E64] text-white text-sm font-medium rounded-lg hover:bg-[#084A4F] transition-colors"
         >
           Add New Category
@@ -52,6 +69,7 @@ export default function CategoriesManagement() {
           <table className="w-full text-sm text-left">
             <thead className="text-xs text-gray-500 uppercase bg-gray-50 border-b border-gray-100">
               <tr>
+                <th className="px-6 py-4">Image</th>
                 <th className="px-6 py-4">Category Name</th>
                 <th className="px-6 py-4">Description</th>
                 <th className="px-6 py-4">Products</th>
@@ -62,6 +80,20 @@ export default function CategoriesManagement() {
             <tbody>
               {categories.map((category) => (
                 <tr key={category.id} className="border-b border-gray-50 last:border-0 hover:bg-gray-50/50 transition-colors">
+                  <td className="px-6 py-4">
+                    {category.image ? (
+                      <div className="w-10 h-10 rounded-lg overflow-hidden border border-gray-200 bg-gray-50 relative">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={category.image} alt={category.name} className="w-full h-full object-cover" />
+                      </div>
+                    ) : (
+                      <div className="w-10 h-10 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-400">
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                    )}
+                  </td>
                   <td className="px-6 py-4 font-medium text-gray-900">{category.name}</td>
                   <td className="px-6 py-4 text-gray-500">{category.description}</td>
                   <td className="px-6 py-4 text-gray-600">{category.productsCount} items</td>
@@ -110,7 +142,31 @@ export default function CategoriesManagement() {
                 </svg>
               </button>
             </div>
-            <div className="p-6 space-y-4">
+            <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Category Image</label>
+                <div className="mt-1 flex items-center space-x-4">
+                  {editingCategory.image ? (
+                    <div className="w-16 h-16 rounded-xl overflow-hidden border border-gray-200 bg-gray-50 flex-shrink-0">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={editingCategory.image} alt="Preview" className="w-full h-full object-cover" />
+                    </div>
+                  ) : (
+                    <div className="w-16 h-16 rounded-xl border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 flex-shrink-0">
+                      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                  )}
+                  <input 
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#0B5E64]/10 file:text-[#0B5E64] hover:file:bg-[#0B5E64]/20 cursor-pointer"
+                  />
+                </div>
+              </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Category Name</label>
                 <input 
@@ -131,16 +187,16 @@ export default function CategoriesManagement() {
                   placeholder="Brief description of this category..."
                 ></textarea>
               </div>
-              {editingCategory && (
+              {editingCategory && editingCategory.id !== '' && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
                   <select 
                     value={editingCategory.status}
-                    onChange={(e) => setEditingCategory({...editingCategory, status: e.target.value})}
+                    onChange={(e) => setEditingCategory({...editingCategory, status: e.target.value as 'Active' | 'Draft'})}
                     className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#0B5E64] focus:outline-none"
                   >
-                    <option>Active</option>
-                    <option>Draft</option>
+                    <option value="Active">Active</option>
+                    <option value="Draft">Draft</option>
                   </select>
                 </div>
               )}
@@ -156,7 +212,8 @@ export default function CategoriesManagement() {
               </button>
               <button 
                 onClick={handleSaveCategory} 
-                className="px-4 py-2 text-sm font-medium text-white bg-[#0B5E64] rounded-lg hover:bg-[#084A4F] transition-colors"
+                disabled={!editingCategory.name || !editingCategory.image}
+                className="px-4 py-2 text-sm font-medium text-white bg-[#0B5E64] rounded-lg hover:bg-[#084A4F] transition-colors disabled:opacity-50"
               >
                 {editingCategory.id === '' ? 'Save Category' : 'Update Category'}
               </button>

@@ -26,7 +26,7 @@ export default function Footer() {
         <div className="space-y-6">
           <div className="flex items-center gap-3">
             <img 
-              src="/images/Logoorg.png" 
+              src="/images/org.png" 
               alt="Elara Silver Logo" 
               className="w-auto h-40 md:h-48 object-contain brightness-0 invert drop-shadow-md" 
             />
@@ -38,7 +38,11 @@ export default function Footer() {
             {['Instagram', 'WhatsApp', 'Facebook'].map((social) => (
               <a
                 key={social}
-                href={social === 'WhatsApp' ? 'https://wa.me/919876543210' : '#'}
+                href={
+                  social === 'WhatsApp' ? 'https://wa.me/919876543210' : 
+                  social === 'Instagram' ? 'https://www.instagram.com/elarasilver_jewellery/' : 
+                  '#'
+                }
                 className="text-white/60 hover:text-white text-xs tracking-wider uppercase transition-colors duration-300"
               >
                 {social}

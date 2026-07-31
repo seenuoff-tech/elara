@@ -22,7 +22,7 @@ const curatedItems = [
 
 export default function CuratedForYou() {
   return (
-    <section className="relative pt-2 md:pt-24 pb-6 md:pb-24 px-6 md:px-12 bg-[#ffffff] z-10">
+    <section className="relative pt-2 md:pt-8 pb-6 md:pb-24 px-6 md:px-12 bg-[#ffffff] z-10">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-6 md:mb-16">
           <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-black font-serif">

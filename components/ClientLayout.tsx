@@ -29,11 +29,11 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
         href="https://wa.me/919876543210"
         target="_blank"
         rel="noopener noreferrer"
-        className="fixed bottom-[100px] right-6 md:right-8 z-50 bg-[#0B5E64] p-3 rounded-full shadow-[0_8px_20px_rgba(0,0,0,0.25)] hover:scale-110 transition-transform duration-300"
+        className="fixed bottom-[96px] right-6 z-[99] w-14 h-14 flex items-center justify-center bg-[#0B5E64] rounded-full shadow-[0_8px_20px_rgba(0,0,0,0.25)] hover:scale-110 transition-transform duration-300"
         title="Chat with us on WhatsApp"
       >
         <svg
-          className="w-8 h-8 md:w-10 md:h-10 text-white"
+          className="w-8 h-8 text-white"
           fill="currentColor"
           viewBox="0 0 24 24"
         >

@@ -35,11 +35,11 @@ export default function NewArrivals() {
   };
 
   return (
-    <section className="pt-2 md:pt-20 pb-6 md:pb-20 px-6 md:px-12 bg-white max-w-7xl mx-auto z-10 relative border-t border-black/5">
-      <h2 className="text-2xl md:text-3xl font-medium mb-6 md:mb-12 text-left text-black">New arrivals</h2>
+    <section className="pt-2 md:pt-8 pb-6 md:pb-20 px-6 md:px-12 bg-white max-w-7xl mx-auto z-10 relative border-t border-black/5">
+      <h2 className="text-2xl md:text-3xl font-medium mb-6 md:mb-8 text-left text-black">New arrivals</h2>
       
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-        {products.map((product, index) => (
+        {products.slice(0, 8).map((product, index) => (
           <div key={product.id} className="relative flex flex-col group">
             {/* Best Seller Ribbon */}
             {product.isBestSeller && (
@@ -60,7 +60,7 @@ export default function NewArrivals() {
             {/* Image Container */}
             <Link href={`/product/${product.name.toLowerCase().replace(/\s+/g, '-')}`} className="aspect-square w-full relative bg-gray-50 flex items-center justify-center mb-4 rounded-xl border border-transparent hover:border-black/5 transition-colors block overflow-hidden">
               <Image 
-                src={product.image || '/images/Logoorg.png'} 
+                src={product.image || '/images/elaralogo.png'} 
                 alt={product.name || 'Product'} 
                 fill 
                 className="object-cover hover:scale-105 transition-transform duration-500" 
@@ -101,11 +101,16 @@ export default function NewArrivals() {
                 </h3>
               </Link>
               
-              <div className="flex items-center gap-2 mb-5">
-                <span className="text-[15px] font-bold text-black">
-                  {product.newPrice ? `₹${product.newPrice}` : (product.price ? product.price : calculatePrice(product.weightInGrams || 0, product.category))}
-                </span>
-                {product.oldPrice && <span className="text-xs text-gray-400 line-through font-light">₹{product.oldPrice}</span>}
+              <div className="flex flex-col gap-1 mb-5">
+                <div className="flex items-center gap-2">
+                  <span className="text-[15px] font-bold text-black">
+                    {product.newPrice ? `₹${product.newPrice}` : (product.price ? product.price : calculatePrice(product.weightInGrams || 0, product.category))}
+                  </span>
+                  {product.oldPrice && <span className="text-xs text-gray-400 line-through font-light">₹{product.oldPrice}</span>}
+                </div>
+                <div className="text-[10px] text-[#b8860b] font-medium tracking-wide bg-[#fdf5e6] border border-[#f5d08e] px-2 py-0.5 rounded-sm self-start inline-flex items-center gap-1">
+                  Earn <span className="font-bold">{Math.floor((parseFloat((product.newPrice ? String(product.newPrice) : (product.price ? String(product.price) : calculatePrice(product.weightInGrams || 0, product.category))).replace(/[^\d.]/g, '')) || 0) * 0.05)} Points</span>
+                </div>
               </div>
               
               <button 

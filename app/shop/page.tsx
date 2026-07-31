@@ -217,11 +217,16 @@ function ShopContent() {
                       </h3>
                     </Link>
                     
-                    <div className="flex items-center gap-2 mb-5">
-                      <span className="text-[15px] font-bold text-black">
-                        {product.newPrice ? `₹${product.newPrice}` : (product.price ? product.price : calculatePrice(product.weightInGrams || 0, product.category))}
-                      </span>
-                      {product.oldPrice && <span className="text-xs text-gray-400 line-through font-light">₹{product.oldPrice}</span>}
+                    <div className="flex flex-col gap-1 mb-5">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[15px] font-bold text-black">
+                          {product.newPrice ? `₹${product.newPrice}` : (product.price ? product.price : calculatePrice(product.weightInGrams || 0, product.category))}
+                        </span>
+                        {product.oldPrice && <span className="text-xs text-gray-400 line-through font-light">₹{product.oldPrice}</span>}
+                      </div>
+                      <div className="text-[10px] text-[#b8860b] font-medium tracking-wide bg-[#fdf5e6] border border-[#f5d08e] px-2 py-0.5 rounded-sm self-start inline-flex items-center gap-1">
+                        Earn <span className="font-bold">{Math.floor(parsePrice(product.newPrice || product.price, product.weightInGrams, product.category) * 0.05)} Points</span>
+                      </div>
                     </div>
                     
                     <button 
