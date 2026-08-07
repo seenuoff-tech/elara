@@ -15,8 +15,8 @@
       "destination": "/backend/:path*"
     },
     {
-      "source": "/(.*)",
-      "destination": "/frontend/$1"
+      "source": "/:path*",
+      "destination": "/frontend/:path*"
     }
   ]
 }
