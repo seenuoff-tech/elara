@@ -4,38 +4,28 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 
-const slides = [
-  {
-    id: 1,
-    image: '/images/silver_necklace.png',
-    title: 'The Elegance Collection',
-    subtitle: 'Discover our new signature silver necklaces.',
-    buttonText: 'Shop Necklaces',
-    link: '/shop/necklaces'
-  },
-  {
-    id: 2,
-    image: '/images/silver_rings.png',
-    title: 'Premium Silver Rings',
-    subtitle: 'Handcrafted perfection for every occasion.',
-    buttonText: 'Explore Rings',
-    link: '/shop/rings'
-  },
-  {
-    id: 3,
-    image: '/images/silver_bracelet.png',
-    title: 'Luxury Bracelets',
-    subtitle: 'Timeless designs that make a statement.',
-    buttonText: 'View Collection',
-    link: '/shop/bracelets'
-  },
-];
-
 export default function HeroSlider() {
+  const [slides, setSlides] = useState<any[]>([]);
   const [current, setCurrent] = useState(0);
 
-  const nextSlide = () => setCurrent((prev) => (prev + 1) % slides.length);
-  const prevSlide = () => setCurrent((prev) => (prev - 1 + slides.length) % slides.length);
+  useEffect(() => {
+    const fetchSlides = async () => {
+      try {
+        const res = await fetch('/api/slides');
+        const data = await res.json();
+        if (data.success && data.slides.length > 0) {
+          // Filter only active slides
+          setSlides(data.slides.filter((s: any) => s.status === 'Active'));
+        }
+      } catch (error) {
+        console.error('Error fetching slides:', error);
+      }
+    };
+    fetchSlides();
+  }, []);
+
+  const nextSlide = () => setCurrent((prev) => (prev + 1) % Math.max(1, slides.length));
+  const prevSlide = () => setCurrent((prev) => (prev - 1 + slides.length) % Math.max(1, slides.length));
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -91,6 +81,11 @@ export default function HeroSlider() {
       className="relative w-full overflow-hidden flex items-center justify-center mt-28 md:mt-[240px]"
       style={{ height: '530px', backgroundColor: '#ffffff', marginBottom: '40px' }}
     >
+      {slides.length === 0 && (
+        <div className="absolute inset-0 flex items-center justify-center text-gray-400 uppercase tracking-widest text-sm">
+          No active slides available
+        </div>
+      )}
       {slides.map((slide, index) => {
         const position = getPosition(index);
         

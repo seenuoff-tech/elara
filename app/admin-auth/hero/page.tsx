@@ -1,32 +1,74 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 export default function HeroSliderManagement() {
-  const [slides, setSlides] = useState([
-    { id: 1, title: 'The Elegance Collection', subtitle: 'Discover our new signature silver necklaces.', image: '/images/silver_necklace.png', status: 'Active' },
-    { id: 2, title: 'Premium Silver Rings', subtitle: 'Handcrafted perfection for every occasion.', image: '/images/silver_rings.png', status: 'Active' },
-    { id: 3, title: 'Luxury Bracelets', subtitle: 'Timeless designs that make a statement.', image: '/images/silver_bracelet.png', status: 'Active' },
-  ]);
-
+  const [slides, setSlides] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSlide, setEditingSlide] = useState<any>(null);
 
-  const handleDelete = (id: number) => {
-    if (confirm('Are you sure you want to delete this slide?')) {
-      setSlides(slides.filter(s => s.id !== id));
+  const fetchSlides = async () => {
+    try {
+      const res = await fetch('/api/slides');
+      const data = await res.json();
+      if (data.success) {
+        setSlides(data.slides);
+      }
+    } catch (error) {
+      console.error('Error fetching slides:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleSaveSlide = () => {
-    if (editingSlide) {
-      if (editingSlide.id === 0) {
-        const newSlide = { ...editingSlide, id: Math.max(0, ...slides.map(s => s.id)) + 1 };
-        setSlides([...slides, newSlide]);
-      } else {
-        setSlides(slides.map(s => s.id === editingSlide.id ? editingSlide : s));
+  useEffect(() => {
+    fetchSlides();
+  }, []);
+
+  const handleDelete = async (id: number) => {
+    if (confirm('Are you sure you want to delete this slide?')) {
+      try {
+        const res = await fetch(`/api/slides/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+          setSlides(slides.filter(s => s.id !== id));
+        }
+      } catch (error) {
+        console.error('Error deleting slide:', error);
       }
-      setEditingSlide(null);
+    }
+  };
+
+  const handleSaveSlide = async () => {
+    if (editingSlide) {
+      try {
+        let res;
+        if (editingSlide.id === 0) {
+          res = await fetch('/api/slides', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(editingSlide)
+          });
+        } else {
+          res = await fetch(`/api/slides/${editingSlide.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(editingSlide)
+          });
+        }
+        
+        const data = await res.json();
+        if (data.success) {
+          if (editingSlide.id === 0) {
+            setSlides([...slides, data.slide]);
+          } else {
+            setSlides(slides.map(s => s.id === editingSlide.id ? data.slide : s));
+          }
+          setEditingSlide(null);
+        }
+      } catch (error) {
+        console.error('Error saving slide:', error);
+      }
     }
   };
 

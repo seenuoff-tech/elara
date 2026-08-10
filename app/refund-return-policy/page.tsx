@@ -100,11 +100,7 @@ export default function RefundReturnPolicyPage() {
     <div className="bg-white text-black min-h-screen pt-[220px] md:pt-[280px] pb-24">
       {/* Header */}
       <section className="relative px-6 md:px-12 max-w-4xl mx-auto text-center space-y-5 pb-16">
-        <div className="flex items-center justify-center gap-4 mb-2">
-          <div className="h-[1px] w-10 bg-black/20" />
-          <span className="text-[10px] font-semibold tracking-[0.45em] text-[#0B5E64] uppercase">Client Policy</span>
-          <div className="h-[1px] w-10 bg-black/20" />
-        </div>
+
         <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight uppercase leading-tight">
           Refund &amp;<br />Return Policy
         </h1>

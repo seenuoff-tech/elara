@@ -18,18 +18,7 @@ export default function ContactPage() {
 
   return (
     <div className="bg-[#ffffff] text-black selection:bg-[#ffffff]/20 min-h-screen pt-24">
-      {/* Editorial Header */}
-      <section className="relative py-16 px-6 md:px-12 max-w-4xl mx-auto text-center space-y-4">
-        <span className="text-xs md:text-sm font-semibold tracking-[0.4em] text-silver-chrome uppercase block">
-          Client Services
-        </span>
-        <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight uppercase">
-          Contact Concierge
-        </h1>
-        <p className="text-black/50 font-light text-sm md:text-base max-w-xl mx-auto leading-relaxed">
-          Our dedicated consultants are available to assist you with order inquires, bespoke designs, size consultations, and care advice.
-        </p>
-      </section>
+
 
       {/* Grid Content */}
       <section className="max-w-7xl mx-auto px-6 md:px-12 py-12 grid grid-cols-1 lg:grid-cols-2 gap-16 items-start mb-20">
@@ -125,42 +114,15 @@ export default function ContactPage() {
           transition={{ duration: 0.6 }}
           className="space-y-12"
         >
-          {/* Column Group 1 */}
-          <div className="space-y-4">
-            <h4 className="text-xs font-semibold tracking-[0.3em] uppercase text-silver-chrome">
-              Private Showroom Locators
-            </h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-              <div className="border border-black/5 p-6 bg-neutral-50/20">
-                <h5 className="text-sm font-semibold uppercase tracking-wider text-black">Atelier Mumbai</h5>
-                <p className="text-xs text-black/50 font-light mt-2 leading-relaxed">
-                  Colaba Causeway, Block A<br />
-                  Mumbai, MH 400001<br />
-                  <span className="text-black/30 block mt-2">mumbai@elarasilver.com</span>
-                </p>
-              </div>
-              <div className="border border-black/5 p-6 bg-neutral-50/20">
-                <h5 className="text-sm font-semibold uppercase tracking-wider text-black">Atelier New Delhi</h5>
-                <p className="text-xs text-black/50 font-light mt-2 leading-relaxed">
-                  Chanakyapuri, Ring Rd<br />
-                  New Delhi, DL 110021<br />
-                  <span className="text-black/30 block mt-2">delhi@elarasilver.com</span>
-                </p>
-              </div>
-            </div>
-          </div>
+
 
           {/* Column Group 2 */}
-          <div className="space-y-4 border-t border-black/10 pt-8">
+          <div className="space-y-4">
             <h4 className="text-xs font-semibold tracking-[0.3em] uppercase text-silver-chrome">
               Concierge Contact
             </h4>
             <div className="space-y-2 text-sm font-light">
               <p className="flex justify-between">
-                <span className="text-black/40 uppercase tracking-wider text-[11px]">Private Consultation Phone</span>
-                <span className="text-black font-medium">+91 (22) 5557-9250</span>
-              </p>
-              <p className="flex justify-between border-t border-black/5 pt-2">
                 <span className="text-black/40 uppercase tracking-wider text-[11px]">Bespoke Order Assistance</span>
                 <span className="text-black font-medium">orders@elarasilver.com</span>
               </p>
