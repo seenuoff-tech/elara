@@ -35,14 +35,10 @@ export default function Footer() {
             Forging timeless aesthetics in solid sterling silver. Experiencing luxury jewelry through high-end craftsmanship and conscious modern design.
           </p>
           <div className="flex gap-4">
-            {['Instagram', 'WhatsApp', 'Facebook'].map((social) => (
+            {['Instagram'].map((social) => (
               <a
                 key={social}
-                href={
-                  social === 'WhatsApp' ? 'https://wa.me/919876543210' : 
-                  social === 'Instagram' ? 'https://www.instagram.com/elarasilver_jewellery/' : 
-                  '#'
-                }
+                href={'https://www.instagram.com/elarasilver_jewellery/'}
                 className="text-white/60 hover:text-white text-xs tracking-wider uppercase transition-colors duration-300"
               >
                 {social}
@@ -129,10 +125,10 @@ export default function Footer() {
           <span className="hidden md:inline text-white/20">|</span>
           <Link href="/privacy-policy" className="hover:text-white transition-colors duration-300 tracking-wider uppercase">Privacy Policy</Link>
         </div>
-        <div className="flex flex-col md:flex-row items-center justify-between w-full gap-4">
-          <p>© {new Date().getFullYear()} ELARA SILVER. All Rights Reserved.</p>
+        <div className="flex flex-col md:flex-row items-center justify-between w-full gap-4 mt-4">
+          <p className="text-sm md:text-base font-medium text-white/90 tracking-wide">© {new Date().getFullYear()} ELARA SILVER. All Rights Reserved.</p>
           <div className="flex gap-6">
-            <a href="https://www.skeneticdigital.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors duration-300">Developed by skenetic digital</a>
+            <a href="https://www.skeneticdigital.com" target="_blank" rel="noopener noreferrer" className="text-sm md:text-base font-medium text-white/90 tracking-wide hover:text-white transition-colors duration-300">Developed by skenetic digital</a>
           </div>
         </div>
       </div>

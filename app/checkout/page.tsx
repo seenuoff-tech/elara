@@ -6,8 +6,6 @@ import { useRouter } from 'next/navigation';
 import { useCart } from '../../context/CartContext';
 import LuxuryButton from '../../components/luxury/LuxuryButton';
 import Image from 'next/image';
-import { jsPDF } from "jspdf";
-import autoTable from "jspdf-autotable";
 import Script from 'next/script';
 
 export default function CheckoutPage() {
@@ -168,7 +166,9 @@ export default function CheckoutPage() {
     }
   };
 
-    const downloadInvoice = () => {
+    const downloadInvoice = async () => {
+    const { jsPDF } = await import("jspdf");
+    const { default: autoTable } = await import("jspdf-autotable");
     const doc = new jsPDF();
     
     // Header text on top left

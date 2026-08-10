@@ -67,7 +67,7 @@ export default function ProductClient() {
       name: product.name,
       category: 'Necklace',
       collection: 'New Arrivals',
-      price: product.newPrice ? `₹${product.newPrice}` : calculatePrice(product.weightInGrams || 0, product.category),
+      price: product.newPrice ? `₹${product.newPrice}` : (product.price ? `₹${product.price}` : calculatePrice(product.weightInGrams || 0, product.category)),
       image: product.image || '/images/Logoorg.png',
       tagline: product.tagline || '',
       description: typeof product.description === 'string' ? product.description : (product.description?.design || ''),
@@ -111,6 +111,8 @@ export default function ProductClient() {
                 alt={gallery[activeImageIndex]?.alt || product.name || 'Product Image'}
                 fill
                 className="object-cover"
+                sizes="(max-width: 768px) 100vw, 50vw"
+                priority
               />
               <button className="absolute bottom-4 right-4 bg-white/80 backdrop-blur border border-black/10 text-xs px-3 py-1.5 rounded-full flex items-center gap-2 hover:bg-white transition-colors">
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -133,7 +135,7 @@ export default function ProductClient() {
                     onClick={() => setActiveImageIndex(idx)}
                     className={`relative w-20 h-20 shrink-0 bg-gray-50 rounded-xl border overflow-hidden ${activeImageIndex === idx ? 'border-black' : 'border-gray-200'} hover:border-black/50 transition-colors`}
                   >
-                    <Image src={img.url} alt={img.alt} fill className="object-cover" />
+                    <Image src={img.url} alt={img.alt} fill className="object-cover" sizes="80px" />
                   </button>
                 ))}
               </div>

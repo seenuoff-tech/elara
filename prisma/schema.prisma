@@ -29,23 +29,25 @@ model Category {
 }
 
 model Product {
-  id          String   @id @default(uuid())
-  name        String
-  categoryId  String
-  category    Category @relation(fields: [categoryId], references: [id])
-  price       Float
-  stock       Int      @default(0)
-  status      String   @default("Active")
-  image       String?
-  gallery     Json?    // Array of { url, alt }
-  description String?  @db.Text
-  finishes    Json?    // Array of finish names
-  ringSizes   Json?    // Array of sizes
-  tags        Json?    // Array of strings
-  isNew       Boolean  @default(false)
-  isBestSeller Boolean @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           String   @id @default(uuid())
+  name         String
+  categoryId   String
+  price        Float
+  stock        Int      @default(0)
+  status       String   @default("Active")
+  image        String?
+  gallery      Json?
+  description  String?  @db.Text
+  finishes     Json?
+  ringSizes    Json?
+  tags         Json?
+  isNew        Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  isBestSeller Boolean  @default(false)
+  category     Category @relation(fields: [categoryId], references: [id])
+
+  @@index([categoryId], map: "Product_categoryId_fkey")
 }
 
 model Slide {

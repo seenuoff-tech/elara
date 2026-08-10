@@ -5,7 +5,13 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 
 export default function HeroSlider() {
-  const [slides, setSlides] = useState<any[]>([]);
+  const defaultSlides = [
+    { id: 'fallback-1', image: '/images/silver_necklace.png', title: 'Silver Necklace', link: '/shop' },
+    { id: 'fallback-2', image: '/images/silver_bracelet.png', title: 'Silver Bracelet', link: '/shop' },
+    { id: 'fallback-3', image: '/images/silver_rings.png', title: 'Silver Rings', link: '/shop' },
+  ];
+
+  const [slides, setSlides] = useState<any[]>(defaultSlides);
   const [current, setCurrent] = useState(0);
 
   useEffect(() => {
@@ -13,9 +19,11 @@ export default function HeroSlider() {
       try {
         const res = await fetch('/api/slides');
         const data = await res.json();
-        if (data.success && data.slides.length > 0) {
-          // Filter only active slides
-          setSlides(data.slides.filter((s: any) => s.status === 'Active'));
+        if (data.success && data.slides && data.slides.length > 0) {
+          const activeSlides = data.slides.filter((s: any) => s.status === 'Active');
+          if (activeSlides.length > 0) {
+            setSlides(activeSlides);
+          }
         }
       } catch (error) {
         console.error('Error fetching slides:', error);
@@ -78,7 +86,7 @@ export default function HeroSlider() {
 
   return (
     <div 
-      className="relative w-full overflow-hidden flex items-center justify-center mt-28 md:mt-[240px]"
+      className="relative w-full overflow-hidden flex items-center justify-center mt-24 md:mt-[180px]"
       style={{ height: '530px', backgroundColor: '#ffffff', marginBottom: '40px' }}
     >
       {slides.length === 0 && (

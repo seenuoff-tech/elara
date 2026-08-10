@@ -19,7 +19,7 @@ export default function AddToCartAnimation() {
         hasConfirmed.current = true;
         confirmAddToCart();
       }
-    }, 10000); // 10 seconds max duration
+    }, 4000); // 4 seconds max duration
 
     return () => clearTimeout(fallbackTimer);
   }, [activeAnimation, confirmAddToCart]);
@@ -57,6 +57,7 @@ export default function AddToCartAnimation() {
         onTimeUpdate={handleTimeUpdate}
         onEnded={handleManualSkip}
         onError={handleManualSkip}
+        onLoadedData={(e) => { e.currentTarget.playbackRate = 2.5; }}
       />
       
       {/* Skip Button for convenience */}

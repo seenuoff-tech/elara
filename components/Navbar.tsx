@@ -7,6 +7,7 @@ import { useWishlist } from '../context/WishlistContext';
 import { useAuth } from '../context/AuthContext';
 import LuxuryButton from './luxury/LuxuryButton';
 import SearchOverlay from './luxury/SearchOverlay';
+import { usePathname } from 'next/navigation';
 import { useProducts } from '../context/ProductsContext';
 
 export default function Navbar() {
@@ -25,7 +26,8 @@ export default function Navbar() {
   const { user, logout } = useAuth();
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [desktopExpandedCategory, setDesktopExpandedCategory] = useState<string | null>(null);
-  const [activeMaterial, setActiveMaterial] = useState('Silver');
+  const pathname = usePathname();
+  const activeMaterial = pathname?.startsWith('/sleet') ? 'Sleet' : 'Silver';
 
   const navigationMenu = [
     {
@@ -148,11 +150,12 @@ export default function Navbar() {
           <div className="flex justify-center items-center w-1/3">
             <Link href="/" className="hover:scale-105 transition-transform duration-500 flex items-center justify-center">
               {isScrolled ? (
-                <img 
-                  src="/images/elaraa.PNG" 
-                  alt="Elara Silver Logo" 
-                  className="h-48 md:h-64 object-contain drop-shadow-sm transition-all duration-500 brightness-0 mix-blend-multiply" 
-                />
+                <span 
+                  style={{ fontFamily: "'tan mon cheri', serif", letterSpacing: '8px', lineHeight: '0.5', fontWeight: 900, WebkitTextStroke: '1px black' }} 
+                  className="text-[18px] font-black text-black transition-all duration-500 ml-2"
+                >
+                  ELARA
+                </span>
               ) : (
                 <img 
                   src="/images/org.png" 
@@ -352,18 +355,18 @@ export default function Navbar() {
 
           {/* Material Toggle */}
           <div className="flex items-center border border-[#D4AF37] rounded-full p-0.5 mb-1 mt-1">
-            <button
-              onClick={() => setActiveMaterial('Silver')}
+            <Link
+              href="/"
               className={`w-60 py-1.5 text-[13px] font-medium rounded-full transition-all duration-300 flex items-center justify-center ${activeMaterial === 'Silver' ? 'bg-[#0B5E64] text-white shadow-md' : 'bg-transparent text-gray-600 hover:text-black hover:bg-gray-50'}`}
             >
               Silver Jewellery
-            </button>
-            <button
-              onClick={() => setActiveMaterial('Sleet')}
+            </Link>
+            <Link
+              href="/sleet"
               className={`w-60 py-1.5 text-[13px] font-medium rounded-full transition-all duration-300 flex items-center justify-center ${activeMaterial === 'Sleet' ? 'bg-[#0B5E64] text-white shadow-md' : 'bg-transparent text-gray-600 hover:text-black hover:bg-gray-50'}`}
             >
               Sleet Jewellery
-            </button>
+            </Link>
           </div>
         </div>
       </div>
