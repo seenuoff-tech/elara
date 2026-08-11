@@ -118,7 +118,7 @@ export default function CheckoutPage() {
           currency: "INR",
           name: "Elara Silver",
           description: "Purchase from Elara Silver",
-          image: "/images/elaralogo.png",
+          image: "/images/org.png",
           order_id: data.order.id,
           handler: async (response: any) => {
             const generatedOrderId = `ELARA-${Math.floor(Math.random() * 900000) + 100000}`;

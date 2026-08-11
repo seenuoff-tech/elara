@@ -40,7 +40,7 @@ export default function ProductClient() {
   // Fallbacks for data structures that might not be present on all products
   const gallery = product.gallery && product.gallery.length > 0 
     ? product.gallery 
-    : [{ url: product.image || '/images/elaralogo.png', alt: product.name }];
+    : [{ url: product.image || '/images/org.png', alt: product.name }];
     
   const finishes = product.finishes || [];
   
@@ -68,7 +68,7 @@ export default function ProductClient() {
       category: 'Necklace',
       collection: 'New Arrivals',
       price: product.newPrice ? `₹${product.newPrice}` : (product.price ? `₹${product.price}` : calculatePrice(product.weightInGrams || 0, product.category)),
-      image: product.image || '/images/Logoorg.png',
+      image: product.image || '/images/org.png',
       tagline: product.tagline || '',
       description: typeof product.description === 'string' ? product.description : (product.description?.design || ''),
       hallmark: product.hallmark || '',

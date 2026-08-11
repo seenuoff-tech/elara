@@ -37,6 +37,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
   };
 
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setUsername('');
+    setPassword('');
+  };
+
 
 
   if (!isAuthenticated) {
@@ -45,9 +51,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="max-w-md w-full bg-white rounded-xl shadow-lg border border-gray-100 p-8">
           <div className="text-center mb-8 flex flex-col items-center">
             <img 
-              src="/images/elaralogo.png" 
+              src="/images/org.png" 
               alt="Elara Silver Logo" 
-              className="h-16 mb-4 object-contain" 
+              className="h-16 mb-4 object-contain brightness-0" 
             />
             <h1 className="text-2xl font-bold tracking-widest text-[#0B5E64]">ELARA ADMIN</h1>
             <p className="text-sm text-gray-500 mt-2">Sign in to manage your store</p>
@@ -129,9 +135,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="py-6 flex flex-col items-center border-b border-gray-200 relative">
           <Link href="/admin-auth" className="flex flex-col items-center group">
             <img 
-              src="/images/elaralogo.png" 
+              src="/images/org.png" 
               alt="Elara Silver Logo" 
-              className="h-12 mb-3 object-contain group-hover:scale-105 transition-transform" 
+              className="h-12 mb-3 object-contain group-hover:scale-105 transition-transform brightness-0" 
             />
             <span className="text-sm font-bold tracking-widest text-[#0B5E64] text-center">ELARA SILVER ADMIN</span>
           </Link>
@@ -172,12 +178,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </nav>
 
         <div className="p-4 border-t border-gray-200">
-          <Link href="/" className="flex items-center text-sm text-gray-600 hover:text-[#0B5E64] transition-colors">
+          <button onClick={handleLogout} className="flex items-center text-sm text-gray-600 hover:text-red-600 transition-colors w-full">
             <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
             </svg>
-            Back to Store
-          </Link>
+            Logout
+          </button>
         </div>
         </aside>
         

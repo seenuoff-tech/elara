@@ -58,7 +58,7 @@ export default function NewArrivals() {
             {/* Image Container */}
             <Link href={`/product/${product.name.toLowerCase().replace(/\s+/g, '-')}`} className="aspect-square w-full relative bg-gray-50 flex items-center justify-center mb-4 rounded-xl border border-transparent hover:border-black/5 transition-colors block overflow-hidden">
               <Image 
-                src={product.image || '/images/elaralogo.png'} 
+                src={product.image || '/images/org.png'} 
                 alt={product.name || 'Product'} 
                 fill 
                 className="object-cover hover:scale-105 transition-transform duration-500" 
