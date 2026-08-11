@@ -23,7 +23,7 @@ export async function POST(request: Request) {
       const uploadStream = cloudinary.uploader.upload_stream(
         { folder: 'elara_uploads', resource_type: 'auto' },
         (error, result) => {
-          if (error) reject(error);
+          if (error) reject(new Error(error.message || JSON.stringify(error)));
           else resolve(result);
         }
       );
@@ -35,8 +35,8 @@ export async function POST(request: Request) {
       url: uploadResult.secure_url,
       filename: uploadResult.public_id 
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error uploading image to Cloudinary:', error);
-    return NextResponse.json({ success: false, error: 'Failed to upload image' }, { status: 500 });
+    return NextResponse.json({ success: false, error: error.message || 'Failed to upload image. Please check Vercel environment variables.' }, { status: 500 });
   }
 }
