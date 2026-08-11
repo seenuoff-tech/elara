@@ -149,20 +149,11 @@ export default function Navbar() {
           {/* Center: Logo */}
           <div className="flex justify-center items-center w-1/3">
             <Link href="/" className="hover:scale-105 transition-transform duration-500 flex items-center justify-center">
-              {isScrolled ? (
-                <span 
-                  style={{ fontFamily: "'tan mon cheri', serif", letterSpacing: '8px', lineHeight: '0.5', fontWeight: 900, WebkitTextStroke: '1px black' }} 
-                  className="text-[18px] font-black text-black transition-all duration-500 ml-2"
-                >
-                  ELARA
-                </span>
-              ) : (
-                <img 
-                  src="/images/org.png" 
-                  alt="Elara Silver Logo" 
-                  className="h-12 md:h-16 object-contain drop-shadow-sm transition-all duration-500 brightness-0" 
-                />
-              )}
+              <img 
+                src="/images/org.png" 
+                alt="Elara Silver Logo" 
+                className={`${isScrolled ? 'h-8 md:h-10' : 'h-12 md:h-16'} object-contain drop-shadow-sm transition-all duration-500 brightness-0`} 
+              />
             </Link>
           </div>
 
@@ -363,7 +354,7 @@ export default function Navbar() {
             </Link>
             <Link
               href="/sleet"
-              className={`w-60 py-1.5 text-[13px] font-medium rounded-full transition-all duration-300 flex items-center justify-center ${activeMaterial === 'Sleet' ? 'bg-[#56D4E1] text-white shadow-md' : 'bg-transparent text-gray-600 hover:text-black hover:bg-gray-50'}`}
+              className={`w-60 py-1.5 text-[13px] font-medium rounded-full transition-all duration-300 flex items-center justify-center ${activeMaterial === 'Sleet' ? 'bg-[#A5F2F3] text-black shadow-md' : 'bg-transparent text-gray-600 hover:text-black hover:bg-gray-50'}`}
             >
               Sleet Jewellery
             </Link>
