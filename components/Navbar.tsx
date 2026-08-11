@@ -363,7 +363,7 @@ export default function Navbar() {
             </Link>
             <Link
               href="/sleet"
-              className={`w-60 py-1.5 text-[13px] font-medium rounded-full transition-all duration-300 flex items-center justify-center ${activeMaterial === 'Sleet' ? 'bg-[#0B5E64] text-white shadow-md' : 'bg-transparent text-gray-600 hover:text-black hover:bg-gray-50'}`}
+              className={`w-60 py-1.5 text-[13px] font-medium rounded-full transition-all duration-300 flex items-center justify-center ${activeMaterial === 'Sleet' ? 'bg-[#56D4E1] text-white shadow-md' : 'bg-transparent text-gray-600 hover:text-black hover:bg-gray-50'}`}
             >
               Sleet Jewellery
             </Link>
@@ -497,7 +497,7 @@ export default function Navbar() {
           {/* Bottom CTA */}
           <div className="p-8 border-t border-black/5 flex flex-col gap-4 bg-gray-50/50 shrink-0">
             <div className="flex justify-center mb-2">
-              <img src="/images/elaralogo.png" alt="Elara Silver Logo" className="h-12 object-contain drop-shadow-sm brightness-0" />
+              <img src="/images/org.png" alt="Elara Silver Logo" className="h-12 object-contain drop-shadow-sm brightness-0" />
             </div>
             {user ? (
               <>
