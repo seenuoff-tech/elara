@@ -39,6 +39,32 @@ export default function HeroSliderManagement() {
     }
   };
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      try {
+        const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+        const res = await fetch(`${API_BASE}/api/upload`, {
+          method: 'POST',
+          body: formData,
+        });
+        
+        const data = await res.json();
+        if (data.success) {
+          if (editingSlide) setEditingSlide({...editingSlide, image: data.url});
+        } else {
+          alert('Upload failed: ' + data.error);
+        }
+      } catch (error) {
+        console.error('Upload error:', error);
+        alert('Failed to upload image');
+      }
+    }
+  };
+
   const handleSaveSlide = async () => {
     if (editingSlide) {
       try {
@@ -156,13 +182,26 @@ export default function HeroSliderManagement() {
             <div className="p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Image Upload (or URL)</label>
-                <input 
-                  type="text" 
-                  value={editingSlide ? editingSlide.image : ''}
-                  onChange={(e) => editingSlide && setEditingSlide({...editingSlide, image: e.target.value})}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#0B5E64] focus:outline-none" 
-                  placeholder="e.g. /images/slider1.jpg" 
-                />
+                <div className="flex gap-2 items-center">
+                  <input 
+                    type="text" 
+                    value={editingSlide ? editingSlide.image : ''}
+                    onChange={(e) => editingSlide && setEditingSlide({...editingSlide, image: e.target.value})}
+                    className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#0B5E64] focus:outline-none" 
+                    placeholder="e.g. /images/slider1.jpg" 
+                  />
+                  <div className="relative overflow-hidden inline-block shrink-0">
+                    <button className="px-4 py-2 bg-gray-100 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors whitespace-nowrap">
+                      Browse Files
+                    </button>
+                    <input 
+                      type="file" 
+                      accept="image/*,video/*"
+                      onChange={handleImageUpload}
+                      className="absolute left-0 top-0 opacity-0 w-full h-full cursor-pointer"
+                    />
+                  </div>
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
