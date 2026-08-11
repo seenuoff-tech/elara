@@ -8,7 +8,7 @@ import { useCategories } from '@/context/CategoriesContext';
 export default function ShopByCategory() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const { categories } = useCategories();
-  const preferredOrder = ["ring", "earring", "minimalist", "bracelet", "anklet", "toe ring", "men"];
+  const preferredOrder = ["earring", "toe ring", "ring", "minimalist", "bracelet", "anklet", "men"];
   
   const activeCategories = [...categories]
     .filter(c => c.status === 'Active' && !c.name.toLowerCase().includes('set'))

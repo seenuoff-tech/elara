@@ -49,24 +49,22 @@ app.post('/api/razorpay', async (req, res) => {
 });
 
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
-// Ensure uploads directory exists
-const uploadDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir);
-}
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
-// Multer config
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    // Keep exact original filename (replacing spaces with dashes for safety)
-    // Note: If a file with the same name exists, it will be overwritten
-    cb(null, file.originalname.replace(/\s+/g, '-'));
+// Multer config for Cloudinary
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'elara_uploads',
+    allowed_formats: ['jpg', 'png', 'jpeg', 'gif', 'webp', 'mp4'],
   },
 });
 const upload = multer({ storage });
@@ -82,52 +80,51 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
     return res.status(400).json({ success: false, error: 'No file uploaded' });
   }
   
-  // The frontend needs the URL relative to the images directory
-  // or absolute URL. We return the filename so it can be appended to backend URL.
-  const fileUrl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
-  
+  // Return the Cloudinary URL
   res.json({
     success: true,
-    url: fileUrl,
-    filename: req.file.filename
+    url: req.file.path, // Cloudinary secure URL
+    filename: req.file.filename // Cloudinary public_id
   });
 });
 
 // ---------------------------------------------------------
 // ROUTE: MANAGE IMAGES (LIST & DELETE)
 // ---------------------------------------------------------
-app.get('/api/images', (req, res) => {
-  fs.readdir(uploadDir, (err, files) => {
-    if (err) {
-      return res.status(500).json({ success: false, error: 'Unable to read directory' });
-    }
-    
-    const images = files.map(file => {
-      const stats = fs.statSync(path.join(uploadDir, file));
-      return {
-        name: file,
-        url: `${req.protocol}://${req.get('host')}/images/${file}`,
-        size: stats.size,
-        createdAt: stats.birthtime
-      };
-    }).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); // Newest first
+app.get('/api/images', async (req, res) => {
+  try {
+    const result = await cloudinary.search
+      .expression('folder:elara_uploads')
+      .sort_by('created_at', 'desc')
+      .max_results(500)
+      .execute();
+      
+    const images = result.resources.map(file => ({
+      name: file.public_id,
+      url: file.secure_url,
+      size: file.bytes,
+      createdAt: file.created_at
+    }));
 
     res.json({ success: true, images });
-  });
+  } catch (error) {
+    console.error('Error fetching images:', error);
+    res.status(500).json({ success: false, error: 'Unable to fetch images from Cloudinary' });
+  }
 });
 
-app.delete('/api/images', (req, res) => {
-  const filename = req.query.filename;
+app.delete('/api/images', async (req, res) => {
+  const filename = req.query.filename; // this is the public_id
   if (!filename) {
-    return res.status(400).json({ success: false, error: 'Filename is required' });
+    return res.status(400).json({ success: false, error: 'Filename (public_id) is required' });
   }
 
-  const filePath = path.join(uploadDir, filename);
-  if (fs.existsSync(filePath)) {
-    fs.unlinkSync(filePath);
+  try {
+    await cloudinary.uploader.destroy(filename);
     res.json({ success: true, message: 'File deleted' });
-  } else {
-    res.status(404).json({ success: false, error: 'File not found' });
+  } catch (error) {
+    console.error('Error deleting image:', error);
+    res.status(500).json({ success: false, error: 'Failed to delete image' });
   }
 });
 
