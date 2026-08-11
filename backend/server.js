@@ -131,6 +131,12 @@ app.get('/', (req, res) => {
   res.send('Elara Silver Backend API is running!');
 });
 
+// Global Error Handler
+app.use((err, req, res, next) => {
+  console.error('Express Error:', err);
+  res.status(500).json({ success: false, error: err.message || err.toString() });
+});
+
 app.listen(PORT, () => {
   console.log(`Backend Server running on port ${PORT}`);
 });
