@@ -10,6 +10,7 @@ export interface CartItem {
   size: string;
   quantity: number;
   image?: string;
+  stock?: number;
 }
 
 interface CartContextType {
@@ -43,7 +44,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, [cartItems]);
 
   // Direct add to cart (used for quantity controls or bypassing animation)
-  const addToCartDirect = (product: { id: string; name: string; price: string; image?: string }, size: string) => {
+  const addToCartDirect = (product: { id: string; name: string; price: string; image?: string; stock?: number }, size: string) => {
     setCartItems((prevItems) => {
       const existingItemIndex = prevItems.findIndex(
         (item) => item.id === product.id && item.size === size
@@ -51,8 +52,23 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
       if (existingItemIndex > -1) {
         const newItems = [...prevItems];
-        newItems[existingItemIndex].quantity += 1;
+        const existingItem = newItems[existingItemIndex];
+        const availableStock = product.stock !== undefined ? product.stock : (existingItem.stock !== undefined ? existingItem.stock : Infinity);
+
+        if (existingItem.quantity >= availableStock) {
+          alert(`Only ${availableStock} quantity available in stock.`);
+          return prevItems;
+        }
+
+        existingItem.quantity += 1;
+        if (product.stock !== undefined) existingItem.stock = product.stock;
         return newItems;
+      }
+
+      const availableStock = product.stock !== undefined ? product.stock : Infinity;
+      if (1 > availableStock) {
+        alert('Item is out of stock.');
+        return prevItems;
       }
 
       return [
@@ -64,6 +80,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           image: product.image || `/images/${product.id}.png`,
           size,
           quantity: 1,
+          stock: product.stock
         },
       ];
     });
@@ -78,7 +95,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const confirmAddToCart = () => {
     if (!activeAnimation) return;
     const { product, size } = activeAnimation;
-    addToCartDirect({ id: product.id, name: product.name, price: product.price, image: (product as any).image }, size);
+    addToCartDirect({ id: product.id, name: product.name, price: product.price, image: (product as any).image, stock: (product as any).stock }, size);
     setActiveAnimation(null);
   };
 

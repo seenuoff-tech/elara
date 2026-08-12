@@ -17,11 +17,11 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="bg-[#ffffff] text-black selection:bg-[#ffffff]/20 min-h-screen pt-24">
+    <div className="bg-[#ffffff] text-black selection:bg-[#ffffff]/20 min-h-screen pt-48">
 
 
       {/* Grid Content */}
-      <section className="max-w-7xl mx-auto px-6 md:px-12 py-12 grid grid-cols-1 lg:grid-cols-2 gap-16 items-start mb-20">
+      <section className="max-w-3xl mx-auto px-6 md:px-12 py-12 grid grid-cols-1 gap-16 items-start mb-20">
         {/* Left Side: Contact Form */}
         <motion.div
           initial={{ opacity: 0, x: -30 }}
@@ -29,12 +29,9 @@ export default function ContactPage() {
           transition={{ duration: 0.6 }}
           className="border border-black/10 p-8 md:p-12 bg-neutral-50/40 backdrop-blur-sm"
         >
-          <h3 className="text-xl font-bold tracking-widest uppercase mb-2 text-black">
+          <h3 className="text-xl font-bold tracking-widest uppercase mb-8 text-black">
             Send a Message
           </h3>
-          <p className="text-xs text-black/40 font-light uppercase tracking-widest mb-8">
-            Reply Guaranteed Within 24 Business Hours
-          </p>
 
           {submitted ? (
             <motion.div
@@ -107,45 +104,7 @@ export default function ContactPage() {
           )}
         </motion.div>
 
-        {/* Right Side: Corporate & Boutique Coordinates */}
-        <motion.div
-          initial={{ opacity: 0, x: 30 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6 }}
-          className="space-y-12"
-        >
 
-
-          {/* Column Group 2 */}
-          <div className="space-y-4">
-            <h4 className="text-xs font-semibold tracking-[0.3em] uppercase text-silver-chrome">
-              Concierge Contact
-            </h4>
-            <div className="space-y-2 text-sm font-light">
-              <p className="flex justify-between">
-                <span className="text-black/40 uppercase tracking-wider text-[11px]">Bespoke Order Assistance</span>
-                <span className="text-black font-medium">orders@elarasilver.com</span>
-              </p>
-              <p className="flex justify-between border-t border-black/5 pt-2">
-                <span className="text-black/40 uppercase tracking-wider text-[11px]">Atelier Hours</span>
-                <span className="text-black font-medium">Monday — Saturday, 10:00 - 19:00 IST</span>
-              </p>
-            </div>
-          </div>
-
-          {/* Column Group 3 */}
-          <div className="space-y-4 border-t border-black/10 pt-8">
-            <h4 className="text-xs font-semibold tracking-[0.3em] uppercase text-silver-chrome">
-              Complimentary Services
-            </h4>
-            <ul className="text-xs text-black/50 font-light space-y-2 leading-relaxed list-disc list-inside">
-              <li>Free express shipping and carbon-neutral packaging for all items.</li>
-              <li>Signature silver-toned luxury hard boxes with velvet linings.</li>
-              <li>Free 30-day returns and resizing options for unworn rings.</li>
-              <li>Laminated Certificate of Authenticity containing assay Hallmark stamps.</li>
-            </ul>
-          </div>
-        </motion.div>
       </section>
     </div>
   );

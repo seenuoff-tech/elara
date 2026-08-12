@@ -16,14 +16,14 @@ export default function AccountPage() {
 
   if (isLoading || !user) {
     return (
-      <div className="min-h-screen pt-32 px-6 flex justify-center">
+      <div className="min-h-screen pt-48 px-6 flex justify-center">
         <p className="text-gray-500">Loading your account...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen pt-32 px-6 md:px-12 max-w-7xl mx-auto pb-24">
+    <div className="min-h-screen pt-48 px-6 md:px-12 max-w-7xl mx-auto pb-24">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 border-b border-gray-200 pb-6 gap-4">
         <div>
           <h1 className="text-3xl md:text-5xl font-light text-black tracking-wide mb-2 uppercase">My Account</h1>

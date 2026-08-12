@@ -187,7 +187,7 @@ export default function CartDrawer() {
                     </div>
                     {isGiftWrap && (
                       <div className="flex justify-between">
-                        <span>Luxury Gift Packaging</span>
+                        <span>Gift Packaging</span>
                         <span className="text-black font-medium">₹50</span>
                       </div>
                     )}

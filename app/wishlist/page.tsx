@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export default function WishlistPage() {
   return (
-    <div className="min-h-screen pt-32 px-6 md:px-12 max-w-7xl mx-auto flex flex-col items-center">
+    <div className="min-h-screen pt-48 px-6 md:px-12 max-w-7xl mx-auto flex flex-col items-center">
       <h1 className="text-3xl md:text-5xl font-light mb-8 text-black tracking-wide">YOUR WISHLIST</h1>
       <p className="text-gray-500 mb-12 text-center max-w-lg">
         Keep track of all your favorite Elara Silver pieces here. Currently, your wishlist is empty.

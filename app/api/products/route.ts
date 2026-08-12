@@ -30,7 +30,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    let { name, categoryId, category, price, stock, status, image, description, isNew, isBestSeller } = body;
+    let { name, categoryId, category, price, stock, status, image, gallery, description, isNew, isBestSeller, weightInGrams } = body;
     
     if (!categoryId && category) {
       const cat = await prisma.category.findFirst({
@@ -47,13 +47,15 @@ export async function POST(request: Request) {
       data: { 
         name, 
         categoryId, 
-        price: price || (body.weightInGrams ? body.weightInGrams * 250 : 0), 
+        price: price ? parseFloat(price) : 0, 
         stock, 
         status, 
         image, 
+        gallery: gallery ? gallery : null,
         description: description ? JSON.stringify(description) : null, 
         isNew: !!isNew,
-        isBestSeller: !!isBestSeller
+        isBestSeller: !!isBestSeller,
+        weightInGrams: weightInGrams ? parseFloat(weightInGrams) : 0
       }
     });
     
@@ -73,7 +75,7 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   try {
     const body = await request.json();
-    const { id, name, categoryId, price, stock, status, image, description, isNew, isBestSeller } = body;
+    const { id, name, categoryId, price, stock, status, image, gallery, description, isNew, isBestSeller, weightInGrams } = body;
     
     if (!id) {
       return NextResponse.json({ success: false, error: 'ID is required' }, { status: 400 });
@@ -84,7 +86,13 @@ export async function PUT(request: Request) {
     
     const product = await prisma.product.update({
       where: { id },
-      data: { name, categoryId, price, stock, status, image, description, isNew: !!isNew, isBestSeller: !!isBestSeller }
+      data: { 
+        name, categoryId, price: price ? parseFloat(price) : 0, stock, status, image, 
+        gallery: gallery ? gallery : null,
+        description: description ? JSON.stringify(description) : null, 
+        isNew: !!isNew, isBestSeller: !!isBestSeller,
+        weightInGrams: weightInGrams ? parseFloat(weightInGrams) : 0 
+      }
     });
     
     if (oldProduct && oldProduct.categoryId !== categoryId) {

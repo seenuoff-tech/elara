@@ -22,7 +22,7 @@ model Category {
   description   String?   @db.Text
   status        String    @default("Active")
   productsCount Int       @default(0)
-  image         String?
+  image         String?   @db.LongText
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   products      Product[]
@@ -35,7 +35,7 @@ model Product {
   price        Float
   stock        Int      @default(0)
   status       String   @default("Active")
-  image        String?
+  image        String?  @db.LongText
   gallery      Json?
   description  String?  @db.Text
   finishes     Json?
@@ -44,8 +44,9 @@ model Product {
   isNew        Boolean  @default(false)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-  isBestSeller Boolean  @default(false)
-  category     Category @relation(fields: [categoryId], references: [id])
+  isBestSeller  Boolean  @default(false)
+  weightInGrams Float    @default(0)
+  category      Category @relation(fields: [categoryId], references: [id])
 
   @@index([categoryId], map: "Product_categoryId_fkey")
 }
@@ -54,7 +55,7 @@ model Slide {
   id         Int      @id @default(autoincrement())
   title      String
   subtitle   String
-  image      String
+  image      String   @db.LongText
   buttonText String?
   link       String?
   status     String   @default("Active")

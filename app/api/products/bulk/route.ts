@@ -21,12 +21,14 @@ export async function POST(request: Request) {
         id: p.id || undefined,
         name: p.name,
         categoryId: catId,
-        price: p.weightInGrams ? p.weightInGrams * 250 : (p.price || 0), // rough estimate for price
+        price: p.price ? parseFloat(p.price) : 0,
         stock: p.stock || 0,
         status: p.status || 'Active',
         image: p.image || null,
+        gallery: p.gallery || null,
         description: p.description ? JSON.stringify(p.description) : null,
-        isNew: !!p.isNew
+        isNew: !!p.isNew,
+        weightInGrams: p.weightInGrams ? parseFloat(p.weightInGrams) : 0
       };
     });
     

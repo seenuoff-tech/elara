@@ -75,7 +75,6 @@ export default function Footer() {
         <div className="space-y-6">
           <h4 className="text-xs font-semibold tracking-[0.25em] uppercase text-white">Client Services</h4>
           <ul className="space-y-3 text-sm text-white/80 font-light">
-            <li><a href="#" className="hover:text-white transition-colors duration-300">Complimentary Shipping</a></li>
             <li><a href="#" className="hover:text-white transition-colors duration-300">Secure Payments</a></li>
             <li><Link href="/refund-return-policy" className="hover:text-white transition-colors duration-300">Refund & Return Policy</Link></li>
             <li><a href="#" className="hover:text-white transition-colors duration-300">Jewellery Care Guide</a></li>

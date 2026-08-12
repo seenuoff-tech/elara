@@ -112,7 +112,7 @@ function ShopContent() {
   if (!mounted) return null;
 
   return (
-    <div className="bg-[#fafafa] min-h-screen pt-24 pb-20">
+    <div className="bg-[#fafafa] min-h-screen pt-48 pb-20">
       
       {/* Header */}
       <section className="py-12 px-6 md:px-12 text-center bg-white border-b border-gray-200 mt-8">
@@ -257,7 +257,7 @@ function ShopContent() {
 
 export default function ShopPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#fafafa] pt-24 pb-20 flex justify-center items-center">Loading...</div>}>
+    <Suspense fallback={<div className="min-h-screen bg-[#fafafa] pt-48 pb-20 flex justify-center items-center">Loading...</div>}>
       <ShopContent />
     </Suspense>
   );

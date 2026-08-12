@@ -25,12 +25,13 @@ export default function ProductClient() {
   const [selectedFinish, setSelectedFinish] = useState(0);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [pincode, setPincode] = useState('');
+  const [deliveryMessage, setDeliveryMessage] = useState('');
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [isGift, setIsGift] = useState(false);
 
   if (!product) {
     return (
-      <div className="min-h-screen flex items-center justify-center pt-24">
+      <div className="min-h-screen flex items-center justify-center pt-48">
         <h1 className="text-2xl">Product not found</h1>
         <button onClick={() => router.push('/')} className="ml-4 underline">Go Home</button>
       </div>
@@ -44,13 +45,30 @@ export default function ProductClient() {
     
   const finishes = product.finishes || [];
   
-  // Handle case where description is just a string (from shopProducts) or missing entirely
-  const descInspiration = typeof product.description === 'string' 
-    ? product.description 
-    : (product.description?.inspiration || 'A beautiful piece crafted with precision.');
+  // Handle case where description is a JSON string or an object
+  let parsedDescription = product.description;
+  try {
+    // Loop to unwrap multiple layers of stringification if they exist
+    while (typeof parsedDescription === 'string') {
+      const trimmed = parsedDescription.trim();
+      if (trimmed.startsWith('{') || trimmed.startsWith('[') || (trimmed.startsWith('"') && trimmed.endsWith('"'))) {
+        const nextParsed = JSON.parse(trimmed);
+        if (typeof nextParsed === 'string' && nextParsed === parsedDescription) break;
+        parsedDescription = nextParsed;
+      } else {
+        break;
+      }
+    }
+  } catch (e) {
+    // Fallback to whatever we successfully parsed so far
+  }
+
+  const descInspiration = typeof parsedDescription === 'string' 
+    ? parsedDescription 
+    : (parsedDescription?.inspiration || 'A beautiful piece crafted with precision.');
     
-  const descDesign = typeof product.description === 'object' && product.description?.design 
-    ? product.description.design 
+  const descDesign = typeof parsedDescription === 'object' && parsedDescription !== null && parsedDescription.design 
+    ? parsedDescription.design 
     : null;
 
   const isWishlisted = wishlist.includes(product.id);
@@ -58,6 +76,14 @@ export default function ProductClient() {
   const handleToggleWishlist = (e: React.MouseEvent) => {
     e.preventDefault();
     toggleWishlist(product.id);
+  };
+
+  const handleCheckPincode = () => {
+    if (pincode.length === 6 && /^\d+$/.test(pincode)) {
+      setDeliveryMessage('Delivery available in 3-5 business days.');
+    } else {
+      setDeliveryMessage('Please enter a valid 6-digit pincode.');
+    }
   };
 
   const handleAddToCart = () => {
@@ -72,6 +98,7 @@ export default function ProductClient() {
       tagline: product.tagline || '',
       description: typeof product.description === 'string' ? product.description : (product.description?.design || ''),
       hallmark: product.hallmark || '',
+      stock: product.stock !== undefined ? product.stock : Infinity,
       sizes: product.sizes || [],
       specs: product.specs || [],
       details: product.details || [],
@@ -88,8 +115,12 @@ export default function ProductClient() {
     triggerPackagingAnimation(mockProduct, 'Standard');
   };
 
+  const rawPriceStr = product.newPrice ? String(product.newPrice) : (product.price ? String(product.price) : calculatePrice(product.weightInGrams || 0, product.category));
+  const sellingPriceNum = parseFloat(rawPriceStr.replace(/[^\d.]/g, '')) || 0;
+  const strikePriceNum = Math.round(sellingPriceNum * 1.10);
+
   return (
-    <div className="min-h-screen bg-[#fafafa] pt-32 md:pt-48 pb-12">
+    <div className="min-h-screen bg-[#fafafa] pt-48 md:pt-56 pb-12">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         
         {/* Breadcrumb (Optional, basic implementation) */}
@@ -97,6 +128,12 @@ export default function ProductClient() {
           <span className="hover:text-black cursor-pointer" onClick={() => router.push('/')}>Home</span> 
           <span className="mx-2">/</span> 
           <span className="hover:text-black cursor-pointer" onClick={() => router.push('/shop')}>Shop</span>
+          {product.category && (
+            <>
+              <span className="mx-2">/</span>
+              <span className="hover:text-black cursor-pointer" onClick={() => router.push(`/shop?category=${encodeURIComponent(product.category)}`)}>{product.category}</span>
+            </>
+          )}
           <span className="mx-2">/</span>
           <span className="text-black">{product.name}</span>
         </div>
@@ -114,7 +151,10 @@ export default function ProductClient() {
                 sizes="(max-width: 768px) 100vw, 50vw"
                 priority
               />
-              <button className="absolute bottom-4 right-4 bg-white/80 backdrop-blur border border-black/10 text-xs px-3 py-1.5 rounded-full flex items-center gap-2 hover:bg-white transition-colors">
+              <button 
+                onClick={() => document.getElementById('similar-products')?.scrollIntoView({ behavior: 'smooth' })}
+                className="absolute bottom-4 right-4 bg-white/80 backdrop-blur border border-black/10 text-xs px-3 py-1.5 rounded-full flex items-center gap-2 hover:bg-white transition-colors"
+              >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
                 </svg>
@@ -122,7 +162,7 @@ export default function ProductClient() {
               </button>
               <div className="absolute bottom-4 left-4 flex items-center gap-1 text-xs font-semibold text-gray-600 bg-white/80 backdrop-blur px-2 py-1 rounded-full border border-black/5">
                 <span className="text-amber-400">★</span>
-                <span>{product.rating} | {product.reviewsCount}</span>
+                <span>{product.rating || '4.8'} | {product.reviewsCount || '154'}</span>
               </div>
             </div>
             
@@ -150,18 +190,18 @@ export default function ProductClient() {
                 <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">{product.name}</h1>
                 <div className="flex items-end gap-3 mb-1">
                   <span className="text-3xl font-bold text-[#0B5E64]">
-                    {product.newPrice 
-                      ? `₹${product.newPrice}` 
+                    ₹{product.newPrice 
+                      ? product.newPrice 
                       : (product.price ? product.price : calculatePrice(product.weightInGrams || 0, product.category))}
                   </span>
-                  {product.oldPrice && <span className="text-lg text-gray-400 line-through mb-1">₹{product.oldPrice}</span>}
+                  <span className="text-lg text-gray-400 line-through mb-1">₹{strikePriceNum.toLocaleString('en-IN')}</span>
                 </div>
                 <p className="text-[10px] text-gray-400 uppercase tracking-widest mb-3">MRP Incl. of all taxes</p>
                 
                 {/* Reward Points */}
                 <div className="inline-flex items-center gap-2 bg-[#fdf5e6] border border-[#f5d08e] px-3 py-1.5 rounded-md">
                   <span className="text-xs text-[#b8860b] font-medium tracking-wide">
-                    Buy this product and earn <span className="font-bold">{Math.floor((parseFloat((product.newPrice ? String(product.newPrice) : (product.price ? String(product.price) : calculatePrice(product.weightInGrams || 0, product.category))).replace(/[^\d.]/g, '')) || 0) * 0.05)} Points</span>
+                    Buy this product and earn <span className="font-bold">{Math.floor(sellingPriceNum * 0.05)} Points</span>
                   </span>
                 </div>
               </div>
@@ -169,11 +209,11 @@ export default function ProductClient() {
               <div className="flex items-center gap-4">
                 <button onClick={handleToggleWishlist} className="hover:scale-110 transition-transform">
                   {isWishlisted ? (
-                    <svg className="w-6 h-6 text-[#0B5E64]" viewBox="0 0 24 24" fill="currentColor">
+                    <svg className="w-6 h-6 text-red-500" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                     </svg>
                   ) : (
-                    <svg className="w-6 h-6 text-gray-400 hover:text-[#0B5E64]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="w-6 h-6 text-gray-400 hover:text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                     </svg>
                   )}
@@ -222,12 +262,18 @@ export default function ProductClient() {
                   onChange={(e) => setPincode(e.target.value)}
                   maxLength={6}
                 />
-                <button className="bg-[#0B5E64] text-white px-6 text-sm font-semibold hover:bg-[#08494E] transition-colors">
+                <button 
+                  onClick={handleCheckPincode}
+                  className="bg-[#0B5E64] text-white px-6 text-sm font-semibold hover:bg-[#08494E] transition-colors"
+                >
                   Check
                 </button>
               </div>
-
-
+              {deliveryMessage && (
+                <p className={`text-sm mb-6 -mt-4 ${deliveryMessage.includes('valid') ? 'text-red-500' : 'text-green-600 font-medium'}`}>
+                  {deliveryMessage}
+                </p>
+              )}
             </div>
 
             {/* Action Area (Sticky on mobile, inline on desktop) */}

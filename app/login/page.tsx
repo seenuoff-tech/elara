@@ -39,7 +39,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen pt-32 px-6 md:px-12 flex justify-center items-start">
+    <div className="min-h-screen pt-48 px-6 md:px-12 flex justify-center items-start">
       <div className="w-full max-w-md bg-white p-8 md:p-12 shadow-[0_0_40px_rgba(0,0,0,0.05)] relative">
         {/* Close Button */}
         <Link href="/" className="absolute top-6 right-6 text-black/40 hover:text-black transition-colors">

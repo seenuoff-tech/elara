@@ -47,7 +47,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen pt-32 px-6 pb-24 md:px-12 flex justify-center items-start relative">
+    <div className="min-h-screen pt-48 px-6 pb-24 md:px-12 flex justify-center items-start relative">
       <Link href="/" className="absolute top-8 right-8 text-black hover:opacity-50 transition-opacity">
         <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
           <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
