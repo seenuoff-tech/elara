@@ -192,7 +192,7 @@ export default function ProductClient() {
                   <span className="text-3xl font-bold text-[#0B5E64]">
                     ₹{product.newPrice 
                       ? product.newPrice 
-                      : (? + String(product.price ? product.price : calculatePrice(product.weightInGrams || 0, product.category)).replace('?', ''))}
+                      : ₹\}
                   </span>
                   <span className="text-lg text-gray-400 line-through mb-1">₹{strikePriceNum.toLocaleString('en-IN')}</span>
                 </div>

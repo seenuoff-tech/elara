@@ -100,7 +100,7 @@ export default function SimilarProducts({ currentProductId }: SimilarProductsPro
               <div className="flex flex-col gap-1 mb-1">
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-bold text-black">
-                    {product.newPrice ? `₹${product.newPrice}` : (? + String(product.price ? product.price : calculatePrice(product.weightInGrams || 0, product.category)).replace('?', ''))}
+                    {product.newPrice ? `₹${product.newPrice}` : ₹\}
                   </span>
                   {product.oldPrice && <span className="text-xs text-gray-400 line-through font-light">₹{product.oldPrice}</span>}
                 </div>
