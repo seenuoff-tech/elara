@@ -149,11 +149,17 @@ export default function Navbar() {
           {/* Center: Logo */}
           <div className="flex justify-center items-center w-1/3">
             <Link href="/" className="hover:scale-105 transition-transform duration-500 flex items-center justify-center">
-              <img 
-                src="/images/org.png" 
-                alt="Elara Silver Logo" 
-                className={`${isScrolled ? 'h-8 md:h-10' : 'h-12 md:h-16'} object-contain drop-shadow-sm transition-all duration-500 brightness-0`} 
-              />
+              {isScrolled ? (
+                <span style={{ fontFamily: "'tan mon cheri', sans-serif" }} className="text-2xl tracking-widest text-black">
+                  ELARA
+                </span>
+              ) : (
+                <img 
+                  src="/images/org.png" 
+                  alt="Elara Silver Logo" 
+                  className="h-12 md:h-16 object-contain drop-shadow-sm transition-all duration-500 brightness-0" 
+                />
+              )}
             </Link>
           </div>
 
