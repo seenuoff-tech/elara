@@ -150,7 +150,7 @@ export default function Navbar() {
           <div className="flex justify-center items-center w-1/3">
             <Link href="/" className="hover:scale-105 transition-transform duration-500 flex items-center justify-center">
               {isScrolled ? (
-                <span style={{ fontFamily: "'tan mon cheri', sans-serif" }} className="text-2xl tracking-widest text-black">
+                <span style={{ fontFamily: "'tan mon cheri', sans-serif" }} className="text-xl font-bold tracking-widest text-black">
                   ELARA
                 </span>
               ) : (
