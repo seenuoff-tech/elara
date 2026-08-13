@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePricing } from '@/components/PricingProvider';
 
 export default function AdminDashboard() {
-  const { silverRates, updateCategoryRate, gstPercentage, setGstPercentage } = usePricing();
+  const { silverRates, updateCategoryRate, gstPercentage, setGstPercentage, saveSettings } = usePricing();
   
   const categories = [
     'Rings', 'Necklace', 'Bracelet', 'Earings', 'Anklets', 'Chains', 'Toe rings', 'Mens-Rings', 'Mens-Chains', 'Mens-Bracelet', 'Kids-Earings'
@@ -20,9 +20,17 @@ export default function AdminDashboard() {
     setLocalSilverRate(silverRates[selectedCategory] || 85);
   }, [selectedCategory, silverRates]);
 
-  const handleUpdatePrice = () => {
+  const handleUpdatePrice = async () => {
+    // Optimistic UI update
     updateCategoryRate(selectedCategory, localSilverRate);
     setGstPercentage(localGst);
+    
+    // Construct new rates object
+    const newRates = { ...silverRates, [selectedCategory]: localSilverRate };
+    
+    // Save to database
+    await saveSettings(newRates, localGst);
+    
     setShowSuccess(true);
     setTimeout(() => setShowSuccess(false), 3000);
   };

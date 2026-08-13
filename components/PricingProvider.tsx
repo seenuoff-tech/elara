@@ -22,6 +22,7 @@ interface PricingContextType {
   gstPercentage: number;
   setGstPercentage: (gst: number) => void;
   calculatePrice: (weightInGrams: number, category?: string) => string;
+  saveSettings: (rates: Record<string, number>, gst: number) => Promise<void>;
 }
 
 const PricingContext = createContext<PricingContextType | undefined>(undefined);
@@ -38,30 +39,40 @@ export function PricingProvider({ children }: { children: ReactNode }) {
   const [gstPercentage, setGstPercentage] = useState<number>(3); // Default to 3% GST
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Load from local storage
+  // Load from database API
   useEffect(() => {
-    const savedRates = localStorage.getItem('elara_silver_rates');
-    const savedGst = localStorage.getItem('elara_gst');
-    if (savedRates) {
+    const fetchSettings = async () => {
       try {
-        setSilverRates(JSON.parse(savedRates));
-      } catch (e) {
-        console.error('Failed to parse saved silver rates');
+        const res = await fetch('/api/settings/pricing');
+        const { success, data } = await res.json();
+        if (success && data) {
+          if (data.silverRates) setSilverRates(data.silverRates);
+          if (data.gstPercentage !== undefined) setGstPercentage(data.gstPercentage);
+        }
+      } catch (error) {
+        console.error('Failed to load pricing settings:', error);
+      } finally {
+        setIsLoaded(true);
       }
-    }
-    if (savedGst) {
-      setGstPercentage(parseFloat(savedGst));
-    }
-    setIsLoaded(true);
+    };
+    fetchSettings();
   }, []);
 
-  // Save to local storage
-  useEffect(() => {
-    if (isLoaded) {
-      localStorage.setItem('elara_silver_rates', JSON.stringify(silverRates));
-      localStorage.setItem('elara_gst', gstPercentage.toString());
+  // Sync state and Save to Database (we debounce or trigger manually to avoid too many requests)
+  // Instead of auto-saving, we will modify the context so `updateCategoryRate` and `setGstPercentage` 
+  // just update local state, and we add a `saveSettings` method to persist to the DB.
+  
+  const saveSettings = async (newRates: Record<string, number>, newGst: number) => {
+    try {
+      await fetch('/api/settings/pricing', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ silverRates: newRates, gstPercentage: newGst })
+      });
+    } catch (error) {
+      console.error('Failed to save pricing settings:', error);
     }
-  }, [silverRates, gstPercentage, isLoaded]);
+  };
 
   const updateCategoryRate = React.useCallback((category: string, rate: number) => {
     setSilverRates(prev => ({
@@ -83,7 +94,8 @@ export function PricingProvider({ children }: { children: ReactNode }) {
     updateCategoryRate,
     gstPercentage,
     setGstPercentage,
-    calculatePrice
+    calculatePrice,
+    saveSettings
   }), [silverRates, updateCategoryRate, gstPercentage, calculatePrice]);
 
   return (
