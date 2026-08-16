@@ -2,12 +2,9 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function main() {
-  const count = await prisma.product.count()
-  console.log(`Total products in database: ${count}`)
-  if(count > 0) {
-      const products = await prisma.product.findMany()
-      console.log(products)
-  }
+  const slides = await prisma.slide.findMany()
+  console.log('Slides in database:')
+  console.log(JSON.stringify(slides, null, 2))
 }
 
 main().catch(console.error).finally(() => prisma.$disconnect())

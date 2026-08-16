@@ -10,7 +10,7 @@ export default function HeroSliderManagement() {
 
   const fetchSlides = async () => {
     try {
-      const res = await fetch('/api/slides');
+      const res = await fetch('/api/slides', { cache: 'no-store' });
       const data = await res.json();
       if (data.success) {
         setSlides(data.slides);
