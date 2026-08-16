@@ -16,7 +16,7 @@ export default function ProductClient() {
   const decodedId = decodeURIComponent(String(id));
   const product = products.find(p => 
     String(p.id) === decodedId || 
-    p.name.toLowerCase().replace(/\s+/g, '-') === decodedId.toLowerCase()
+    p.name.toLowerCase().replace(/[\s-]+/g, '-') === decodedId.toLowerCase().replace(/[\s-]+/g, '-')
   );
   const { wishlist, toggleWishlist } = useWishlist();
   const { calculatePrice } = usePricing();

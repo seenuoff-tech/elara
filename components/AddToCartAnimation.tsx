@@ -6,20 +6,35 @@ import { useCart } from '../context/CartContext';
 export default function AddToCartAnimation() {
   const { activeAnimation, confirmAddToCart } = useCart();
   const hasConfirmed = useRef(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    if (!activeAnimation) {
+    if (activeAnimation) {
       hasConfirmed.current = false;
-      return;
+      if (videoRef.current) {
+        videoRef.current.currentTime = 0;
+        videoRef.current.play().catch((err) => {
+          console.error('Autoplay blocked or failed:', err);
+          handleManualSkip();
+        });
+      }
+    } else {
+      if (videoRef.current) {
+        videoRef.current.pause();
+      }
     }
-    
+  }, [activeAnimation]);
+
+  useEffect(() => {
+    if (!activeAnimation) return;
+
     // Fallback timer in case the video stalls or fails to play
     const fallbackTimer = setTimeout(() => {
       if (!hasConfirmed.current) {
         hasConfirmed.current = true;
         confirmAddToCart();
       }
-    }, 4000); // 4 seconds max duration
+    }, 4500); // 4.5 seconds max duration
 
     return () => clearTimeout(fallbackTimer);
   }, [activeAnimation, confirmAddToCart]);
@@ -44,29 +59,39 @@ export default function AddToCartAnimation() {
     }
   };
 
-  if (!activeAnimation) return null;
-
   return (
-    <div className="fixed inset-0 z-[999] bg-white flex items-center justify-center overflow-hidden animate-in fade-in duration-500">
-      <video
-        src="/images/addtocart.mp4"
-        autoPlay
-        playsInline
-        muted
-        className="w-full h-full max-w-5xl max-h-[85vh] object-contain"
-        onTimeUpdate={handleTimeUpdate}
-        onEnded={handleManualSkip}
-        onError={handleManualSkip}
-        onLoadedData={(e) => { e.currentTarget.playbackRate = 2.5; }}
-      />
+    <div 
+      className={`fixed inset-0 z-[999] bg-white flex items-center justify-center overflow-hidden transition-all duration-500 ${
+        activeAnimation 
+          ? 'opacity-100 pointer-events-auto' 
+          : 'opacity-0 pointer-events-none'
+      }`}
+    >
+      {/* Container that crops the video edges by 8% to hide the corner watermarks */}
+      <div className="relative w-[90%] h-[90%] max-w-4xl max-h-[80vh] overflow-hidden flex items-center justify-center rounded-2xl bg-white shadow-2xl">
+        <video
+          ref={videoRef}
+          src="/images/addtocart.mp4"
+          playsInline
+          muted
+          preload="auto"
+          className="w-full h-full object-cover scale-[1.09] transition-transform duration-300"
+          onTimeUpdate={handleTimeUpdate}
+          onEnded={handleManualSkip}
+          onError={handleManualSkip}
+          onLoadedData={(e) => { e.currentTarget.playbackRate = 2.5; }}
+        />
+      </div>
       
-      {/* Skip Button for convenience */}
-      <button 
-        onClick={handleManualSkip}
-        className="absolute top-8 right-8 px-4 py-2 border border-black/20 text-black/50 hover:text-black hover:border-black/50 hover:bg-black/5 rounded-full transition-all uppercase tracking-[0.2em] text-[10px] font-semibold"
-      >
-        Skip
-      </button>
+      {/* Skip Button */}
+      {activeAnimation && (
+        <button 
+          onClick={handleManualSkip}
+          className="absolute top-8 right-8 px-4 py-2 border border-black/20 text-black/50 hover:text-black hover:border-black/50 hover:bg-black/5 rounded-full transition-all uppercase tracking-[0.2em] text-[10px] font-semibold z-10"
+        >
+          Skip
+        </button>
+      )}
     </div>
   );
 }
