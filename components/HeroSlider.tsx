@@ -17,7 +17,7 @@ export default function HeroSlider() {
   useEffect(() => {
     const fetchSlides = async () => {
       try {
-        const res = await fetch('/api/slides', { cache: 'no-store' });
+        const res = await fetch(`/api/slides?t=${Date.now()}`, { cache: 'no-store' });
         const data = await res.json();
         if (data.success && data.slides && data.slides.length > 0) {
           const activeSlides = data.slides.filter((s: any) => s.status === 'Active');
