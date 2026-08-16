@@ -83,9 +83,20 @@ export function PricingProvider({ children }: { children: ReactNode }) {
 
   // Helper to instantly calculate price based on weight and category
   const calculatePrice = React.useCallback((weightInGrams: number, category: string = '') => {
-    const rate = silverRates[category] || 85; // Fallback to 85 if category not found
-    const basePrice = weightInGrams * rate;
-    const finalPrice = basePrice + (basePrice * (gstPercentage / 100));
+    // Normalize category spelling differences (e.g. Earrings vs Earings)
+    let normCategory = category;
+    if (category === 'Earrings') normCategory = 'Earings';
+    if (category === 'Kids-Earrings' || category === 'Kids Earrings') normCategory = 'Kids-Earings';
+    if (category === 'Mens-Rings' || category === "Men's Rings") normCategory = 'Mens-Rings';
+    if (category === 'Mens-Chains' || category === "Men's Chains") normCategory = 'Mens-Chains';
+    if (category === 'Mens-Bracelet' || category === "Men's Bracelets") normCategory = 'Mens-Bracelet';
+
+    const rate = silverRates[normCategory] || silverRates[category] || 85; // Fallback to 85 if category not found
+    
+    // Calculate rounded price per gram with GST first to ensure mathematical consistency (e.g. 2g is always 2 * 1g price)
+    const pricePerGramWithGst = Math.round(rate * (1 + gstPercentage / 100));
+    const finalPrice = weightInGrams * pricePerGramWithGst;
+    
     return currencyFormatter.format(finalPrice);
   }, [silverRates, gstPercentage]);
 
