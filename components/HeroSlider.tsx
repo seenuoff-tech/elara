@@ -11,8 +11,9 @@ export default function HeroSlider() {
     { id: 'fallback-3', image: '/images/silver_rings.png', title: 'Silver Rings', link: '/shop' },
   ];
 
-  const [slides, setSlides] = useState<any[]>(defaultSlides);
+  const [slides, setSlides] = useState<any[]>([]);
   const [current, setCurrent] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchSlides = async () => {
@@ -23,10 +24,16 @@ export default function HeroSlider() {
           const activeSlides = data.slides.filter((s: any) => s.status === 'Active');
           if (activeSlides.length > 0) {
             setSlides(activeSlides);
+            setLoading(false);
+            return;
           }
         }
+        setSlides(defaultSlides);
       } catch (error) {
         console.error('Error fetching slides:', error);
+        setSlides(defaultSlides);
+      } finally {
+        setLoading(false);
       }
     };
     fetchSlides();
@@ -40,7 +47,7 @@ export default function HeroSlider() {
       nextSlide();
     }, 3000);
     return () => clearInterval(timer);
-  }, []);
+  }, [slides.length]);
 
   const getPosition = (index: number) => {
     if (index === current) return 'center';
@@ -89,7 +96,12 @@ export default function HeroSlider() {
       className="relative w-full overflow-hidden flex items-center justify-center mt-24 md:mt-[180px]"
       style={{ height: '530px', backgroundColor: '#ffffff', marginBottom: '40px' }}
     >
-      {slides.length === 0 && (
+      {loading && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-8 h-8 border-2 border-[#0B5E64] border-t-transparent rounded-full animate-spin" />
+        </div>
+      )}
+      {!loading && slides.length === 0 && (
         <div className="absolute inset-0 flex items-center justify-center text-gray-400 uppercase tracking-widest text-sm">
           No active slides available
         </div>
@@ -104,7 +116,7 @@ export default function HeroSlider() {
             initial="hidden"
             animate={position}
             transition={{ duration: 0.7, ease: [0.32, 0.72, 0, 1] }}
-            className="absolute rounded-[1rem] md:rounded-[2.5rem] overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.15)] border border-black/5"
+            className="absolute rounded-[1rem] md:rounded-[2.5rem] overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.15)] border border-black/5 bg-white"
             style={{ width: '95%', maxWidth: '1187px', height: '100%', maxHeight: '530px' }}
           >
             <div 
