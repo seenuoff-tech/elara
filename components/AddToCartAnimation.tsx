@@ -27,8 +27,8 @@ export default function AddToCartAnimation() {
   const handleTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
     const video = e.currentTarget;
     if (video.duration && video.duration > 0) {
-      // Cut off the last 1.5 seconds to hide the Gemini watermark
-      if (video.currentTime >= video.duration - 1.5) {
+      // Cut off the last 3.2 seconds to hide the Gemini watermark
+      if (video.currentTime >= video.duration - 3.2) {
         if (!hasConfirmed.current) {
           hasConfirmed.current = true;
           confirmAddToCart();
