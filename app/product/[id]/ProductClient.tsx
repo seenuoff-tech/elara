@@ -12,7 +12,7 @@ import SimilarProducts from '../../../components/SimilarProducts';
 export default function ProductClient() {
   const { id } = useParams();
   const router = useRouter();
-  const { products } = useProducts();
+  const { products, isLoaded } = useProducts();
   const decodedId = decodeURIComponent(String(id));
   const product = products.find(p => 
     String(p.id) === decodedId || 
@@ -29,6 +29,15 @@ export default function ProductClient() {
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [isGift, setIsGift] = useState(false);
 
+  // Show spinner while products are loading from API
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen flex items-center justify-center pt-48">
+        <div className="w-10 h-10 border-4 border-[#0B5E64] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   if (!product) {
     return (
       <div className="min-h-screen flex items-center justify-center pt-48">
@@ -38,10 +47,10 @@ export default function ProductClient() {
     );
   }
 
-  // Fallbacks for data structures that might not be present on all products
-  const gallery = product.gallery && product.gallery.length > 0 
-    ? product.gallery 
-    : [{ url: product.image || '/images/org.png', alt: product.name }];
+  // Always show main image first, then sub gallery images
+  const mainImageEntry = { url: product.image || '/images/org.png', alt: product.name };
+  const subGallery = product.gallery && product.gallery.length > 0 ? product.gallery : [];
+  const gallery = [mainImageEntry, ...subGallery];
     
   const finishes = product.finishes || [];
   
@@ -209,11 +218,11 @@ export default function ProductClient() {
               <div className="flex items-center gap-4">
                 <button onClick={handleToggleWishlist} className="hover:scale-110 transition-transform">
                   {isWishlisted ? (
-                    <svg className="w-6 h-6 text-red-500" viewBox="0 0 24 24" fill="currentColor">
+                    <svg className="w-6 h-6 text-[#0B5E64]" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                     </svg>
                   ) : (
-                    <svg className="w-6 h-6 text-gray-400 hover:text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="w-6 h-6 text-gray-400 hover:text-[#0B5E64]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                     </svg>
                   )}

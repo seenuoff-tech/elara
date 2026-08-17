@@ -21,6 +21,7 @@ export interface AppProduct extends DetailedProduct {
 
 interface ProductsContextType {
   products: AppProduct[];
+  isLoaded: boolean;
   setProducts: React.Dispatch<React.SetStateAction<AppProduct[]>>;
   addProduct: (product: Partial<AppProduct>) => void;
   updateProduct: (id: string | number, updates: Partial<AppProduct>) => void;
@@ -117,7 +118,7 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <ProductsContext.Provider value={{ products, setProducts, addProduct, updateProduct, deleteProduct, addBulkProducts }}>
+    <ProductsContext.Provider value={{ products, isLoaded, setProducts, addProduct, updateProduct, deleteProduct, addBulkProducts }}>
       {children}
     </ProductsContext.Provider>
   );

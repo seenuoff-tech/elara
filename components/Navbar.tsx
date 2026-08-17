@@ -150,7 +150,15 @@ export default function Navbar() {
           <div className="flex justify-center items-center w-1/3">
             <Link href="/" className="hover:scale-105 transition-transform duration-500 flex items-center justify-center">
               {isScrolled ? (
-                <span style={{ fontFamily: "'tan mon cheri', sans-serif" }} className="text-xl font-bold tracking-widest text-black">
+                <span 
+                  style={{ 
+                    fontFamily: "'tan mon cheri', sans-serif", 
+                    letterSpacing: '0.4em', 
+                    fontWeight: 900,
+                    WebkitTextStroke: '1.2px black'
+                  }} 
+                  className="text-xl font-black text-black pl-[0.4em]"
+                >
                   ELARA
                 </span>
               ) : (
@@ -306,7 +314,12 @@ export default function Navbar() {
         >
           <div className="flex items-center gap-8 md:gap-12 text-[13px] font-medium text-gray-800 tracking-widest uppercase relative mb-2 mt-0">
             {navigationMenu.map((nav) => (
-              <div key={nav.name} className="relative py-2 desktop-dropdown">
+              <div 
+                key={nav.name} 
+                className="relative py-2 desktop-dropdown"
+                onMouseEnter={() => nav.items && setDesktopExpandedCategory(nav.name)}
+                onMouseLeave={() => setDesktopExpandedCategory(null)}
+              >
                 {nav.href ? (
                   <Link 
                     href={nav.href}
@@ -317,10 +330,6 @@ export default function Navbar() {
                 ) : (
                   <>
                     <span 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setDesktopExpandedCategory(desktopExpandedCategory === nav.name ? null : nav.name);
-                      }}
                       className="hover:text-[#067964] transition-colors cursor-pointer hover:underline underline-offset-8 decoration-1 flex items-center gap-1"
                     >
                       {nav.name}

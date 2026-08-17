@@ -66,20 +66,20 @@ export default function HeroSlider() {
       opacity: 1,
     },
     left: {
-      x: '-20%',
+      x: '-28%',
       y: '-50%',
       top: '50%',
       scale: 0.85,
       zIndex: 5,
-      opacity: 0.8,
+      opacity: 0.6,
     },
     right: {
-      x: '20%',
+      x: '28%',
       y: '-50%',
       top: '50%',
       scale: 0.85,
       zIndex: 5,
-      opacity: 0.8,
+      opacity: 0.6,
     },
     hidden: {
       x: '0%',
@@ -117,21 +117,22 @@ export default function HeroSlider() {
             animate={position}
             transition={{ duration: 0.7, ease: [0.32, 0.72, 0, 1] }}
             className="absolute rounded-[1rem] md:rounded-[2.5rem] overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.15)] border border-black/5 bg-white"
-            style={{ width: '95%', maxWidth: '1187px', height: '100%', maxHeight: '530px' }}
+            style={{ width: '88%', maxWidth: '1100px', height: '100%', maxHeight: '530px' }}
           >
-            <div 
-              className="absolute inset-0 bg-cover bg-center"
-              style={{ backgroundImage: `url(${slide.image})` }}
+            <img
+              src={slide.image}
+              alt={slide.title || 'Slide'}
+              className="absolute inset-0 w-full h-full object-cover object-center"
             />
 
           </motion.div>
         );
       })}
 
-      {/* Navigation Arrows */}
+      {/* Navigation Arrows — hidden on mobile */}
       <button 
         onClick={prevSlide}
-        className="absolute z-30 w-12 h-12 md:w-16 md:h-16 bg-white/40 backdrop-blur-md text-black rounded-full flex items-center justify-center shadow-[0_4px_20px_rgba(0,0,0,0.15)] border border-white/50 transition-all hover:scale-105 hover:bg-white/60 left-4 md:left-12 top-1/2 -translate-y-1/2 group"
+        className="hidden md:flex absolute z-30 w-16 h-16 bg-white/40 backdrop-blur-md text-black rounded-full items-center justify-center shadow-[0_4px_20px_rgba(0,0,0,0.15)] border border-white/50 transition-all hover:scale-105 hover:bg-white/60 left-12 top-1/2 -translate-y-1/2 group"
         aria-label="Previous Slide"
       >
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
@@ -141,7 +142,7 @@ export default function HeroSlider() {
 
       <button 
         onClick={nextSlide}
-        className="absolute z-30 w-12 h-12 md:w-16 md:h-16 bg-white/40 backdrop-blur-md text-black rounded-full flex items-center justify-center shadow-[0_4px_20px_rgba(0,0,0,0.15)] border border-white/50 transition-all hover:scale-105 hover:bg-white/60 right-4 md:right-12 top-1/2 -translate-y-1/2 group"
+        className="hidden md:flex absolute z-30 w-16 h-16 bg-white/40 backdrop-blur-md text-black rounded-full items-center justify-center shadow-[0_4px_20px_rgba(0,0,0,0.15)] border border-white/50 transition-all hover:scale-105 hover:bg-white/60 right-12 top-1/2 -translate-y-1/2 group"
         aria-label="Next Slide"
       >
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">

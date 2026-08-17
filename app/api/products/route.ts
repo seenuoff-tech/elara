@@ -9,17 +9,35 @@ export async function GET(request: Request) {
     
     const where = categoryId ? { categoryId } : {};
     
-    const dbProducts = await prisma.product.findMany({
-      where,
-      include: { category: true },
-      orderBy: { createdAt: 'desc' }
+    const [dbProducts, pricingSettings] = await Promise.all([
+      prisma.product.findMany({
+        where,
+        include: { category: true },
+        orderBy: { createdAt: 'desc' }
+      }),
+      prisma.setting.findUnique({ where: { key: 'pricing_rules' } })
+    ]);
+
+    // Parse pricing rules
+    const pricingData = pricingSettings?.value as any;
+    const silverRates: Record<string, number> = pricingData?.silverRates || {};
+    const gstPercentage: number = pricingData?.gstPercentage ?? 3;
+    const defaultRate = 85;
+
+    // Map products with dynamically computed price from current silver rates
+    const products = dbProducts.map(p => {
+      const categoryName = p.category ? p.category.name : 'Uncategorized';
+      const rate = silverRates[categoryName] ?? defaultRate;
+      const weight = p.weightInGrams ?? 0;
+      const computedPrice = weight > 0
+        ? Math.round(weight * rate * (1 + gstPercentage / 100))
+        : p.price;
+      return {
+        ...p,
+        price: computedPrice,
+        category: categoryName,
+      };
     });
-    
-    // Map to include category string for frontend backward compatibility
-    const products = dbProducts.map(p => ({
-      ...p,
-      category: p.category ? p.category.name : 'Uncategorized'
-    }));
     
     return NextResponse.json({ success: true, products });
   } catch (error) {

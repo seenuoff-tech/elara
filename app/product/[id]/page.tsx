@@ -3,6 +3,9 @@ import ProductClient from './ProductClient';
 import { newArrivalsData } from '../../../data/newArrivals';
 import { mensProducts } from '../../../data/mensProducts';
 
+// Allow dynamic routes beyond static params (needed for DB products on Vercel)
+export const dynamicParams = true;
+
 
 export function generateStaticParams() {
   const allProducts = [...newArrivalsData, ...mensProducts];
