@@ -37,9 +37,7 @@ const testimonials = [
 
 export default function Testimonials() {
   return (
-    <section className="pt-4 md:pt-8 pb-12 md:pb-24 bg-[#FAFAFA] overflow-hidden relative z-10 border-t border-black/5">
-      {/* Rose background at the bottom */}
-      <div className="absolute bottom-0 left-0 w-full h-[300px] bg-gradient-to-t from-rose-100/80 to-transparent z-0 pointer-events-none" />
+    <section className="pt-4 md:pt-8 pb-12 md:pb-24 bg-[#FFF9F9] overflow-hidden relative z-10 border-t border-black/5" style={{ backgroundImage: "url('/images/bgdesign.png')", backgroundSize: "cover", backgroundPosition: "center" }}>
       
       <div className="text-center mb-16 relative z-10">
         <h2 className="text-4xl md:text-5xl font-medium text-[#0B5E64]">Love Letters</h2>
@@ -47,9 +45,6 @@ export default function Testimonials() {
 
       {/* Infinite Marquee Container */}
       <div className="relative w-full flex items-center">
-        {/* Edge Gradients for smooth fade out */}
-        <div className="absolute left-0 top-0 w-32 h-full bg-gradient-to-r from-[#FAFAFA] to-transparent z-10 pointer-events-none" />
-        <div className="absolute right-0 top-0 w-32 h-full bg-gradient-to-l from-[#FAFAFA] to-transparent z-10 pointer-events-none" />
         
         {/* Marquee Track */}
         <div className="flex w-max animate-[marquee_40s_linear_infinite] hover:animate-[marquee_40s_linear_infinite_paused] space-x-6 py-8 px-6">
@@ -69,7 +64,7 @@ export default function Testimonials() {
                     <h3 className="font-bold text-gray-900 text-sm mb-1">{testimonial.name}</h3>
                     <p className="text-[10px] text-gray-400">{testimonial.date}</p>
                   </div>
-                  <span className="text-4xl text-[#0B5E64] leading-none font-serif font-black mt-[-10px]">“</span>
+                  <span className="text-5xl text-[#0B5E64] leading-none font-serif font-black mt-[-15px]">”</span>
                 </div>
                 <p className="text-[13px] text-gray-600 leading-relaxed font-medium">
                   {testimonial.text}
