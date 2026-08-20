@@ -29,10 +29,17 @@ export default function AdminDashboard() {
     const newRates = { ...silverRates, [selectedCategory]: localSilverRate };
     
     // Save to database
-    await saveSettings(newRates, localGst);
-    
-    setShowSuccess(true);
-    setTimeout(() => setShowSuccess(false), 3000);
+    try {
+      const res = await saveSettings(newRates, localGst);
+      if (res && res.success === false) {
+        alert("Failed to save to database. Please check connection.");
+      } else {
+        setShowSuccess(true);
+        setTimeout(() => setShowSuccess(false), 3000);
+      }
+    } catch (e) {
+      alert("Error saving settings.");
+    }
   };
 
   const stats = [

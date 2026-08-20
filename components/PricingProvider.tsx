@@ -22,7 +22,7 @@ interface PricingContextType {
   gstPercentage: number;
   setGstPercentage: (gst: number) => void;
   calculatePrice: (weightInGrams: number, category?: string) => string;
-  saveSettings: (rates: Record<string, number>, gst: number) => Promise<void>;
+  saveSettings: (rates: Record<string, number>, gst: number) => Promise<any>;
 }
 
 const PricingContext = createContext<PricingContextType | undefined>(undefined);
@@ -64,13 +64,15 @@ export function PricingProvider({ children }: { children: ReactNode }) {
   
   const saveSettings = async (newRates: Record<string, number>, newGst: number) => {
     try {
-      await fetch('/api/settings/pricing', {
+      const response = await fetch('/api/settings/pricing', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ silverRates: newRates, gstPercentage: newGst })
       });
+      return await response.json();
     } catch (error) {
       console.error('Failed to save pricing settings:', error);
+      return { success: false };
     }
   };
 
