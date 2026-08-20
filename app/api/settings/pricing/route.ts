@@ -35,7 +35,7 @@ export async function GET() {
     return NextResponse.json({ success: true, data: settings.value });
   } catch (error) {
     console.error('Error fetching pricing settings:', error);
-    return NextResponse.json({ success: false, error: 'Failed to fetch settings' }, { status: 500 });
+    return NextResponse.json({ success: false, error: 'Failed to fetch settings', details: error instanceof Error ? error.message : String(error) }, { status: 500 });
   }
 }
 
@@ -58,6 +58,6 @@ export async function PUT(request: Request) {
     return NextResponse.json({ success: true, data: updated.value });
   } catch (error) {
     console.error('Error updating pricing settings:', error);
-    return NextResponse.json({ success: false, error: 'Failed to update settings' }, { status: 500 });
+    return NextResponse.json({ success: false, error: 'Failed to update settings', details: error instanceof Error ? error.message : String(error) }, { status: 500 });
   }
 }

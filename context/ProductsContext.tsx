@@ -24,8 +24,8 @@ interface ProductsContextType {
   products: AppProduct[];
   isLoaded: boolean;
   setProducts: React.Dispatch<React.SetStateAction<AppProduct[]>>;
-  addProduct: (product: Partial<AppProduct>) => Promise<{success: boolean, error?: string}>;
-  updateProduct: (id: string | number, updates: Partial<AppProduct>) => Promise<{success: boolean, error?: string}>;
+  addProduct: (product: Partial<AppProduct>) => Promise<{success: boolean, error?: string, details?: string}>;
+  updateProduct: (id: string | number, updates: Partial<AppProduct>) => Promise<{success: boolean, error?: string, details?: string}>;
   deleteProduct: (id: string | number) => void;
   addBulkProducts: (productsList: Partial<AppProduct>[]) => void;
 }
@@ -68,10 +68,10 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
         setProducts(prev => prev.map(p => String(p.id) === String(id) ? { ...p, ...updates } : p));
         return { success: true };
       }
-      return { success: false, error: data.error };
+      return { success: false, error: data.error, details: data.details };
     } catch (error) {
       console.error("Error updating product", error);
-      return { success: false };
+      return { success: false, details: String(error) };
     }
   };
 
@@ -87,10 +87,10 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
         setProducts(prev => [data.product, ...prev]);
         return { success: true };
       }
-      return { success: false, error: data.error };
+      return { success: false, error: data.error, details: data.details };
     } catch (error) {
       console.error("Error adding product", error);
-      return { success: false };
+      return { success: false, details: String(error) };
     }
   };
 

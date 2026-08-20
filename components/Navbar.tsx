@@ -68,8 +68,8 @@ export default function Navbar() {
       ]
     },
     {
-      name: 'About us',
-      href: '/about'
+      name: 'Gifts',
+      href: '/gifts'
     }
   ];
 
@@ -369,7 +369,7 @@ export default function Navbar() {
             </Link>
             <Link
               href="/sleet"
-              className={`w-60 py-1.5 text-[13px] font-medium rounded-full transition-all duration-300 flex items-center justify-center ${activeMaterial === 'Sleet' ? 'bg-[#A5F2F3] text-black shadow-md' : 'bg-transparent text-gray-600 hover:text-black hover:bg-gray-50'}`}
+              className={`w-60 py-1.5 text-[13px] font-medium rounded-full transition-all duration-300 flex items-center justify-center ${activeMaterial === 'Sleet' ? 'bg-gradient-to-r from-[#5DE0E6] to-[#004AAD] text-white shadow-md' : 'bg-transparent text-gray-600 hover:text-black hover:bg-gray-50'}`}
             >
               Sleet Jewellery
             </Link>

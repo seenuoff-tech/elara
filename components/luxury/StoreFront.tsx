@@ -21,7 +21,7 @@ export default function StoreFront() {
             The Experience
           </span>
           <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight uppercase leading-none text-[#0B5E64]">
-            Elara Silver Shop
+            Elara Silver Store
           </h2>
           <div className="w-16 h-[2px] bg-[#0B5E64]/20" />
           <p className="text-neutral-600 font-light text-base md:text-lg leading-relaxed">

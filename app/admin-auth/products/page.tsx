@@ -104,7 +104,7 @@ export default function ProductsManagement() {
       }
       
       if (result && result.success === false) {
-        alert("Failed to save product. Check database connection.");
+        alert(`Failed to save product: ${result.error || ''}. Details: ${result.details || ''}. Check database connection.`);
       } else {
         setEditingProduct(null);
       }

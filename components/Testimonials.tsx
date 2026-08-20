@@ -38,9 +38,11 @@ const testimonials = [
 export default function Testimonials() {
   return (
     <section className="pt-4 md:pt-8 pb-12 md:pb-24 bg-[#FAFAFA] overflow-hidden relative z-10 border-t border-black/5">
-      <div className="text-center mb-16">
-        <span className="text-sm font-serif text-[#0B5E64] block mb-2">Our</span>
-        <h2 className="text-4xl md:text-5xl font-medium text-[#0B5E64]">Testimonials</h2>
+      {/* Rose background at the bottom */}
+      <div className="absolute bottom-0 left-0 w-full h-[300px] bg-gradient-to-t from-rose-100/80 to-transparent z-0 pointer-events-none" />
+      
+      <div className="text-center mb-16 relative z-10">
+        <h2 className="text-4xl md:text-5xl font-medium text-[#0B5E64]">Love Letters</h2>
       </div>
 
       {/* Infinite Marquee Container */}

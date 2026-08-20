@@ -16,6 +16,7 @@ import HotRightNowBanner from '../components/HotRightNowBanner';
 import ShopByColour from '../components/ShopByColour';
 import MensCollection from '../components/MensCollection';
 import FirstAccessBanner from '../components/FirstAccessBanner';
+import ElaraPromises from '../components/ElaraPromises';
 
 export default function Home() {
   return (
@@ -59,6 +60,8 @@ export default function Home() {
 
 
       <Testimonials />
+      
+      <ElaraPromises />
     </div>
   );
 }
