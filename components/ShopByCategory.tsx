@@ -109,7 +109,7 @@ export default function ShopByCategory() {
               className="flex flex-col items-center gap-2 md:gap-4 md:snap-start shrink-0 group/item w-full md:w-auto"
             >
               {/* Image Container (Squircle) */}
-              <div className="w-full aspect-square md:w-[130px] md:h-[130px] rounded-[1.2rem] md:rounded-[2rem] border-[1.5px] border-[#fce4e9] bg-[#f9f3f4] overflow-hidden relative shadow-sm group-hover/item:shadow-md transition-all">
+              <div className="w-full aspect-square md:w-[130px] md:h-[130px] rounded-[1.2rem] md:rounded-[2rem] bg-gray-50 overflow-hidden relative shadow-sm group-hover/item:shadow-md transition-all">
                 <Image
                   src={category.image}
                   alt={category.name}

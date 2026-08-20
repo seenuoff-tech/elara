@@ -228,14 +228,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
         <div ref={containerRef} className="space-y-8 relative z-10">
           
           {/* Search Box Header */}
-          <div className="text-center space-y-1">
-            <span className="text-[9px] font-mono tracking-widest text-[#D4AF37] uppercase block">
-              Atelier Collections
-            </span>
-            <h3 className="text-sm font-bold tracking-[0.25em] text-black uppercase">
-              Explore Masterpieces
-            </h3>
-          </div>
+          {/* Search Box Header Removed */}
 
           {/* Search Input field */}
           <div className="relative">
@@ -267,28 +260,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
           </div>
 
           {/* Conditional View: Suggestions vs Results */}
-          {query.trim() === '' ? (
-            /* Suggestions view */
-            <div className="space-y-4">
-              <span className="text-[8px] font-mono tracking-widest text-black/30 uppercase block">
-                Popular Inquiries
-              </span>
-              <div className="flex flex-wrap gap-3">
-                {["Signature Rings", "Classic Bands", "Halo Solitaire", "Limited Edition"].map((term) => (
-                  <div key={term} className="suggestion-item-wrapper">
-                    <LuxuryButton isCTA={false} magneticRange={45} magneticStrength={0.2}>
-                      <button
-                        onClick={() => handleSuggestionClick(term)}
-                        className="suggestion-item text-[9px] md:text-[10px] font-bold text-black/50 hover:text-black tracking-widest border border-black/5 hover:border-black/25 bg-neutral-900/20 px-4 py-2.5 uppercase cursor-pointer rounded-none transition-colors"
-                      >
-                        {term}
-                      </button>
-                    </LuxuryButton>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : (
+          {query.trim() === '' ? null : (
             /* Results preview view */
             <div className="space-y-4">
               <span className="text-[8px] font-mono tracking-widest text-black/30 uppercase block">
@@ -342,11 +314,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
           )}
 
           {/* Footer branding note */}
-          <div className="pt-2 text-center">
-            <span className="text-[7.5px] font-mono tracking-[0.4em] text-black/20 uppercase block">
-              Elara Atelier © BIS 925 Hallmark Certification Guarded
-            </span>
-          </div>
+          {/* Footer branding note removed */}
 
         </div>
       </div>

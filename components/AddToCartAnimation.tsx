@@ -67,15 +67,15 @@ export default function AddToCartAnimation() {
           : 'opacity-0 pointer-events-none'
       }`}
     >
-      {/* Container that crops the video edges by 8% to hide the corner watermarks */}
-      <div className="relative w-[90%] h-[90%] max-w-4xl max-h-[80vh] overflow-hidden flex items-center justify-center rounded-2xl bg-white shadow-2xl">
+      {/* Container that crops the video edges to hide any black lines/watermarks */}
+      <div className="relative w-full h-full overflow-hidden flex items-center justify-center bg-white">
         <video
           ref={videoRef}
           src="/images/addtocart.mp4"
           playsInline
           muted
           preload="auto"
-          className="w-full h-full object-cover scale-[1.09] transition-transform duration-300"
+          className="w-full h-full object-cover scale-[1.12] transition-transform duration-300"
           onTimeUpdate={handleTimeUpdate}
           onEnded={handleManualSkip}
           onError={handleManualSkip}

@@ -94,7 +94,7 @@ export default function HeroSlider() {
   return (
     <div 
       className="relative w-full overflow-hidden flex items-center justify-center mt-24 md:mt-[180px]"
-      style={{ height: '530px', backgroundColor: '#ffffff', marginBottom: '40px' }}
+      style={{ height: 'min(36.66vw, 800px)', backgroundColor: '#ffffff', marginBottom: '40px' }}
     >
       {loading && (
         <div className="absolute inset-0 flex items-center justify-center">
@@ -117,7 +117,7 @@ export default function HeroSlider() {
             animate={position}
             transition={{ duration: 0.7, ease: [0.32, 0.72, 0, 1] }}
             className="absolute rounded-[1rem] md:rounded-[2.5rem] overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.15)] border border-black/5 bg-white"
-            style={{ width: '88%', maxWidth: '1100px', height: '100%', maxHeight: '530px' }}
+            style={{ width: '88%', maxWidth: '1920px', aspectRatio: '1920/800' }}
           >
             <picture className="absolute inset-0 w-full h-full">
               {slide.mobileImage && (

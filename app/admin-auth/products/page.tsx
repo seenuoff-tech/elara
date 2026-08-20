@@ -475,29 +475,17 @@ export default function ProductsManagement() {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Price (₹)</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Price (Auto-calculated)</label>
                     <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-medium">₹</span>
                       <input 
-                        type="number"
+                        type="text"
+                        readOnly
                         value={
                           editingProduct && editingProduct.weightInGrams 
-                            ? (parseFloat(calculatePrice(editingProduct.weightInGrams, editingProduct.category).replace(/[^\d.]/g, '')) || '')
-                            : ''
+                            ? calculatePrice(editingProduct.weightInGrams, editingProduct.category)
+                            : '₹ 0'
                         }
-                        onChange={(e) => {
-                          if (!editingProduct) return;
-                          const enteredPrice = parseFloat(e.target.value) || 0;
-                          let category = editingProduct.category;
-                          let normCategory = category;
-                          if (category === 'Earrings') normCategory = 'Earings';
-                          const rate = silverRates[normCategory] || silverRates[category] || 85;
-                          const pricePerGramWithGst = Math.round(rate * (1 + gstPercentage / 100));
-                          const calculatedWeight = parseFloat((enteredPrice / pricePerGramWithGst).toFixed(2));
-                          setEditingProduct({...editingProduct, weightInGrams: calculatedWeight});
-                        }}
-                        className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0B5E64] focus:outline-none" 
-                        placeholder="e.g. 1500" 
+                        className="w-full px-4 py-2 border border-gray-200 bg-gray-50 text-gray-600 font-medium rounded-lg cursor-not-allowed focus:outline-none" 
                       />
                     </div>
                   </div>

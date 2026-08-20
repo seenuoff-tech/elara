@@ -43,7 +43,7 @@ export function PricingProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const res = await fetch('/api/settings/pricing');
+        const res = await fetch(`/api/settings/pricing?t=${Date.now()}`, { cache: 'no-store' });
         const { success, data } = await res.json();
         if (success && data) {
           if (data.silverRates) setSilverRates(data.silverRates);
