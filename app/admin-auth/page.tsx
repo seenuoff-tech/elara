@@ -81,8 +81,14 @@ export default function AdminDashboard() {
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">₹</span>
               <input 
                 type="number" 
-                value={localSilverRate}
-                onChange={(e) => setLocalSilverRate(parseFloat(e.target.value) || 0)}
+                value={localSilverRate === 0 ? '' : localSilverRate}
+                onFocus={(e) => e.target.select()}
+                onChange={(e) => {
+                  const val = parseInt(e.target.value, 10);
+                  setLocalSilverRate(isNaN(val) ? 0 : val);
+                }}
+                min={0}
+                placeholder="0"
                 className="w-full sm:w-36 pl-8 pr-4 py-2 border border-[#0B5E64]/30 rounded-lg focus:ring-2 focus:ring-[#0B5E64] focus:outline-none"
               />
             </div>
@@ -92,8 +98,14 @@ export default function AdminDashboard() {
             <div className="relative">
               <input 
                 type="number" 
-                value={localGst}
-                onChange={(e) => setLocalGst(parseFloat(e.target.value) || 0)}
+                value={localGst === 0 ? '' : localGst}
+                onFocus={(e) => e.target.select()}
+                onChange={(e) => {
+                  const val = parseInt(e.target.value, 10);
+                  setLocalGst(isNaN(val) ? 0 : val);
+                }}
+                min={0}
+                placeholder="0"
                 className="w-full sm:w-32 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0B5E64] focus:outline-none"
               />
               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">%</span>

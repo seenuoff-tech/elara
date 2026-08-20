@@ -119,11 +119,16 @@ export default function HeroSlider() {
             className="absolute rounded-[1rem] md:rounded-[2.5rem] overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.15)] border border-black/5 bg-white"
             style={{ width: '88%', maxWidth: '1100px', height: '100%', maxHeight: '530px' }}
           >
-            <img
-              src={slide.image}
-              alt={slide.title || 'Slide'}
-              className="absolute inset-0 w-full h-full object-cover object-center"
-            />
+            <picture className="absolute inset-0 w-full h-full">
+              {slide.mobileImage && (
+                <source media="(max-width: 767px)" srcSet={slide.mobileImage} />
+              )}
+              <img
+                src={slide.image}
+                alt={slide.title || 'Slide'}
+                className="w-full h-full object-cover object-center"
+              />
+            </picture>
 
           </motion.div>
         );

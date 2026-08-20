@@ -7,7 +7,7 @@ import { usePricing } from '@/components/PricingProvider';
 import { useProducts, AppProduct } from '@/context/ProductsContext';
 
 export default function ProductsManagement() {
-  const { calculatePrice } = usePricing();
+  const { calculatePrice, silverRates, gstPercentage } = usePricing();
   const { products, setProducts, addProduct, updateProduct, deleteProduct, addBulkProducts } = useProducts();
 
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
@@ -311,7 +311,7 @@ export default function ProductsManagement() {
               </div>
               <div className="text-xs text-left text-gray-500 pt-4">
                 <a 
-                  href="data:text/csv;charset=utf-8,id,name,category,weightInGrams,stock,status,image,gallery,inspiration,design%0APRD-NEW,Sample%20Silver%20Ring,Rings,5.5,10,Active,ring1.jpg,ring1_side.jpg|ring1_back.jpg,Elegant inspiration text,Detailed design text" 
+                  href="data:text/csv;charset=utf-8,id,name,category,weightInGrams,stock,status,image,gallery,inspiration,design,finishes%0APRD-NEW,Sample%20Silver%20Ring,Rings,5.5,10,Active,ring1.jpg,ring1_side.jpg|ring1_back.jpg,Elegant inspiration text,Detailed design text,Pure 925 Silver|Gold Plated" 
                   download="elara_products_template.csv" 
                   className="text-[#0B5E64] hover:underline"
                 >
@@ -344,7 +344,7 @@ export default function ProductsManagement() {
                         // Skip header row (index 0)
                         const rows = json.slice(1).filter(row => row.length > 0);
                         const newProducts = rows.map(row => {
-                          const [id, name, category, weightInGrams, stock, status, image, galleryStr, inspiration, design] = row;
+                          const [id, name, category, weightInGrams, stock, status, image, galleryStr, inspiration, design, finishesStr] = row;
                           
                           // Process main image
                           let mainImage = '';
@@ -378,13 +378,14 @@ export default function ProductsManagement() {
                             category: String(category || 'Uncategorized').trim(),
                             weightInGrams: parseFloat(weightInGrams) || 0,
                             stock: parseInt(stock) || 0,
-                            status: String(status || 'Draft').trim(),
+                            status: String(status || 'Active').trim(),
                             image: mainImage,
                             gallery: gallery,
                             description: {
-                              inspiration: inspiration ? String(inspiration).trim() : '',
-                              design: design ? String(design).trim() : ''
-                            }
+                              inspiration: String(inspiration || '').trim(),
+                              design: String(design || '').trim()
+                            },
+                            finishes: finishesStr ? String(finishesStr).split(/[|,]/).map(s => s.trim()).filter(Boolean) : []
                           };
                         });
                         
@@ -458,24 +459,48 @@ export default function ProductsManagement() {
                     <option>Chains</option>
                   </select>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Weight (in Grams)</label>
-                  <div className="relative">
-                    <input 
-                      type="number" 
-                      step="0.1"
-                      value={editingProduct ? editingProduct.weightInGrams : ''}
-                      onChange={(e) => editingProduct && setEditingProduct({...editingProduct, weightInGrams: parseFloat(e.target.value) || 0})}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#0B5E64] focus:outline-none" 
-                      placeholder="e.g. 5.5" 
-                    />
-                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">g</span>
+                <div className="md:col-span-1 grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Weight (in Grams)</label>
+                    <div className="relative">
+                      <input 
+                        type="number" 
+                        step="0.1"
+                        value={editingProduct ? editingProduct.weightInGrams : ''}
+                        onChange={(e) => editingProduct && setEditingProduct({...editingProduct, weightInGrams: parseFloat(e.target.value) || 0})}
+                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#0B5E64] focus:outline-none" 
+                        placeholder="e.g. 5.5" 
+                      />
+                      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">g</span>
+                    </div>
                   </div>
-                  {editingProduct && (
-                    <p className="text-xs text-[#0B5E64] mt-1 font-medium">
-                      Calculated Price: {calculatePrice(editingProduct.weightInGrams, editingProduct.category)}
-                    </p>
-                  )}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Price (₹)</label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-medium">₹</span>
+                      <input 
+                        type="number"
+                        value={
+                          editingProduct && editingProduct.weightInGrams 
+                            ? (parseFloat(calculatePrice(editingProduct.weightInGrams, editingProduct.category).replace(/[^\d.]/g, '')) || '')
+                            : ''
+                        }
+                        onChange={(e) => {
+                          if (!editingProduct) return;
+                          const enteredPrice = parseFloat(e.target.value) || 0;
+                          let category = editingProduct.category;
+                          let normCategory = category;
+                          if (category === 'Earrings') normCategory = 'Earings';
+                          const rate = silverRates[normCategory] || silverRates[category] || 85;
+                          const pricePerGramWithGst = Math.round(rate * (1 + gstPercentage / 100));
+                          const calculatedWeight = parseFloat((enteredPrice / pricePerGramWithGst).toFixed(2));
+                          setEditingProduct({...editingProduct, weightInGrams: calculatedWeight});
+                        }}
+                        className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0B5E64] focus:outline-none" 
+                        placeholder="e.g. 1500" 
+                      />
+                    </div>
+                  </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Stock Quantity</label>
@@ -498,6 +523,30 @@ export default function ProductsManagement() {
                     <option>Draft</option>
                     <option>Out of Stock</option>
                   </select>
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Available Finishes (Colours)</label>
+                  <div className="flex flex-wrap gap-4 bg-gray-50 p-3 rounded-lg border border-gray-200">
+                    {['Pure 925 Silver', 'Gold Plated', 'Rose Gold Plated', 'Oxidised Silver'].map(finish => (
+                      <label key={finish} className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={editingProduct?.finishes?.includes(finish) || false}
+                          onChange={(e) => {
+                            if (!editingProduct) return;
+                            const currentFinishes = Array.isArray(editingProduct.finishes) ? editingProduct.finishes : (editingProduct.finishes ? JSON.parse(editingProduct.finishes as string) : []);
+                            if (e.target.checked) {
+                              setEditingProduct({...editingProduct, finishes: [...currentFinishes, finish]});
+                            } else {
+                              setEditingProduct({...editingProduct, finishes: currentFinishes.filter((f:string) => f !== finish)});
+                            }
+                          }}
+                          className="rounded border-gray-300 text-[#0B5E64] focus:ring-[#0B5E64] w-4 h-4"
+                        />
+                        {finish}
+                      </label>
+                    ))}
+                  </div>
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Main Image</label>

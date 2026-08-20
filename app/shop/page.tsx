@@ -15,6 +15,7 @@ function ShopContent() {
   const searchParams = useSearchParams();
   const urlCategory = searchParams.get('category');
   const urlGender = searchParams.get('gender');
+  const urlPrice = searchParams.get('price');
 
   const [mounted, setMounted] = useState(false);
   
@@ -55,11 +56,12 @@ function ShopContent() {
     toggleWishlist(id);
   };
 
-  const parsePrice = (priceStr: string | undefined, weight: number = 0, category: string = '') => {
-    if (!priceStr) {
-      priceStr = calculatePrice(weight, category);
+  const parsePrice = (priceVal: string | number | undefined, weight: number = 0, category: string = '') => {
+    let finalPrice = priceVal;
+    if (finalPrice === undefined || finalPrice === null || finalPrice === '') {
+      finalPrice = calculatePrice(weight, category);
     }
-    return parseFloat(priceStr.replace(/[^\d.]/g, '')) || 0;
+    return parseFloat(String(finalPrice).replace(/[^\d.]/g, '')) || 0;
   };
 
   // Derived state: Filtered & Sorted Products
@@ -74,6 +76,15 @@ function ShopContent() {
         filtered = filtered.filter(p => p.category.toLowerCase().includes('mens'));
       } else if (urlGender === 'kids') {
         filtered = filtered.filter(p => p.category.toLowerCase().includes('kids'));
+      }
+    }
+
+    // Filter by Price range from URL
+    if (urlPrice) {
+      const match = urlPrice.match(/under-(\d+)/);
+      if (match) {
+        const maxPrice = parseInt(match[1]);
+        filtered = filtered.filter(p => parsePrice(p.newPrice || p.price, p.weightInGrams, p.category) < maxPrice);
       }
     }
 

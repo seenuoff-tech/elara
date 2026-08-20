@@ -17,7 +17,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { title, subtitle, image, buttonText, link, status } = body;
+    const { title, subtitle, image, mobileImage, buttonText, link, status } = body;
     
     if (!image) {
       return NextResponse.json({ success: false, error: 'Image is required' }, { status: 400 });
@@ -28,6 +28,7 @@ export async function POST(request: Request) {
         title,
         subtitle,
         image,
+        mobileImage,
         buttonText,
         link,
         status: status || 'Active'

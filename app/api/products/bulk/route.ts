@@ -28,6 +28,7 @@ export async function POST(request: Request) {
         image: p.image || null,
         gallery: p.gallery || null,
         description: p.description ? JSON.stringify(p.description) : null,
+        finishes: p.finishes ? JSON.stringify(typeof p.finishes === 'string' ? p.finishes.split(',').map((s:string) => s.trim()) : p.finishes) : null,
         isNew: !!p.isNew,
         weightInGrams: p.weightInGrams ? parseFloat(p.weightInGrams) : 0
       };

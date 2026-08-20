@@ -18,6 +18,7 @@ export async function PUT(request: Request, props: { params: Promise<{ id: strin
         title: body.title,
         subtitle: body.subtitle,
         image: body.image,
+        mobileImage: body.mobileImage,
         buttonText: body.buttonText,
         link: body.link,
         status: body.status

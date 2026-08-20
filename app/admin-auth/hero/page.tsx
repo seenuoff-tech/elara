@@ -39,7 +39,7 @@ export default function HeroSliderManagement() {
     }
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, field: 'image' | 'mobileImage' = 'image') => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
       const formData = new FormData();
@@ -53,7 +53,7 @@ export default function HeroSliderManagement() {
         
         const data = await res.json();
         if (data.success) {
-          if (editingSlide) setEditingSlide({...editingSlide, image: data.url});
+          if (editingSlide) setEditingSlide({...editingSlide, [field]: data.url});
         } else {
           alert('Upload failed: ' + data.error);
         }
@@ -180,7 +180,7 @@ export default function HeroSliderManagement() {
             </div>
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Image Upload (or URL)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Desktop Image (URL or Upload) <span className="text-xs text-gray-400 font-normal ml-2">Recommended: 1920x800 px</span></label>
                 <div className="flex gap-2 items-center">
                   <input 
                     type="text" 
@@ -196,7 +196,31 @@ export default function HeroSliderManagement() {
                     <input 
                       type="file" 
                       accept=".jpg,.jpeg,.png,.gif,.webp,.mp4"
-                      onChange={handleImageUpload}
+                      onChange={(e) => handleImageUpload(e, 'image')}
+                      className="absolute left-0 top-0 opacity-0 w-full h-full cursor-pointer"
+                    />
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Mobile Image (URL or Upload) <span className="text-xs text-gray-400 font-normal ml-2">Recommended: 1080x1920 px</span></label>
+                <div className="flex gap-2 items-center">
+                  <input 
+                    type="text" 
+                    value={editingSlide ? (editingSlide.mobileImage || '') : ''}
+                    onChange={(e) => editingSlide && setEditingSlide({...editingSlide, mobileImage: e.target.value})}
+                    className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#0B5E64] focus:outline-none" 
+                    placeholder="e.g. /images/slider1-mobile.jpg" 
+                  />
+                  <div className="relative overflow-hidden inline-block shrink-0">
+                    <button className="px-4 py-2 bg-gray-100 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors whitespace-nowrap">
+                      Browse Files
+                    </button>
+                    <input 
+                      type="file" 
+                      accept=".jpg,.jpeg,.png,.gif,.webp,.mp4"
+                      onChange={(e) => handleImageUpload(e, 'mobileImage')}
                       className="absolute left-0 top-0 opacity-0 w-full h-full cursor-pointer"
                     />
                   </div>

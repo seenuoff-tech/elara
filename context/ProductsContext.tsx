@@ -17,6 +17,7 @@ export interface AppProduct extends DetailedProduct {
   colorTheme?: string;
   ringGeometry?: any;
   price?: string;
+  finishes?: any[];
 }
 
 interface ProductsContextType {
