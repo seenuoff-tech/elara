@@ -94,14 +94,20 @@ export default function ProductsManagement() {
     }
   };
 
-  const handleSaveProduct = () => {
+  const handleSaveProduct = async () => {
     if (editingProduct) {
+      let result;
       if (editingProduct.id === '') {
-        addProduct(editingProduct);
+        result = await addProduct(editingProduct);
       } else {
-        updateProduct(editingProduct.id, editingProduct);
+        result = await updateProduct(editingProduct.id, editingProduct);
       }
-      setEditingProduct(null);
+      
+      if (result && result.success === false) {
+        alert("Failed to save product. Check database connection.");
+      } else {
+        setEditingProduct(null);
+      }
     }
   };
 

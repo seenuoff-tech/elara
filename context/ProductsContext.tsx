@@ -24,8 +24,8 @@ interface ProductsContextType {
   products: AppProduct[];
   isLoaded: boolean;
   setProducts: React.Dispatch<React.SetStateAction<AppProduct[]>>;
-  addProduct: (product: Partial<AppProduct>) => void;
-  updateProduct: (id: string | number, updates: Partial<AppProduct>) => void;
+  addProduct: (product: Partial<AppProduct>) => Promise<{success: boolean, error?: string}>;
+  updateProduct: (id: string | number, updates: Partial<AppProduct>) => Promise<{success: boolean, error?: string}>;
   deleteProduct: (id: string | number) => void;
   addBulkProducts: (productsList: Partial<AppProduct>[]) => void;
 }
@@ -66,9 +66,12 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
       const data = await res.json();
       if (data.success) {
         setProducts(prev => prev.map(p => String(p.id) === String(id) ? { ...p, ...updates } : p));
+        return { success: true };
       }
+      return { success: false, error: data.error };
     } catch (error) {
       console.error("Error updating product", error);
+      return { success: false };
     }
   };
 
@@ -82,9 +85,12 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
       const data = await res.json();
       if (data.success) {
         setProducts(prev => [data.product, ...prev]);
+        return { success: true };
       }
+      return { success: false, error: data.error };
     } catch (error) {
       console.error("Error adding product", error);
+      return { success: false };
     }
   };
 
