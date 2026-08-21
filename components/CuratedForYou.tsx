@@ -26,7 +26,7 @@ export default function CuratedForYou() {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-6 md:mb-16">
           <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-black font-serif">
-            Curated For You
+            Gifts For You
           </h2>
         </div>
 

@@ -39,15 +39,16 @@ export default function Testimonials() {
   return (
     <section className="pt-4 md:pt-8 pb-12 md:pb-24 bg-[#FFF9F9] overflow-hidden relative z-10 border-t border-black/5" style={{ backgroundImage: "url('/images/bgdesign.png')", backgroundSize: "cover", backgroundPosition: "center" }}>
       
-      <div className="text-center mb-16 relative z-10">
-        <h2 className="text-4xl md:text-5xl font-medium text-[#0B5E64]">Love Letters</h2>
+      <div className="text-center mb-16 relative z-10 flex flex-col items-center justify-center">
+        <span className="text-sm md:text-base font-semibold tracking-[0.3em] uppercase text-gray-500 mb-1">Our</span>
+        <h2 className="text-4xl md:text-5xl font-serif font-bold text-[#E05A87] tracking-wide drop-shadow-sm">Love Letters</h2>
       </div>
 
       {/* Infinite Marquee Container */}
-      <div className="relative w-full flex items-center">
+      <div className="relative w-full flex items-center overflow-hidden">
         
         {/* Marquee Track */}
-        <div className="flex w-max animate-[marquee_40s_linear_infinite] hover:animate-[marquee_40s_linear_infinite_paused] space-x-6 py-8 px-6">
+        <div className="flex w-max animate-[marquee_22s_linear_infinite] hover:animate-[marquee_22s_linear_infinite_paused] space-x-6 py-8 px-6 will-change-transform">
           {/* We duplicate the array to create a seamless loop */}
           {[...testimonials, ...testimonials, ...testimonials].map((testimonial, idx) => {
             // Alternating rotations based on index to create the wavy/tilted look
