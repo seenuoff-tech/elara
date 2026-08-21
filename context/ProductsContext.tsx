@@ -21,6 +21,7 @@ export interface AppProduct extends DetailedProduct {
   pricingType?: 'weight_based' | 'manual';
   customBadge?: string;
   targetAudience?: 'Men' | 'Women' | 'Kids' | 'Unisex';
+  mrpPrice?: number;
 }
 
 interface ProductsContextType {

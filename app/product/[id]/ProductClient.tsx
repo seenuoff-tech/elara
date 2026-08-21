@@ -142,7 +142,7 @@ export default function ProductClient() {
 
   const rawPriceStr = product.newPrice ? String(product.newPrice) : (product.price ? String(product.price) : calculatePrice(product.weightInGrams || 0, product.category));
   const sellingPriceNum = parseFloat(rawPriceStr.replace(/[^\d.]/g, '')) || 0;
-  const strikePriceNum = Math.round(sellingPriceNum * 1.10);
+  const strikePriceNum = (product as any).mrpPrice ? Number((product as any).mrpPrice) : Math.round(sellingPriceNum * 1.10);
 
   return (
     <div className="min-h-screen bg-[#fafafa] pt-48 md:pt-56 pb-12">

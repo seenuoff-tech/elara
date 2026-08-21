@@ -148,6 +148,7 @@ export default function ProductsManagement() {
               pricingType: 'weight_based',
               weightInGrams: 0, 
               price: 0,
+              mrpPrice: undefined,
               stock: 0, 
               status: 'Active', 
               isBestSeller: false, 
@@ -587,7 +588,7 @@ export default function ProductsManagement() {
 
                 {/* Weight & Price Fields depending on selected pricingType */}
                 {(editingProduct?.pricingType || 'weight_based') === 'weight_based' ? (
-                  <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 bg-teal-50/40 p-4 rounded-xl border border-teal-100">
+                  <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-4 bg-teal-50/40 p-4 rounded-xl border border-teal-100">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Weight (in Grams) <span className="text-red-500">*</span>
@@ -605,7 +606,7 @@ export default function ProductsManagement() {
                       </div>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Price (Silver Rate + GST)</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Selling Price (Silver Rate + GST)</label>
                       <div className="relative">
                         <input 
                           type="text"
@@ -615,14 +616,31 @@ export default function ProductsManagement() {
                               ? calculatePrice(editingProduct.weightInGrams, editingProduct.category)
                               : '₹ 0'
                           }
-                          className="w-full px-4 py-2 border border-gray-200 bg-gray-50 text-[#0B5E64] font-semibold rounded-lg cursor-not-allowed focus:outline-none" 
+                          className="w-full px-4 py-2 border border-gray-200 bg-gray-50 text-[#0B5E64] font-bold rounded-lg cursor-not-allowed focus:outline-none" 
                         />
                       </div>
-                      <p className="text-[11px] text-gray-500 mt-1">Calculated via daily category silver rate & GST %</p>
+                      <p className="text-[11px] text-gray-500 mt-1">Calculated via daily category rate & GST</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        MRP Price (₹) <span className="text-xs text-gray-400 font-normal">(Strike-through)</span>
+                      </label>
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium select-none pointer-events-none">₹</span>
+                        <input 
+                          type="number" 
+                          step="1"
+                          value={editingProduct && editingProduct.mrpPrice !== undefined && editingProduct.mrpPrice !== null ? editingProduct.mrpPrice : ''}
+                          onChange={(e) => editingProduct && setEditingProduct({...editingProduct, mrpPrice: e.target.value ? parseFloat(e.target.value) : undefined})}
+                          className="w-full border border-gray-300 rounded-lg pl-8 pr-4 py-2 focus:ring-2 focus:ring-[#0B5E64] focus:outline-none text-gray-700" 
+                          placeholder="e.g. 3999 (Optional)" 
+                        />
+                      </div>
+                      <p className="text-[11px] text-gray-400 mt-1">Leave empty for auto +10% MRP</p>
                     </div>
                   </div>
                 ) : (
-                  <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 bg-purple-50/40 p-4 rounded-xl border border-purple-100">
+                  <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-4 bg-purple-50/40 p-4 rounded-xl border border-purple-100">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Weight (in Grams) (Optional)</label>
                       <div className="relative">
@@ -639,7 +657,7 @@ export default function ProductsManagement() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Manual Base Price (₹) <span className="text-red-500">*</span>
+                        Selling Price (Base Price) <span className="text-red-500">*</span>
                       </label>
                       <div className="relative">
                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium select-none pointer-events-none">₹</span>
@@ -648,7 +666,7 @@ export default function ProductsManagement() {
                           step="1"
                           value={editingProduct ? (editingProduct.price ?? '') : ''}
                           onChange={(e) => editingProduct && setEditingProduct({...editingProduct, price: parseFloat(e.target.value) || 0})}
-                          className="w-full border border-gray-300 rounded-lg pl-8 pr-4 py-2 focus:ring-2 focus:ring-[#0B5E64] focus:outline-none font-medium text-gray-900" 
+                          className="w-full border border-gray-300 rounded-lg pl-8 pr-4 py-2 focus:ring-2 focus:ring-[#0B5E64] focus:outline-none font-bold text-gray-900" 
                           placeholder="e.g. 2499" 
                         />
                       </div>
@@ -658,6 +676,23 @@ export default function ProductsManagement() {
                           Final: ₹{Math.round(Number(editingProduct?.price || 0) * (1 + gstPercentage / 100)).toLocaleString('en-IN')}
                         </span>
                       </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        MRP Price (₹) <span className="text-xs text-gray-400 font-normal">(Strike-through)</span>
+                      </label>
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium select-none pointer-events-none">₹</span>
+                        <input 
+                          type="number" 
+                          step="1"
+                          value={editingProduct && editingProduct.mrpPrice !== undefined && editingProduct.mrpPrice !== null ? editingProduct.mrpPrice : ''}
+                          onChange={(e) => editingProduct && setEditingProduct({...editingProduct, mrpPrice: e.target.value ? parseFloat(e.target.value) : undefined})}
+                          className="w-full border border-gray-300 rounded-lg pl-8 pr-4 py-2 focus:ring-2 focus:ring-[#0B5E64] focus:outline-none text-gray-700" 
+                          placeholder="e.g. 2999" 
+                        />
+                      </div>
+                      <p className="text-[11px] text-gray-500 mt-1">Crossed-out original price (MRP)</p>
                     </div>
                   </div>
                 )}

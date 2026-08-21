@@ -52,6 +52,7 @@ export async function GET(request: Request) {
         pricingType: (p as any).pricingType || 'weight_based',
         customBadge: (p as any).customBadge || null,
         targetAudience: (p as any).targetAudience || 'Women',
+        mrpPrice: (p as any).mrpPrice || null,
         sizes: parsedSizes
       };
     });
@@ -66,7 +67,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    let { name, categoryId, category, price, stock, status, image, gallery, description, isNew, isBestSeller, customBadge, weightInGrams, finishes, sizes, ringSizes, pricingType, targetAudience } = body;
+    let { name, categoryId, category, price, stock, status, image, gallery, description, isNew, isBestSeller, customBadge, weightInGrams, finishes, sizes, ringSizes, pricingType, targetAudience, mrpPrice } = body;
     
     if (!categoryId && category) {
       const cat = await prisma.category.findFirst({
@@ -100,7 +101,8 @@ export async function POST(request: Request) {
         customBadge: customBadge ? String(customBadge).trim() : null,
         weightInGrams: weightInGrams ? parseFloat(weightInGrams) : 0,
         pricingType: pricingType || 'weight_based',
-        targetAudience: targetAudience || 'Women'
+        targetAudience: targetAudience || 'Women',
+        mrpPrice: mrpPrice ? parseFloat(mrpPrice) : null
       } as any
     });
     
@@ -120,7 +122,7 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   try {
     const body = await request.json();
-    const { id, name, categoryId, price, stock, status, image, gallery, description, isNew, isBestSeller, customBadge, weightInGrams, finishes, sizes, ringSizes, pricingType, targetAudience } = body;
+    const { id, name, categoryId, price, stock, status, image, gallery, description, isNew, isBestSeller, customBadge, weightInGrams, finishes, sizes, ringSizes, pricingType, targetAudience, mrpPrice } = body;
     
     if (!id) {
       return NextResponse.json({ success: false, error: 'ID is required' }, { status: 400 });
@@ -148,7 +150,8 @@ export async function PUT(request: Request) {
         customBadge: customBadge ? String(customBadge).trim() : null,
         weightInGrams: weightInGrams ? parseFloat(weightInGrams) : 0,
         pricingType: pricingType || 'weight_based',
-        targetAudience: targetAudience || 'Women'
+        targetAudience: targetAudience || 'Women',
+        mrpPrice: mrpPrice !== undefined ? (mrpPrice ? parseFloat(mrpPrice) : null) : undefined
       } as any
     });
     
