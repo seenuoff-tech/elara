@@ -95,9 +95,9 @@ export function PricingProvider({ children }: { children: ReactNode }) {
 
     const rate = silverRates[normCategory] || silverRates[category] || 85; // Fallback to 85 if category not found
     
-    // Calculate rounded price per gram with GST first to ensure mathematical consistency (e.g. 2g is always 2 * 1g price)
-    const pricePerGramWithGst = Math.round(rate * (1 + gstPercentage / 100));
-    const finalPrice = weightInGrams * pricePerGramWithGst;
+    // Calculate total base price (Weight * Silver Rate) then add GST percentage
+    const basePrice = weightInGrams * rate;
+    const finalPrice = Math.round(basePrice * (1 + gstPercentage / 100));
     
     return currencyFormatter.format(finalPrice);
   }, [silverRates, gstPercentage]);
