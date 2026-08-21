@@ -93,8 +93,11 @@ export default function HeroSlider() {
 
   return (
     <div 
-      className="relative w-full overflow-hidden flex items-center justify-center mt-24 md:mt-[180px]"
-      style={{ height: 'min(36.66vw, 800px)', backgroundColor: '#ffffff', marginBottom: '40px' }}
+      className="relative w-full overflow-hidden flex items-center justify-center mt-[135px] md:mt-[180px] mb-6 md:mb-12"
+      style={{ 
+        height: 'clamp(170px, 42vw, 800px)', 
+        backgroundColor: '#ffffff'
+      }}
     >
       {loading && (
         <div className="absolute inset-0 flex items-center justify-center">
@@ -116,8 +119,7 @@ export default function HeroSlider() {
             initial="hidden"
             animate={position}
             transition={{ duration: 0.7, ease: [0.32, 0.72, 0, 1] }}
-            className="absolute rounded-[1rem] md:rounded-[2.5rem] overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.15)] border border-black/5 bg-white"
-            style={{ width: '88%', maxWidth: '1920px', aspectRatio: '1920/800' }}
+            className="absolute rounded-[0.85rem] md:rounded-[2.5rem] overflow-hidden shadow-[0_8px_25px_rgba(0,0,0,0.08)] md:shadow-[0_20px_60px_rgba(0,0,0,0.15)] border border-black/5 bg-white w-[92%] md:w-[88%] max-w-[1920px] aspect-[1920/800]"
           >
             <picture className="absolute inset-0 w-full h-full">
               {slide.mobileImage && (
@@ -126,7 +128,7 @@ export default function HeroSlider() {
               <img
                 src={slide.image}
                 alt={slide.title || 'Slide'}
-                className="w-full h-full object-cover object-center"
+                className="w-full h-full object-fill md:object-cover object-center"
               />
             </picture>
 
