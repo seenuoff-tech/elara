@@ -68,9 +68,6 @@ export default function ConciergeAssistant() {
                   <h4 className="text-xs font-bold tracking-widest text-black uppercase">
                     Elara Chatbot
                   </h4>
-                  <span className="text-[8px] text-black/40 tracking-wider uppercase font-mono block">
-                    Online Concierge
-                  </span>
                 </div>
               </div>
               <button
