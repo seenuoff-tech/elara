@@ -30,16 +30,16 @@ export default function Home() {
       {/* Shop by Category Section */}
       <ShopByCategory />
 
+      {/* Elara Promise Section (Directly below Shop by Category) */}
+      <ElaraPromises />
+
+      {/* Affordable Elegance (Luxury Within Reach) Section */}
+      <LuxuryWithinReach />
+
       {/* New Arrivals Section */}
       <div className="relative z-10">
         <NewArrivals />
       </div>
-
-      {/* Elara Promise Section (Above Affordable Elegance) */}
-      <ElaraPromises />
-
-      {/* Affordable Elegance (Luxury Within Reach) Section (Below New Arrivals) */}
-      <LuxuryWithinReach />
 
       {/* Hot Right Now Banner */}
       <HotRightNowBanner />
