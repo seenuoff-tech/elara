@@ -187,6 +187,22 @@ function ShopContent() {
               {filteredProducts.map((product, index) => (
                 <div key={product.id} className="relative flex flex-col group">
                   <Link href={`/product/${product.name.toLowerCase().replace(/\s+/g, '-')}`} className="block relative aspect-square bg-gray-100 mb-3 overflow-hidden rounded-md">
+                    {/* Badge Ribbon (Custom Badge or Best Seller) */}
+                    {(product.customBadge || product.isBestSeller) && (
+                      <div className="absolute top-3 -left-1 z-20 flex flex-col items-start">
+                        <div 
+                          className="bg-[#0B5E64] text-white text-[10px] font-semibold py-0.5 pl-2.5 pr-4 shadow-sm uppercase tracking-wider" 
+                          style={{ clipPath: 'polygon(0 0, 100% 0, 85% 50%, 100% 100%, 0 100%)' }}
+                        >
+                          {product.customBadge || 'Bestseller'}
+                        </div>
+                        <div 
+                          className="w-1.5 h-1.5 bg-[#07474B]" 
+                          style={{ clipPath: 'polygon(100% 0, 100% 100%, 0 0)' }} 
+                        />
+                      </div>
+                    )}
+
                     <Image
                       src={product.image}
                       alt={product.name}

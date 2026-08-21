@@ -19,6 +19,7 @@ export interface AppProduct extends DetailedProduct {
   price?: string;
   finishes?: any[];
   pricingType?: 'weight_based' | 'manual';
+  customBadge?: string;
 }
 
 interface ProductsContextType {

@@ -148,6 +148,8 @@ export default function ProductsManagement() {
               stock: 0, 
               status: 'Active', 
               isBestSeller: false, 
+              customBadge: '',
+              hasCustomBadge: false,
               description: { inspiration: '', design: '' } 
             })}
             className="px-4 py-2 bg-[#0B5E64] text-white text-sm font-medium rounded-lg hover:bg-[#084A4F] transition-colors"
@@ -241,7 +243,15 @@ export default function ProductsManagement() {
                         <div className="w-10 h-10 bg-gray-100 rounded object-cover flex-shrink-0 flex items-center justify-center text-gray-400 text-[10px] text-center border border-gray-200">No img</div>
                       )}
                       <div>
-                        <div className="font-medium text-gray-900">{product.name}</div>
+                        <div className="font-medium text-gray-900 flex items-center gap-2">
+                          {product.name}
+                          {product.isBestSeller && (
+                            <span className="px-1.5 py-0.5 bg-amber-100 text-amber-800 text-[10px] font-semibold rounded">Bestseller</span>
+                          )}
+                          {product.customBadge && (
+                            <span className="px-1.5 py-0.5 bg-teal-100 text-teal-800 text-[10px] font-semibold rounded">{product.customBadge}</span>
+                          )}
+                        </div>
                         <div className="text-gray-500 text-xs">{product.id}</div>
                       </div>
                     </div>
@@ -707,16 +717,54 @@ export default function ProductsManagement() {
                   />
                   {isUploading && <p className="text-xs text-gray-500 mt-2 animate-pulse">Uploading image...</p>}
                 </div>
-                <div className="md:col-span-2">
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input 
-                      type="checkbox"
-                      checked={editingProduct ? !!editingProduct.isBestSeller : false}
-                      onChange={(e) => editingProduct && setEditingProduct({...editingProduct, isBestSeller: e.target.checked})}
-                      className="w-4 h-4 text-[#0B5E64] rounded border-gray-300 focus:ring-[#0B5E64]"
-                    />
-                    <span className="text-sm font-medium text-gray-700">Mark as Best Seller</span>
-                  </label>
+                <div className="md:col-span-2 bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-3">
+                  <label className="block text-sm font-semibold text-gray-800">Product Badges / Tags</label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+                    {/* Best Seller Checkbox */}
+                    <label className="flex items-center gap-2 cursor-pointer pt-2">
+                      <input 
+                        type="checkbox"
+                        checked={editingProduct ? !!editingProduct.isBestSeller : false}
+                        onChange={(e) => editingProduct && setEditingProduct({...editingProduct, isBestSeller: e.target.checked})}
+                        className="w-4 h-4 text-[#0B5E64] rounded border-gray-300 focus:ring-[#0B5E64]"
+                      />
+                      <span className="text-sm font-medium text-gray-700">Mark as Best Seller</span>
+                    </label>
+
+                    {/* Custom Badge Checkbox & Input */}
+                    <div className="space-y-2">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input 
+                          type="checkbox"
+                          checked={editingProduct ? (editingProduct.hasCustomBadge ?? (!!editingProduct.customBadge)) : false}
+                          onChange={(e) => {
+                            if (!editingProduct) return;
+                            const isChecked = e.target.checked;
+                            setEditingProduct({
+                              ...editingProduct, 
+                              hasCustomBadge: isChecked,
+                              customBadge: isChecked ? (editingProduct.customBadge || '') : ''
+                            });
+                          }}
+                          className="w-4 h-4 text-[#0B5E64] rounded border-gray-300 focus:ring-[#0B5E64]"
+                        />
+                        <span className="text-sm font-medium text-gray-700">Type Your Own Badge</span>
+                      </label>
+                      
+                      {(editingProduct?.hasCustomBadge ?? (!!editingProduct?.customBadge)) && (
+                        <div className="animate-fade-in pl-6">
+                          <input 
+                            type="text"
+                            value={editingProduct?.customBadge || ''}
+                            onChange={(e) => editingProduct && setEditingProduct({...editingProduct, customBadge: e.target.value})}
+                            placeholder="e.g. Trending, Hot Deal, Exclusive, New Launch"
+                            className="w-full text-sm border border-gray-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-[#0B5E64] focus:outline-none bg-white"
+                          />
+                          <p className="text-[11px] text-gray-500 mt-1">This text badge will be highlighted on the product card</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Inspiration (Description Preview)</label>

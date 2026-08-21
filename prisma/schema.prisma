@@ -45,6 +45,7 @@ model Product {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   isBestSeller  Boolean  @default(false)
+  customBadge   String?
   weightInGrams Float    @default(0)
   pricingType   String   @default("weight_based")
   category      Category @relation(fields: [categoryId], references: [id])

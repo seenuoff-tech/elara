@@ -37,7 +37,8 @@ export async function GET(request: Request) {
         ...p,
         price: computedPrice,
         category: categoryName,
-        pricingType: (p as any).pricingType || 'weight_based'
+        pricingType: (p as any).pricingType || 'weight_based',
+        customBadge: (p as any).customBadge || null
       };
     });
     
@@ -51,7 +52,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    let { name, categoryId, category, price, stock, status, image, gallery, description, isNew, isBestSeller, weightInGrams, finishes, pricingType } = body;
+    let { name, categoryId, category, price, stock, status, image, gallery, description, isNew, isBestSeller, customBadge, weightInGrams, finishes, pricingType } = body;
     
     if (!categoryId && category) {
       const cat = await prisma.category.findFirst({
@@ -77,6 +78,7 @@ export async function POST(request: Request) {
         finishes: finishes ? JSON.stringify(finishes) : null,
         isNew: !!isNew,
         isBestSeller: !!isBestSeller,
+        customBadge: customBadge ? String(customBadge).trim() : null,
         weightInGrams: weightInGrams ? parseFloat(weightInGrams) : 0,
         pricingType: pricingType || 'weight_based'
       } as any
@@ -98,7 +100,7 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   try {
     const body = await request.json();
-    const { id, name, categoryId, price, stock, status, image, gallery, description, isNew, isBestSeller, weightInGrams, finishes, pricingType } = body;
+    const { id, name, categoryId, price, stock, status, image, gallery, description, isNew, isBestSeller, customBadge, weightInGrams, finishes, pricingType } = body;
     
     if (!id) {
       return NextResponse.json({ success: false, error: 'ID is required' }, { status: 400 });
@@ -115,6 +117,7 @@ export async function PUT(request: Request) {
         description: description ? JSON.stringify(description) : null,
         finishes: finishes ? JSON.stringify(finishes) : null,
         isNew: !!isNew, isBestSeller: !!isBestSeller,
+        customBadge: customBadge ? String(customBadge).trim() : null,
         weightInGrams: weightInGrams ? parseFloat(weightInGrams) : 0,
         pricingType: pricingType || 'weight_based'
       } as any

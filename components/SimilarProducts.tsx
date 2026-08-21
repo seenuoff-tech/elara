@@ -47,14 +47,14 @@ export default function SimilarProducts({ currentProductId }: SimilarProductsPro
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
         {displayProducts.map((product, index) => (
           <div key={product.id} className="relative flex flex-col group">
-            {/* Best Seller Ribbon */}
-            {product.isBestSeller && (
+            {/* Badge Ribbon (Custom Badge or Best Seller) */}
+            {(product.customBadge || product.isBestSeller) && (
               <div className="absolute top-4 -left-2 z-20 flex flex-col items-start">
                 <div 
-                  className="bg-[#0B5E64] text-white text-[10px] md:text-xs font-semibold py-1 pl-3 pr-5 shadow-sm" 
+                  className="bg-[#0B5E64] text-white text-[10px] md:text-xs font-semibold py-1 pl-3 pr-5 shadow-sm uppercase tracking-wider" 
                   style={{ clipPath: 'polygon(0 0, 100% 0, 85% 50%, 100% 100%, 0 100%)' }}
                 >
-                  Bestseller
+                  {product.customBadge || 'Bestseller'}
                 </div>
                 <div 
                   className="w-2 h-2 bg-[#07474B]" 
