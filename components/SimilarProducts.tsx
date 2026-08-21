@@ -66,8 +66,8 @@ export default function SimilarProducts({ currentProductId }: SimilarProductsPro
             {/* Image Container */}
             <Link href={`/product/${product.name.toLowerCase().replace(/\s+/g, '-')}`} className="aspect-square w-full relative bg-gray-50 flex items-center justify-center mb-4 rounded-xl border border-gray-100 hover:border-black/10 transition-colors block overflow-hidden">
               <Image 
-                src={product.image} 
-                alt={product.name} 
+                src={product.image || '/images/org.png'} 
+                alt={product.name || 'Product'} 
                 fill 
                 className="object-cover hover:scale-105 transition-transform duration-500" 
                 sizes="(max-width: 768px) 50vw, 25vw"

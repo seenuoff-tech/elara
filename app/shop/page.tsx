@@ -213,8 +213,8 @@ function ShopContent() {
                     )}
 
                     <Image
-                      src={product.image}
-                      alt={product.name}
+                      src={product.image || '/images/org.png'}
+                      alt={product.name || 'Product'}
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-500"
                     />
