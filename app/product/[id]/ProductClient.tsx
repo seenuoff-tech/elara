@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useProducts } from '../../../context/ProductsContext';
 import { usePricing } from '../../../components/PricingProvider';
@@ -29,6 +30,7 @@ export default function ProductClient() {
   const [deliveryMessage, setDeliveryMessage] = useState('');
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [isGift, setIsGift] = useState(false);
+  const [activePolicyTab, setActivePolicyTab] = useState<'terms' | 'refund' | 'return' | null>('terms');
 
   // Parse sizes
   const productSizes: string[] = Array.isArray(product?.sizes) 
@@ -373,6 +375,128 @@ export default function ProductClient() {
                   {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
                 </button>
               </div>
+            </div>
+
+            {/* Policy Dropdowns (Terms & Conditions, Refund Policy, Return Policy) */}
+            <div className="mb-10 bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+              {/* Tabs / Accordion Header Buttons */}
+              <div className="grid grid-cols-3 border-b border-gray-200 bg-gray-50/80">
+                <button
+                  onClick={() => setActivePolicyTab(activePolicyTab === 'terms' ? null : 'terms')}
+                  className={`py-3 px-2 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors border-r border-gray-200 ${
+                    activePolicyTab === 'terms'
+                      ? 'bg-white text-[#0B5E64] shadow-sm'
+                      : 'text-gray-600 hover:text-black hover:bg-gray-100/50'
+                  }`}
+                >
+                  <svg className="w-4 h-4 shrink-0 text-[#0B5E64]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  <span className="truncate">Terms & Conditions</span>
+                  <svg className={`w-3.5 h-3.5 transition-transform duration-200 ${activePolicyTab === 'terms' ? 'rotate-180 text-[#0B5E64]' : 'text-gray-400'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                <button
+                  onClick={() => setActivePolicyTab(activePolicyTab === 'refund' ? null : 'refund')}
+                  className={`py-3 px-2 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors border-r border-gray-200 ${
+                    activePolicyTab === 'refund'
+                      ? 'bg-white text-[#0B5E64] shadow-sm'
+                      : 'text-gray-600 hover:text-black hover:bg-gray-100/50'
+                  }`}
+                >
+                  <svg className="w-4 h-4 shrink-0 text-[#0B5E64]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 15v-1a4 4 0 00-4-4H8m0 0l3 3m-3-3l3-3m9 14V5a2 2 0 00-2-2H6a2 2 0 00-2 2v16l4-2 4 2 4-2 4 2z" />
+                  </svg>
+                  <span className="truncate">Refund Policy</span>
+                  <svg className={`w-3.5 h-3.5 transition-transform duration-200 ${activePolicyTab === 'refund' ? 'rotate-180 text-[#0B5E64]' : 'text-gray-400'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                <button
+                  onClick={() => setActivePolicyTab(activePolicyTab === 'return' ? null : 'return')}
+                  className={`py-3 px-2 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors ${
+                    activePolicyTab === 'return'
+                      ? 'bg-white text-[#0B5E64] shadow-sm'
+                      : 'text-gray-600 hover:text-black hover:bg-gray-100/50'
+                  }`}
+                >
+                  <svg className="w-4 h-4 shrink-0 text-[#0B5E64]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
+                  <span className="truncate">Return Policy</span>
+                  <svg className={`w-3.5 h-3.5 transition-transform duration-200 ${activePolicyTab === 'return' ? 'rotate-180 text-[#0B5E64]' : 'text-gray-400'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Tab Content Display with 2 points & Read More Link */}
+              {activePolicyTab && (
+                <div className="p-4 bg-white text-xs text-gray-700 leading-relaxed animate-fadeIn">
+                  {activePolicyTab === 'terms' && (
+                    <div className="space-y-3">
+                      <ul className="space-y-2 list-disc list-inside text-gray-700">
+                        <li>All products are authentically crafted in <strong>925 Sterling Silver</strong> with hallmark certification.</li>
+                        <li>Actual product dimensions and stone colors may slightly vary due to professional photography lighting.</li>
+                      </ul>
+                      <div className="pt-2 border-t border-gray-100 flex justify-end">
+                        <Link 
+                          href="/terms-and-conditions" 
+                          className="inline-flex items-center gap-1 text-[#0B5E64] font-semibold hover:underline"
+                        >
+                          Read Full Terms & Conditions
+                          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                          </svg>
+                        </Link>
+                      </div>
+                    </div>
+                  )}
+
+                  {activePolicyTab === 'refund' && (
+                    <div className="space-y-3">
+                      <ul className="space-y-2 list-disc list-inside text-gray-700">
+                        <li>Approved refunds are processed back directly to the original payment source within <strong>5-7 working days</strong>.</li>
+                        <li>Instant online cancellation & immediate refund support available prior to product dispatch.</li>
+                      </ul>
+                      <div className="pt-2 border-t border-gray-100 flex justify-end">
+                        <Link 
+                          href="/refund-return-policy" 
+                          className="inline-flex items-center gap-1 text-[#0B5E64] font-semibold hover:underline"
+                        >
+                          Read Full Refund Policy
+                          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                          </svg>
+                        </Link>
+                      </div>
+                    </div>
+                  )}
+
+                  {activePolicyTab === 'return' && (
+                    <div className="space-y-3">
+                      <ul className="space-y-2 list-disc list-inside text-gray-700">
+                        <li>Hassle-free <strong>7-Day Return / Replacement window</strong> from the date of package delivery.</li>
+                        <li>Items must remain unused, with intact security tags and original luxury packaging.</li>
+                      </ul>
+                      <div className="pt-2 border-t border-gray-100 flex justify-end">
+                        <Link 
+                          href="/refund-return-policy" 
+                          className="inline-flex items-center gap-1 text-[#0B5E64] font-semibold hover:underline"
+                        >
+                          Read Full Return Policy
+                          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                          </svg>
+                        </Link>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Product Description Expandable */}
