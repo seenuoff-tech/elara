@@ -30,12 +30,13 @@ export async function POST(request: Request) {
         description: p.description ? JSON.stringify(p.description) : null,
         finishes: p.finishes ? JSON.stringify(typeof p.finishes === 'string' ? p.finishes.split(',').map((s:string) => s.trim()) : p.finishes) : null,
         isNew: !!p.isNew,
-        weightInGrams: p.weightInGrams ? parseFloat(p.weightInGrams) : 0
+        weightInGrams: p.weightInGrams ? parseFloat(p.weightInGrams) : 0,
+        pricingType: p.pricingType || (p.price && !p.weightInGrams ? 'manual' : 'weight_based')
       };
     });
     
     await prisma.product.createMany({
-      data: formattedProducts,
+      data: formattedProducts as any,
       skipDuplicates: true
     });
     

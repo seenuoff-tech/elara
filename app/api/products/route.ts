@@ -24,18 +24,20 @@ export async function GET(request: Request) {
     const gstPercentage: number = pricingData?.gstPercentage ?? 3;
     const defaultRate = 85;
 
-    // Map products with dynamically computed price from current silver rates
+    // Map products with dynamically computed price from current silver rates if weight_based
     const products = dbProducts.map(p => {
       const categoryName = p.category ? p.category.name : 'Uncategorized';
       const rate = silverRates[categoryName] ?? defaultRate;
       const weight = p.weightInGrams ?? 0;
-      const computedPrice = weight > 0
-        ? Math.round(weight * rate * (1 + gstPercentage / 100))
-        : p.price;
+      const isManual = (p as any).pricingType === 'manual';
+      const computedPrice = isManual 
+        ? (p.price || 0)
+        : (weight > 0 ? Math.round(weight * rate * (1 + gstPercentage / 100)) : p.price);
       return {
         ...p,
         price: computedPrice,
         category: categoryName,
+        pricingType: (p as any).pricingType || 'weight_based'
       };
     });
     
@@ -49,7 +51,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    let { name, categoryId, category, price, stock, status, image, gallery, description, isNew, isBestSeller, weightInGrams, finishes } = body;
+    let { name, categoryId, category, price, stock, status, image, gallery, description, isNew, isBestSeller, weightInGrams, finishes, pricingType } = body;
     
     if (!categoryId && category) {
       const cat = await prisma.category.findFirst({
@@ -75,8 +77,9 @@ export async function POST(request: Request) {
         finishes: finishes ? JSON.stringify(finishes) : null,
         isNew: !!isNew,
         isBestSeller: !!isBestSeller,
-        weightInGrams: weightInGrams ? parseFloat(weightInGrams) : 0
-      }
+        weightInGrams: weightInGrams ? parseFloat(weightInGrams) : 0,
+        pricingType: pricingType || 'weight_based'
+      } as any
     });
     
     // Update category count
@@ -95,7 +98,7 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   try {
     const body = await request.json();
-    const { id, name, categoryId, price, stock, status, image, gallery, description, isNew, isBestSeller, weightInGrams, finishes } = body;
+    const { id, name, categoryId, price, stock, status, image, gallery, description, isNew, isBestSeller, weightInGrams, finishes, pricingType } = body;
     
     if (!id) {
       return NextResponse.json({ success: false, error: 'ID is required' }, { status: 400 });
@@ -112,8 +115,9 @@ export async function PUT(request: Request) {
         description: description ? JSON.stringify(description) : null,
         finishes: finishes ? JSON.stringify(finishes) : null,
         isNew: !!isNew, isBestSeller: !!isBestSeller,
-        weightInGrams: weightInGrams ? parseFloat(weightInGrams) : 0 
-      }
+        weightInGrams: weightInGrams ? parseFloat(weightInGrams) : 0,
+        pricingType: pricingType || 'weight_based'
+      } as any
     });
     
     if (oldProduct && oldProduct.categoryId !== categoryId) {

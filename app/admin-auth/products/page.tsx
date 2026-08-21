@@ -111,6 +111,13 @@ export default function ProductsManagement() {
     }
   };
 
+  const formatDisplayPrice = (product: any) => {
+    if (product.pricingType === 'manual' || (!product.weightInGrams && product.price)) {
+      return `₹ ${Number(product.price || 0).toLocaleString('en-IN')}`;
+    }
+    return calculatePrice(product.weightInGrams || 0, product.category);
+  };
+
   const filteredProducts = products.filter(p => 
     p.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
     String(p.id).toLowerCase().includes(searchTerm.toLowerCase())
@@ -131,7 +138,18 @@ export default function ProductsManagement() {
             Bulk Upload
           </button>
           <button 
-            onClick={() => setEditingProduct({ id: '', name: '', category: 'Rings', weightInGrams: 0, stock: 0, status: 'Active', isBestSeller: false, description: { inspiration: '', design: '' } })}
+            onClick={() => setEditingProduct({ 
+              id: '', 
+              name: '', 
+              category: 'Rings', 
+              pricingType: 'weight_based',
+              weightInGrams: 0, 
+              price: 0,
+              stock: 0, 
+              status: 'Active', 
+              isBestSeller: false, 
+              description: { inspiration: '', design: '' } 
+            })}
             className="px-4 py-2 bg-[#0B5E64] text-white text-sm font-medium rounded-lg hover:bg-[#084A4F] transition-colors"
           >
             Add Product
@@ -192,6 +210,7 @@ export default function ProductsManagement() {
                 </th>
                 <th className="px-6 py-4">Product</th>
                 <th className="px-6 py-4">Category</th>
+                <th className="px-6 py-4">Pricing Type</th>
                 <th className="px-6 py-4">Weight (g)</th>
                 <th className="px-6 py-4">Final Price</th>
                 <th className="px-6 py-4">Stock</th>
@@ -228,8 +247,19 @@ export default function ProductsManagement() {
                     </div>
                   </td>
                   <td className="px-6 py-4 text-gray-600">{product.category}</td>
-                  <td className="px-6 py-4 text-gray-600">{product.weightInGrams}g</td>
-                  <td className="px-6 py-4 font-medium text-[#0B5E64]">{calculatePrice(product.weightInGrams, product.category)}</td>
+                  <td className="px-6 py-4">
+                    <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${
+                      product.pricingType === 'manual' 
+                        ? 'bg-purple-100 text-purple-800' 
+                        : 'bg-teal-100 text-teal-800'
+                    }`}>
+                      {product.pricingType === 'manual' ? 'Manual' : 'Weight Based'}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-gray-600">
+                    {product.weightInGrams ? `${product.weightInGrams}g` : '-'}
+                  </td>
+                  <td className="px-6 py-4 font-medium text-[#0B5E64]">{formatDisplayPrice(product)}</td>
                   <td className="px-6 py-4">
                     <span className={`font-medium ${product.stock === 0 ? 'text-red-600' : 'text-gray-900'}`}>{product.stock}</span>
                   </td>
@@ -243,7 +273,10 @@ export default function ProductsManagement() {
                   </td>
                   <td className="px-6 py-4 text-right space-x-3">
                     <button 
-                      onClick={() => setEditingProduct(product)}
+                      onClick={() => setEditingProduct({
+                        ...product,
+                        pricingType: product.pricingType || (product.price && !product.weightInGrams ? 'manual' : 'weight_based')
+                      })}
                       className="text-[#0B5E64] hover:underline font-medium"
                     >
                       Edit
@@ -259,7 +292,7 @@ export default function ProductsManagement() {
               ))}
               {filteredProducts.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
+                  <td colSpan={9} className="px-6 py-8 text-center text-gray-500">
                     No products found. Add a new product to get started.
                   </td>
                 </tr>
@@ -317,7 +350,7 @@ export default function ProductsManagement() {
               </div>
               <div className="text-xs text-left text-gray-500 pt-4">
                 <a 
-                  href="data:text/csv;charset=utf-8,id,name,category,weightInGrams,stock,status,image,gallery,inspiration,design,finishes%0APRD-NEW,Sample%20Silver%20Ring,Rings,5.5,10,Active,ring1.jpg,ring1_side.jpg|ring1_back.jpg,Elegant inspiration text,Detailed design text,Pure 925 Silver|Gold Plated" 
+                  href="data:text/csv;charset=utf-8,id,name,category,weightInGrams,price,stock,status,image,gallery,inspiration,design,finishes,pricingType%0APRD-NEW,Sample%20Silver%20Ring,Rings,5.5,,10,Active,ring1.jpg,ring1_side.jpg|ring1_back.jpg,Elegant inspiration text,Detailed design text,Pure 925 Silver|Gold Plated,weight_based" 
                   download="elara_products_template.csv" 
                   className="text-[#0B5E64] hover:underline"
                 >
@@ -350,7 +383,7 @@ export default function ProductsManagement() {
                         // Skip header row (index 0)
                         const rows = json.slice(1).filter(row => row.length > 0);
                         const newProducts = rows.map(row => {
-                          const [id, name, category, weightInGrams, stock, status, image, galleryStr, inspiration, design, finishesStr] = row;
+                          const [id, name, category, weightInGrams, priceVal, stock, status, image, galleryStr, inspiration, design, finishesStr, pricingTypeVal] = row;
                           
                           // Process main image
                           let mainImage = '';
@@ -378,11 +411,17 @@ export default function ProductsManagement() {
                             });
                           }
 
+                          const inferredPricingType = pricingTypeVal 
+                            ? String(pricingTypeVal).trim().toLowerCase() 
+                            : (priceVal && !weightInGrams ? 'manual' : 'weight_based');
+
                           return {
                             id: `PRD-${Math.random().toString(36).substr(2, 5)}`.toUpperCase(),
                             name: String(name || 'Unknown Product').trim(),
                             category: String(category || 'Uncategorized').trim(),
                             weightInGrams: parseFloat(weightInGrams) || 0,
+                            price: parseFloat(priceVal) || 0,
+                            pricingType: inferredPricingType,
                             stock: parseInt(stock) || 0,
                             status: String(status || 'Active').trim(),
                             image: mainImage,
@@ -465,37 +504,119 @@ export default function ProductsManagement() {
                     <option>Chains</option>
                   </select>
                 </div>
-                <div className="md:col-span-1 grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Weight (in Grams)</label>
-                    <div className="relative">
+
+                {/* Pricing Type Selection Checkboxes */}
+                <div className="md:col-span-2 bg-gray-50 p-4 rounded-xl border border-gray-200">
+                  <label className="block text-sm font-semibold text-gray-800 mb-2">Pricing Mode</label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <label className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
+                      (editingProduct?.pricingType || 'weight_based') === 'weight_based'
+                        ? 'border-[#0B5E64] bg-[#0B5E64]/5 shadow-sm'
+                        : 'border-gray-200 bg-white hover:border-gray-300'
+                    }`}>
                       <input 
-                        type="number" 
-                        step="0.1"
-                        value={editingProduct ? editingProduct.weightInGrams : ''}
-                        onChange={(e) => editingProduct && setEditingProduct({...editingProduct, weightInGrams: parseFloat(e.target.value) || 0})}
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#0B5E64] focus:outline-none" 
-                        placeholder="e.g. 5.5" 
+                        type="checkbox"
+                        checked={(editingProduct?.pricingType || 'weight_based') === 'weight_based'}
+                        onChange={() => setEditingProduct({ ...editingProduct, pricingType: 'weight_based' })}
+                        className="w-4 h-4 text-[#0B5E64] rounded border-gray-300 focus:ring-[#0B5E64]"
                       />
-                      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">g</span>
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Price (Auto-calculated)</label>
-                    <div className="relative">
+                      <div>
+                        <span className="font-medium text-sm text-gray-900 block">Weight Based Pricing</span>
+                        <span className="text-xs text-gray-500 block">Auto calculates price: (Silver Rate + GST)</span>
+                      </div>
+                    </label>
+
+                    <label className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
+                      editingProduct?.pricingType === 'manual'
+                        ? 'border-[#0B5E64] bg-[#0B5E64]/5 shadow-sm'
+                        : 'border-gray-200 bg-white hover:border-gray-300'
+                    }`}>
                       <input 
-                        type="text"
-                        readOnly
-                        value={
-                          editingProduct && editingProduct.weightInGrams 
-                            ? calculatePrice(editingProduct.weightInGrams, editingProduct.category)
-                            : '₹ 0'
-                        }
-                        className="w-full px-4 py-2 border border-gray-200 bg-gray-50 text-gray-600 font-medium rounded-lg cursor-not-allowed focus:outline-none" 
+                        type="checkbox"
+                        checked={editingProduct?.pricingType === 'manual'}
+                        onChange={() => setEditingProduct({ ...editingProduct, pricingType: 'manual' })}
+                        className="w-4 h-4 text-[#0B5E64] rounded border-gray-300 focus:ring-[#0B5E64]"
                       />
-                    </div>
+                      <div>
+                        <span className="font-medium text-sm text-gray-900 block">Manual Entry</span>
+                        <span className="text-xs text-gray-500 block">Manually enter weight and fixed price</span>
+                      </div>
+                    </label>
                   </div>
                 </div>
+
+                {/* Weight & Price Fields depending on selected pricingType */}
+                {(editingProduct?.pricingType || 'weight_based') === 'weight_based' ? (
+                  <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 bg-teal-50/40 p-4 rounded-xl border border-teal-100">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Weight (in Grams) <span className="text-red-500">*</span>
+                      </label>
+                      <div className="relative">
+                        <input 
+                          type="number" 
+                          step="0.01"
+                          value={editingProduct ? (editingProduct.weightInGrams ?? '') : ''}
+                          onChange={(e) => editingProduct && setEditingProduct({...editingProduct, weightInGrams: parseFloat(e.target.value) || 0})}
+                          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#0B5E64] focus:outline-none" 
+                          placeholder="e.g. 5.5" 
+                        />
+                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">g</span>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Price (Silver Rate + GST)</label>
+                      <div className="relative">
+                        <input 
+                          type="text"
+                          readOnly
+                          value={
+                            editingProduct && editingProduct.weightInGrams 
+                              ? calculatePrice(editingProduct.weightInGrams, editingProduct.category)
+                              : '₹ 0'
+                          }
+                          className="w-full px-4 py-2 border border-gray-200 bg-gray-50 text-[#0B5E64] font-semibold rounded-lg cursor-not-allowed focus:outline-none" 
+                        />
+                      </div>
+                      <p className="text-[11px] text-gray-500 mt-1">Calculated via daily category silver rate & GST %</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 bg-purple-50/40 p-4 rounded-xl border border-purple-100">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Weight (in Grams) (Optional)</label>
+                      <div className="relative">
+                        <input 
+                          type="number" 
+                          step="0.01"
+                          value={editingProduct ? (editingProduct.weightInGrams ?? '') : ''}
+                          onChange={(e) => editingProduct && setEditingProduct({...editingProduct, weightInGrams: parseFloat(e.target.value) || 0})}
+                          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#0B5E64] focus:outline-none" 
+                          placeholder="e.g. 5.5" 
+                        />
+                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">g</span>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Manual Price (₹) <span className="text-red-500">*</span>
+                      </label>
+                      <div className="relative">
+                        <input 
+                          type="number" 
+                          step="1"
+                          value={editingProduct ? (editingProduct.price ?? '') : ''}
+                          onChange={(e) => editingProduct && setEditingProduct({...editingProduct, price: parseFloat(e.target.value) || 0})}
+                          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#0B5E64] focus:outline-none font-medium" 
+                          placeholder="e.g. 2499" 
+                        />
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-medium">₹</span>
+                      </div>
+                      <p className="text-[11px] text-gray-500 mt-1">Direct manual price entered for this product</p>
+                    </div>
+                  </div>
+                )}
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Stock Quantity</label>
                   <input 

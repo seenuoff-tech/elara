@@ -18,6 +18,7 @@ export interface AppProduct extends DetailedProduct {
   ringGeometry?: any;
   price?: string;
   finishes?: any[];
+  pricingType?: 'weight_based' | 'manual';
 }
 
 interface ProductsContextType {
