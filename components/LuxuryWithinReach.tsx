@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 const LuxuryWithinReach = () => {
   return (
-    <section className="w-full max-w-5xl mx-auto mt-0 mb-4 md:mb-16 px-4">
+    <section className="w-full max-w-5xl mx-auto mt-8 md:mt-14 mb-6 md:mb-16 px-4">
       <h2 className="text-center text-2xl md:text-4xl font-semibold text-[#0B5E64] tracking-wide mb-8">
         Affordable Elegance
       </h2>
