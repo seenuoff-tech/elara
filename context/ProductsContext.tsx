@@ -20,6 +20,7 @@ export interface AppProduct extends DetailedProduct {
   finishes?: any[];
   pricingType?: 'weight_based' | 'manual';
   customBadge?: string;
+  targetAudience?: 'Men' | 'Women' | 'Kids' | 'Unisex';
 }
 
 interface ProductsContextType {

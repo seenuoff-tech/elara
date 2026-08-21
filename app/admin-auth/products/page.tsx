@@ -144,6 +144,7 @@ export default function ProductsManagement() {
               id: '', 
               name: '', 
               category: 'Rings', 
+              targetAudience: 'Women',
               pricingType: 'weight_based',
               weightInGrams: 0, 
               price: 0,
@@ -214,6 +215,7 @@ export default function ProductsManagement() {
                 </th>
                 <th className="px-6 py-4">Product</th>
                 <th className="px-6 py-4">Category</th>
+                <th className="px-6 py-4">For</th>
                 <th className="px-6 py-4">Pricing Type</th>
                 <th className="px-6 py-4">Weight (g)</th>
                 <th className="px-6 py-4">Final Price</th>
@@ -260,6 +262,16 @@ export default function ProductsManagement() {
                   </td>
                   <td className="px-6 py-4 text-gray-600">{product.category}</td>
                   <td className="px-6 py-4">
+                    <span className={`px-2 py-0.5 text-xs font-medium rounded-md ${
+                      product.targetAudience === 'Men' ? 'bg-blue-50 text-blue-700 border border-blue-200' :
+                      product.targetAudience === 'Kids' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
+                      product.targetAudience === 'Unisex' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
+                      'bg-pink-50 text-pink-700 border border-pink-200'
+                    }`}>
+                      {product.targetAudience || "Women's"}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
                     <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${
                       product.pricingType === 'manual' 
                         ? 'bg-purple-100 text-purple-800' 
@@ -304,7 +316,7 @@ export default function ProductsManagement() {
               ))}
               {filteredProducts.length === 0 && (
                 <tr>
-                  <td colSpan={9} className="px-6 py-8 text-center text-gray-500">
+                  <td colSpan={10} className="px-6 py-8 text-center text-gray-500">
                     No products found. Add a new product to get started.
                   </td>
                 </tr>
@@ -514,6 +526,21 @@ export default function ProductsManagement() {
                     <option>Bracelet</option>
                     <option>Earrings</option>
                     <option>Chains</option>
+                    <option>Anklets</option>
+                    <option>Toe rings</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">For (Target Gender / Audience)</label>
+                  <select 
+                    value={editingProduct ? (editingProduct.targetAudience || 'Women') : 'Women'}
+                    onChange={(e) => editingProduct && setEditingProduct({...editingProduct, targetAudience: e.target.value})}
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#0B5E64] focus:outline-none"
+                  >
+                    <option value="Women">Women's</option>
+                    <option value="Men">Men's</option>
+                    <option value="Kids">Kids</option>
+                    <option value="Unisex">Unisex (All)</option>
                   </select>
                 </div>
 

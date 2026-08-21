@@ -48,6 +48,7 @@ model Product {
   customBadge   String?
   weightInGrams Float    @default(0)
   pricingType   String   @default("weight_based")
+  targetAudience String  @default("Women")
   category      Category @relation(fields: [categoryId], references: [id])
 
   @@index([categoryId], map: "Product_categoryId_fkey")

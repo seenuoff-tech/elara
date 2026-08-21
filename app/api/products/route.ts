@@ -38,7 +38,8 @@ export async function GET(request: Request) {
         price: computedPrice,
         category: categoryName,
         pricingType: (p as any).pricingType || 'weight_based',
-        customBadge: (p as any).customBadge || null
+        customBadge: (p as any).customBadge || null,
+        targetAudience: (p as any).targetAudience || 'Women'
       };
     });
     
@@ -52,7 +53,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    let { name, categoryId, category, price, stock, status, image, gallery, description, isNew, isBestSeller, customBadge, weightInGrams, finishes, pricingType } = body;
+    let { name, categoryId, category, price, stock, status, image, gallery, description, isNew, isBestSeller, customBadge, weightInGrams, finishes, pricingType, targetAudience } = body;
     
     if (!categoryId && category) {
       const cat = await prisma.category.findFirst({
@@ -80,7 +81,8 @@ export async function POST(request: Request) {
         isBestSeller: !!isBestSeller,
         customBadge: customBadge ? String(customBadge).trim() : null,
         weightInGrams: weightInGrams ? parseFloat(weightInGrams) : 0,
-        pricingType: pricingType || 'weight_based'
+        pricingType: pricingType || 'weight_based',
+        targetAudience: targetAudience || 'Women'
       } as any
     });
     
@@ -100,7 +102,7 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   try {
     const body = await request.json();
-    const { id, name, categoryId, price, stock, status, image, gallery, description, isNew, isBestSeller, customBadge, weightInGrams, finishes, pricingType } = body;
+    const { id, name, categoryId, price, stock, status, image, gallery, description, isNew, isBestSeller, customBadge, weightInGrams, finishes, pricingType, targetAudience } = body;
     
     if (!id) {
       return NextResponse.json({ success: false, error: 'ID is required' }, { status: 400 });
@@ -119,7 +121,8 @@ export async function PUT(request: Request) {
         isNew: !!isNew, isBestSeller: !!isBestSeller,
         customBadge: customBadge ? String(customBadge).trim() : null,
         weightInGrams: weightInGrams ? parseFloat(weightInGrams) : 0,
-        pricingType: pricingType || 'weight_based'
+        pricingType: pricingType || 'weight_based',
+        targetAudience: targetAudience || 'Women'
       } as any
     });
     

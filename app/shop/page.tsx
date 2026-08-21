@@ -71,11 +71,20 @@ function ShopContent() {
     // Filter by Gender logic
     if (urlGender) {
       if (urlGender === 'women') {
-        filtered = filtered.filter(p => !p.category.toLowerCase().includes('mens') && !p.category.toLowerCase().includes('kids'));
+        filtered = filtered.filter(p => {
+          if (p.targetAudience) return p.targetAudience === 'Women' || p.targetAudience === 'Unisex';
+          return !p.category.toLowerCase().includes('mens') && !p.category.toLowerCase().includes('kids');
+        });
       } else if (urlGender === 'men') {
-        filtered = filtered.filter(p => p.category.toLowerCase().includes('mens'));
+        filtered = filtered.filter(p => {
+          if (p.targetAudience) return p.targetAudience === 'Men' || p.targetAudience === 'Unisex';
+          return p.category.toLowerCase().includes('mens') || p.category.toLowerCase().includes('men');
+        });
       } else if (urlGender === 'kids') {
-        filtered = filtered.filter(p => p.category.toLowerCase().includes('kids'));
+        filtered = filtered.filter(p => {
+          if (p.targetAudience) return p.targetAudience === 'Kids' || p.targetAudience === 'Unisex';
+          return p.category.toLowerCase().includes('kids');
+        });
       }
     }
 
