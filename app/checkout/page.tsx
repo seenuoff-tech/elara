@@ -24,9 +24,12 @@ export default function CheckoutPage() {
     phone: '',
     address: '',
     city: '',
+    state: 'Tamil Nadu',
     pincode: '',
     gstNumber: '',
   });
+
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const [paymentData, setPaymentData] = useState({
     cardNumber: '',
@@ -40,7 +43,12 @@ export default function CheckoutPage() {
     return acc + numericPrice * item.quantity;
   }, 0);
   
-  const grandTotal = subtotal > 0 ? (isGiftWrap ? subtotal + 50 : subtotal) : 0;
+  // Shipping calculation: Free within Tamil Nadu, ₹150 for other states
+  const isOutsideTN = formData.state !== 'Tamil Nadu';
+  const shippingFee = (subtotal > 0 && isOutsideTN) ? 150 : 0;
+  const giftWrapFee = isGiftWrap ? 50 : 0;
+  
+  const grandTotal = subtotal > 0 ? (subtotal + shippingFee + giftWrapFee) : 0;
   const formattedGrandTotal = `₹${grandTotal.toLocaleString('en-IN')}`;
 
   useEffect(() => {
@@ -246,7 +254,7 @@ export default function CheckoutPage() {
     
     let currentY = currY + (addressLines.length * 5);
     
-    doc.text(`${formData.city} - ${formData.pincode}`, 14, currentY);
+    doc.text(`${formData.city}, ${formData.state} - ${formData.pincode}`, 14, currentY);
     currentY += 5;
     doc.text(`Phone: ${formData.phone}`, 14, currentY);
     currentY += 5;
@@ -443,16 +451,54 @@ export default function CheckoutPage() {
                     <textarea required name="address" value={formData.address} onChange={handleInputChange} rows={3} className="w-full bg-[#F5F5F7] border border-transparent focus:border-[#0B5E64] p-4 text-sm outline-none transition-colors resize-none" placeholder="House/Flat No., Building Name, Street" />
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="space-y-2">
                       <label className="text-[10px] tracking-widest uppercase text-black/60 font-semibold">City *</label>
-                      <input required type="text" name="city" value={formData.city} onChange={handleInputChange} className="w-full bg-[#F5F5F7] border border-transparent focus:border-[#0B5E64] p-4 text-sm outline-none transition-colors" placeholder="e.g. Mumbai" />
+                      <input required type="text" name="city" value={formData.city} onChange={handleInputChange} className="w-full bg-[#F5F5F7] border border-transparent focus:border-[#0B5E64] p-4 text-sm outline-none transition-colors" placeholder="e.g. Chennai" />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] tracking-widest uppercase text-black/60 font-semibold">State *</label>
+                      <select 
+                        required 
+                        name="state" 
+                        value={formData.state} 
+                        onChange={(e: any) => handleInputChange(e)} 
+                        className="w-full bg-[#F5F5F7] border border-transparent focus:border-[#0B5E64] p-4 text-sm outline-none transition-colors"
+                      >
+                        <option value="Tamil Nadu">Tamil Nadu (Free Shipping)</option>
+                        <option value="Andhra Pradesh">Andhra Pradesh (+₹150)</option>
+                        <option value="Karnataka">Karnataka (+₹150)</option>
+                        <option value="Kerala">Kerala (+₹150)</option>
+                        <option value="Telangana">Telangana (+₹150)</option>
+                        <option value="Maharashtra">Maharashtra (+₹150)</option>
+                        <option value="Delhi">Delhi (+₹150)</option>
+                        <option value="Gujarat">Gujarat (+₹150)</option>
+                        <option value="Rajasthan">Rajasthan (+₹150)</option>
+                        <option value="West Bengal">West Bengal (+₹150)</option>
+                        <option value="Uttar Pradesh">Uttar Pradesh (+₹150)</option>
+                        <option value="Punjab">Punjab (+₹150)</option>
+                        <option value="Haryana">Haryana (+₹150)</option>
+                        <option value="Madhya Pradesh">Madhya Pradesh (+₹150)</option>
+                        <option value="Bihar">Bihar (+₹150)</option>
+                        <option value="Odisha">Odisha (+₹150)</option>
+                        <option value="Assam">Assam (+₹150)</option>
+                        <option value="Goa">Goa (+₹150)</option>
+                        <option value="Jammu and Kashmir">Jammu and Kashmir (+₹150)</option>
+                        <option value="Other State">Other State (+₹150)</option>
+                      </select>
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] tracking-widest uppercase text-black/60 font-semibold">Pincode *</label>
-                      <input required type="text" name="pincode" value={formData.pincode} onChange={handleInputChange} className="w-full bg-[#F5F5F7] border border-transparent focus:border-[#0B5E64] p-4 text-sm outline-none transition-colors" placeholder="e.g. 400001" />
+                      <input required type="text" name="pincode" value={formData.pincode} onChange={handleInputChange} className="w-full bg-[#F5F5F7] border border-transparent focus:border-[#0B5E64] p-4 text-sm outline-none transition-colors" placeholder="e.g. 600001" />
                     </div>
                   </div>
+
+                  {formData.state !== 'Tamil Nadu' && (
+                    <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-800 flex items-center gap-2">
+                      <span>🚚</span>
+                      <span>Delivery outside Tamil Nadu incurs a nominal shipping charge of <strong>₹150</strong>.</span>
+                    </div>
+                  )}
 
                   <div className="space-y-2">
                     <label className="text-[10px] tracking-widest uppercase text-black/60 font-semibold">GST Number (Optional) - For B2B Invoice</label>
@@ -536,9 +582,36 @@ export default function CheckoutPage() {
                     </label>
                   </div>
 
-                  <div className="pt-6">
+                  {/* Terms and Refund Policy Agreement Checkbox */}
+                  <div className="pt-2">
+                    <label className="flex items-start gap-3 p-4 bg-gray-50 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-100/70 transition-colors">
+                      <input 
+                        type="checkbox"
+                        required
+                        checked={agreedToTerms}
+                        onChange={(e) => setAgreedToTerms(e.target.checked)}
+                        className="mt-1 w-4 h-4 text-[#0B5E64] rounded border-gray-300 focus:ring-[#0B5E64]"
+                      />
+                      <span className="text-xs text-gray-700 leading-relaxed select-none">
+                        I have read and agree to the{' '}
+                        <a href="/terms-and-conditions" target="_blank" rel="noopener noreferrer" className="text-[#0B5E64] font-semibold underline hover:text-[#084A4F]">
+                          Terms & Conditions
+                        </a>{' '}
+                        and{' '}
+                        <a href="/refund-return-policy" target="_blank" rel="noopener noreferrer" className="text-[#0B5E64] font-semibold underline hover:text-[#084A4F]">
+                          Refund & Return Policy
+                        </a>.
+                      </span>
+                    </label>
+                  </div>
+
+                  <div className="pt-4">
                     <LuxuryButton isCTA={true} className="w-full">
-                      <button type="submit" disabled={isProcessing} className="w-full px-10 py-5 bg-[#0B5E64] text-white text-xs font-bold tracking-[0.2em] uppercase transition-opacity duration-500 hover:opacity-90 shadow-xl shadow-black/10 disabled:opacity-50">
+                      <button 
+                        type="submit" 
+                        disabled={isProcessing || !agreedToTerms} 
+                        className="w-full px-10 py-5 bg-[#0B5E64] text-white text-xs font-bold tracking-[0.2em] uppercase transition-opacity duration-500 hover:opacity-90 shadow-xl shadow-black/10 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
                         {isProcessing ? 'Placing Order...' : (paymentMethod === 'razorpay' ? 'Pay Securely Online' : 'Place Order')}
                       </button>
                     </LuxuryButton>
@@ -635,8 +708,10 @@ export default function CheckoutPage() {
                 </div>
               )}
               <div className="flex justify-between pb-4 border-b border-black/10">
-                <span>Shipping & Taxes</span>
-                <span className="text-[#0B5E64] font-bold">Included</span>
+                <span>Shipping ({formData.state === 'Tamil Nadu' ? 'Tamil Nadu' : 'Out of State'})</span>
+                <span className={shippingFee > 0 ? "text-black font-semibold" : "text-[#0B5E64] font-bold"}>
+                  {shippingFee > 0 ? `+₹${shippingFee}` : 'FREE'}
+                </span>
               </div>
               <div className="flex justify-between text-sm font-bold text-black pt-2">
                 <span>Grand Total</span>
