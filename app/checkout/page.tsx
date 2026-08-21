@@ -465,26 +465,26 @@ export default function CheckoutPage() {
                         onChange={(e: any) => handleInputChange(e)} 
                         className="w-full bg-[#F5F5F7] border border-transparent focus:border-[#0B5E64] p-4 text-sm outline-none transition-colors"
                       >
-                        <option value="Tamil Nadu">Tamil Nadu (Free Shipping)</option>
-                        <option value="Andhra Pradesh">Andhra Pradesh (+₹150)</option>
-                        <option value="Karnataka">Karnataka (+₹150)</option>
-                        <option value="Kerala">Kerala (+₹150)</option>
-                        <option value="Telangana">Telangana (+₹150)</option>
-                        <option value="Maharashtra">Maharashtra (+₹150)</option>
-                        <option value="Delhi">Delhi (+₹150)</option>
-                        <option value="Gujarat">Gujarat (+₹150)</option>
-                        <option value="Rajasthan">Rajasthan (+₹150)</option>
-                        <option value="West Bengal">West Bengal (+₹150)</option>
-                        <option value="Uttar Pradesh">Uttar Pradesh (+₹150)</option>
-                        <option value="Punjab">Punjab (+₹150)</option>
-                        <option value="Haryana">Haryana (+₹150)</option>
-                        <option value="Madhya Pradesh">Madhya Pradesh (+₹150)</option>
-                        <option value="Bihar">Bihar (+₹150)</option>
-                        <option value="Odisha">Odisha (+₹150)</option>
-                        <option value="Assam">Assam (+₹150)</option>
-                        <option value="Goa">Goa (+₹150)</option>
-                        <option value="Jammu and Kashmir">Jammu and Kashmir (+₹150)</option>
-                        <option value="Other State">Other State (+₹150)</option>
+                        <option value="Tamil Nadu">Tamil Nadu</option>
+                        <option value="Andhra Pradesh">Andhra Pradesh</option>
+                        <option value="Karnataka">Karnataka</option>
+                        <option value="Kerala">Kerala</option>
+                        <option value="Telangana">Telangana</option>
+                        <option value="Maharashtra">Maharashtra</option>
+                        <option value="Delhi">Delhi</option>
+                        <option value="Gujarat">Gujarat</option>
+                        <option value="Rajasthan">Rajasthan</option>
+                        <option value="West Bengal">West Bengal</option>
+                        <option value="Uttar Pradesh">Uttar Pradesh</option>
+                        <option value="Punjab">Punjab</option>
+                        <option value="Haryana">Haryana</option>
+                        <option value="Madhya Pradesh">Madhya Pradesh</option>
+                        <option value="Bihar">Bihar</option>
+                        <option value="Odisha">Odisha</option>
+                        <option value="Assam">Assam</option>
+                        <option value="Goa">Goa</option>
+                        <option value="Jammu and Kashmir">Jammu and Kashmir</option>
+                        <option value="Other State">Other State</option>
                       </select>
                     </div>
                     <div className="space-y-2">
