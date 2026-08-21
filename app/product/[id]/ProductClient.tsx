@@ -250,7 +250,9 @@ export default function ProductClient() {
             </div>
 
             <h1 className="text-xl text-gray-700 mb-2">{product.name}</h1>
-            <p className="text-sm font-semibold tracking-wide uppercase text-black mb-8">Made With {product.material || 'Premium Material'}</p>
+            <p className="text-sm font-semibold tracking-wide uppercase text-black mb-8">
+              Made With {product.material ? (product.material.toLowerCase().includes('silver') ? product.material : `${product.material} / Pure 925 Silver`) : 'Pure 925 Silver'}
+            </p>
 
             {/* Choose Finish */}
             {finishes.length > 0 && (
