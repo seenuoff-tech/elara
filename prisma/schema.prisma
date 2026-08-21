@@ -39,6 +39,7 @@ model Product {
   gallery      Json?
   description  String?  @db.Text
   finishes     Json?
+  sizes        Json?
   ringSizes    Json?
   tags         Json?
   isNew        Boolean  @default(false)

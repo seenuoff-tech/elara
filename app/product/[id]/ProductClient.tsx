@@ -23,11 +23,25 @@ export default function ProductClient() {
   const { triggerPackagingAnimation, setIsGiftWrap } = useCart();
   
   const [selectedFinish, setSelectedFinish] = useState(0);
+  const [selectedSize, setSelectedSize] = useState<string>('');
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [pincode, setPincode] = useState('');
   const [deliveryMessage, setDeliveryMessage] = useState('');
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [isGift, setIsGift] = useState(false);
+
+  // Parse sizes
+  const productSizes: string[] = Array.isArray(product?.sizes) 
+    ? product.sizes 
+    : (product?.sizes ? (typeof product.sizes === 'string' ? JSON.parse(product.sizes) : product.sizes) : []);
+
+  useEffect(() => {
+    if (productSizes.length > 0 && !selectedSize) {
+      setSelectedSize(productSizes[0]);
+    }
+  }, [productSizes, selectedSize]);
+
+  const isOutOfStock = (product?.stock !== undefined && product.stock <= 0) || product?.status === 'Out of Stock';
 
   // Show spinner while products are loading from API
   if (!isLoaded) {
@@ -240,19 +254,44 @@ export default function ProductClient() {
 
             {/* Choose Finish */}
             {finishes.length > 0 && (
-              <div className="mb-8">
-                <p className="text-sm text-gray-600 mb-4">Choose Your Finish</p>
-                <div className="flex gap-4">
+              <div className="mb-6">
+                <p className="text-sm font-semibold text-gray-700 mb-3">Choose Your Finish</p>
+                <div className="flex gap-4 flex-wrap">
                   {finishes.map((finish, idx) => (
                     <button 
                       key={idx}
                       onClick={() => setSelectedFinish(idx)}
-                      className={`flex flex-col items-center p-3 border rounded-xl transition-all ${selectedFinish === idx ? 'border-black shadow-md' : 'border-gray-200 hover:border-gray-300'}`}
+                      className={`flex flex-col items-center p-3 border rounded-xl transition-all ${selectedFinish === idx ? 'border-black shadow-md bg-black/5' : 'border-gray-200 hover:border-gray-300'}`}
                     >
-                      <div className="w-16 h-16 relative mb-2">
+                      <div className="w-14 h-14 relative mb-2">
                         <Image src={finish.image} alt={finish.name} fill className="object-contain" />
                       </div>
                       <span className="text-[10px] font-bold tracking-widest uppercase">{finish.name}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Choose Size */}
+            {productSizes.length > 0 && (
+              <div className="mb-8">
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-sm font-semibold text-gray-700">Select Size</p>
+                  <span className="text-xs text-gray-400">Selected: <strong className="text-[#0B5E64]">{selectedSize || 'None'}</strong></span>
+                </div>
+                <div className="flex gap-2.5 flex-wrap">
+                  {productSizes.map((sizeOption, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setSelectedSize(sizeOption)}
+                      className={`min-w-[48px] h-10 px-3.5 text-xs font-semibold rounded-lg border transition-all ${
+                        selectedSize === sizeOption
+                          ? 'border-[#0B5E64] bg-[#0B5E64] text-white shadow-sm'
+                          : 'border-gray-200 bg-white text-gray-700 hover:border-gray-400'
+                      }`}
+                    >
+                      {sizeOption}
                     </button>
                   ))}
                 </div>
@@ -287,31 +326,49 @@ export default function ProductClient() {
 
             {/* Action Area (Sticky on mobile, inline on desktop) */}
             <div className="fixed bottom-0 left-0 w-full bg-white p-4 border-t border-gray-200 z-50 md:static md:bg-transparent md:p-0 md:border-0 md:z-auto shadow-[0_-5px_15px_-5px_rgba(0,0,0,0.1)] md:shadow-none mb-0 md:mb-12">
-              {/* Gift Wrap */}
-              <div className="flex items-center gap-2 mb-3">
-                <input 
-                  type="checkbox" 
-                  id="giftWrap" 
-                  checked={isGift}
-                  onChange={(e) => setIsGift(e.target.checked)}
-                  className="w-4 h-4 text-[#0B5E64] focus:ring-[#0B5E64] border-gray-300 rounded"
-                />
-                <label htmlFor="giftWrap" className="text-sm text-gray-700">
-                  Is this a <span className="text-[#0B5E64] font-semibold">Gift?</span> 🎁 Wrap it for just (₹50)
-                </label>
-              </div>
+              {/* Stock Notice */}
+              {isOutOfStock ? (
+                <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-red-700 text-xs font-semibold">
+                  <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
+                  Currently Out of Stock. This item cannot be purchased right now.
+                </div>
+              ) : (
+                /* Gift Wrap */
+                <div className="flex items-center gap-2 mb-3">
+                  <input 
+                    type="checkbox" 
+                    id="giftWrap" 
+                    checked={isGift}
+                    onChange={(e) => setIsGift(e.target.checked)}
+                    className="w-4 h-4 text-[#0B5E64] focus:ring-[#0B5E64] border-gray-300 rounded"
+                  />
+                  <label htmlFor="giftWrap" className="text-sm text-gray-700">
+                    Is this a <span className="text-[#0B5E64] font-semibold">Gift?</span> 🎁 Wrap it for just (₹50)
+                  </label>
+                </div>
+              )}
 
               <div className="flex gap-3">
                 <button 
-                  className="flex-1 py-3 bg-white border border-[#0B5E64] text-[#0B5E64] font-bold tracking-widest uppercase rounded-lg hover:bg-gray-50 transition-colors"
+                  disabled={isOutOfStock}
+                  className={`flex-1 py-3 border font-bold tracking-widest uppercase rounded-lg transition-colors ${
+                    isOutOfStock 
+                      ? 'bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed'
+                      : 'bg-white border-[#0B5E64] text-[#0B5E64] hover:bg-gray-50'
+                  }`}
                 >
-                  Buy Now
+                  {isOutOfStock ? 'Unavailable' : 'Buy Now'}
                 </button>
                 <button 
+                  disabled={isOutOfStock}
                   onClick={handleAddToCart}
-                  className="flex-1 py-3 bg-[#0B5E64] text-white font-bold tracking-widest uppercase rounded-lg shadow-md hover:bg-[#08494E] transition-colors"
+                  className={`flex-1 py-3 font-bold tracking-widest uppercase rounded-lg transition-colors ${
+                    isOutOfStock 
+                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed shadow-none' 
+                      : 'bg-[#0B5E64] text-white shadow-md hover:bg-[#08494E]'
+                  }`}
                 >
-                  Add to Cart
+                  {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
                 </button>
               </div>
             </div>

@@ -153,6 +153,7 @@ export default function ProductsManagement() {
               isBestSeller: false, 
               customBadge: '',
               hasCustomBadge: false,
+              sizes: [],
               description: { inspiration: '', design: '' } 
             })}
             className="px-4 py-2 bg-[#0B5E64] text-white text-sm font-medium rounded-lg hover:bg-[#084A4F] transition-colors"
@@ -683,6 +684,132 @@ export default function ProductsManagement() {
                     <option>Out of Stock</option>
                   </select>
                 </div>
+                {/* Available Sizes / Manual Size Entry */}
+                <div className="md:col-span-2 bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-800">Available Sizes (Optional)</label>
+                      <p className="text-xs text-gray-500">Select preset standard sizes or type custom sizes manually.</p>
+                    </div>
+                    {/* Common Preset Pills based on category */}
+                    <div className="flex gap-1.5 flex-wrap">
+                      {(editingProduct?.category === 'Rings' ? ['6', '7', '8', '9', '10', '11', '12', 'Free Size'] :
+                        editingProduct?.category === 'Chains' || editingProduct?.category === 'Necklace' ? ['16 inch', '18 inch', '20 inch', '22 inch', '24 inch', 'Standard'] :
+                        editingProduct?.category === 'Bracelet' || editingProduct?.category === 'Anklets' ? ['6.5 inch', '7 inch', '7.5 inch', '8 inch', 'Adjustable'] :
+                        ['Small', 'Medium', 'Large', 'Free Size', 'Adjustable']
+                      ).map(preset => {
+                        const currentSizes = Array.isArray(editingProduct?.sizes) 
+                          ? editingProduct.sizes 
+                          : (editingProduct?.sizes ? (typeof editingProduct.sizes === 'string' ? JSON.parse(editingProduct.sizes) : editingProduct.sizes) : []);
+                        const isSelected = currentSizes.includes(preset);
+
+                        return (
+                          <button
+                            type="button"
+                            key={preset}
+                            onClick={() => {
+                              if (!editingProduct) return;
+                              if (isSelected) {
+                                setEditingProduct({ ...editingProduct, sizes: currentSizes.filter((s: string) => s !== preset) });
+                              } else {
+                                setEditingProduct({ ...editingProduct, sizes: [...currentSizes, preset] });
+                              }
+                            }}
+                            className={`px-2.5 py-1 text-xs font-medium rounded-full border transition-all ${
+                              isSelected 
+                                ? 'bg-[#0B5E64] text-white border-[#0B5E64] shadow-xs' 
+                                : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
+                            }`}
+                          >
+                            {isSelected ? '✓ ' : '+ '}{preset}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Manual Size Entry / Tag list */}
+                  <div className="space-y-2 pt-2 border-t border-gray-200">
+                    <div className="flex gap-2">
+                      <input 
+                        type="text"
+                        id="customSizeInput"
+                        placeholder="Type custom size (e.g. 14, 2.4, 2.6, 18 cm, Custom Size) & press Add"
+                        className="flex-1 text-sm border border-gray-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-[#0B5E64] focus:outline-none bg-white"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            const val = e.currentTarget.value.trim();
+                            if (!val || !editingProduct) return;
+                            const currentSizes = Array.isArray(editingProduct.sizes) 
+                              ? editingProduct.sizes 
+                              : (editingProduct.sizes ? (typeof editingProduct.sizes === 'string' ? JSON.parse(editingProduct.sizes) : editingProduct.sizes) : []);
+                            if (!currentSizes.includes(val)) {
+                              setEditingProduct({ ...editingProduct, sizes: [...currentSizes, val] });
+                            }
+                            e.currentTarget.value = '';
+                          }
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const input = document.getElementById('customSizeInput') as HTMLInputElement;
+                          if (!input || !input.value.trim() || !editingProduct) return;
+                          const val = input.value.trim();
+                          const currentSizes = Array.isArray(editingProduct.sizes) 
+                            ? editingProduct.sizes 
+                            : (editingProduct.sizes ? (typeof editingProduct.sizes === 'string' ? JSON.parse(editingProduct.sizes) : editingProduct.sizes) : []);
+                          if (!currentSizes.includes(val)) {
+                            setEditingProduct({ ...editingProduct, sizes: [...currentSizes, val] });
+                          }
+                          input.value = '';
+                        }}
+                        className="px-4 py-1.5 bg-[#0B5E64] text-white text-xs font-semibold rounded-lg hover:bg-[#084A4F] transition-colors"
+                      >
+                        Add Size
+                      </button>
+                    </div>
+
+                    {/* Selected Sizes Chips */}
+                    {(() => {
+                      const currentSizes = Array.isArray(editingProduct?.sizes) 
+                        ? editingProduct.sizes 
+                        : (editingProduct?.sizes ? (typeof editingProduct.sizes === 'string' ? JSON.parse(editingProduct.sizes) : editingProduct.sizes) : []);
+                      
+                      if (currentSizes.length === 0) {
+                        return <p className="text-xs text-gray-400 italic">No sizes added. (Customers will see standard product or Free Size)</p>;
+                      }
+
+                      return (
+                        <div className="flex flex-wrap gap-2 pt-1">
+                          {currentSizes.map((sz: string, i: number) => (
+                            <span 
+                              key={i} 
+                              className="inline-flex items-center gap-1.5 bg-white border border-[#0B5E64]/30 text-[#0B5E64] px-3 py-1 rounded-lg text-xs font-medium shadow-xs"
+                            >
+                              <span>{sz}</span>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (!editingProduct) return;
+                                  setEditingProduct({
+                                    ...editingProduct,
+                                    sizes: currentSizes.filter((_: any, idx: number) => idx !== i)
+                                  });
+                                }}
+                                className="text-gray-400 hover:text-red-500 text-sm leading-none font-bold"
+                              >
+                                ×
+                              </button>
+                            </span>
+                          ))}
+                        </div>
+                      );
+                    })()}
+                  </div>
+                </div>
+
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-2">Available Finishes (Colours)</label>
                   <div className="flex flex-wrap gap-4 bg-gray-50 p-3 rounded-lg border border-gray-200">

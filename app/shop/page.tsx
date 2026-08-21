@@ -265,12 +265,21 @@ function ShopContent() {
 
                     </div>
                     
-                    <button 
-                      onClick={(e) => handleAddToCart(product, e)}
-                      className="w-full mt-auto py-2.5 bg-[#0B5E64] text-white text-xs font-semibold tracking-wide uppercase rounded-md hover:bg-black transition-colors duration-300 shadow-sm"
-                    >
-                      Add to cart
-                    </button>
+                    {((product.stock !== undefined && product.stock <= 0) || product.status === 'Out of Stock') ? (
+                      <button 
+                        disabled
+                        className="w-full mt-auto py-2.5 bg-gray-200 text-gray-500 text-xs font-semibold tracking-wide uppercase rounded-md cursor-not-allowed"
+                      >
+                        Out of Stock
+                      </button>
+                    ) : (
+                      <button 
+                        onClick={(e) => handleAddToCart(product, e)}
+                        className="w-full mt-auto py-2.5 bg-[#0B5E64] text-white text-xs font-semibold tracking-wide uppercase rounded-md hover:bg-black transition-colors duration-300 shadow-sm"
+                      >
+                        Add to cart
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}

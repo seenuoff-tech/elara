@@ -115,12 +115,21 @@ export default function SimilarProducts({ currentProductId }: SimilarProductsPro
                 <p className="text-[10px] font-bold text-[#0B5E64] mb-3">PRICE DROP!</p>
               )}
               
-              <button 
-                onClick={(e) => handleAddToCart(product, e)}
-                className="w-full mt-auto py-2.5 bg-[#0B5E64] text-white text-xs font-semibold rounded-md hover:bg-[#08494E] transition-colors duration-300"
-              >
-                Add to Cart
-              </button>
+              {((product.stock !== undefined && product.stock <= 0) || product.status === 'Out of Stock') ? (
+                <button 
+                  disabled
+                  className="w-full mt-auto py-2.5 bg-gray-200 text-gray-500 text-xs font-semibold rounded-md cursor-not-allowed"
+                >
+                  Out of Stock
+                </button>
+              ) : (
+                <button 
+                  onClick={(e) => handleAddToCart(product, e)}
+                  className="w-full mt-auto py-2.5 bg-[#0B5E64] text-white text-xs font-semibold rounded-md hover:bg-[#08494E] transition-colors duration-300"
+                >
+                  Add to Cart
+                </button>
+              )}
             </div>
           </div>
         ))}
