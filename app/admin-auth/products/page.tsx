@@ -112,8 +112,10 @@ export default function ProductsManagement() {
   };
 
   const formatDisplayPrice = (product: any) => {
-    if (product.pricingType === 'manual' || (!product.weightInGrams && product.price)) {
-      return `₹ ${Number(product.price || 0).toLocaleString('en-IN')}`;
+    if (product.pricingType === 'manual') {
+      const basePrice = Number(product.price || 0);
+      const priceWithGst = Math.round(basePrice * (1 + gstPercentage / 100));
+      return `₹ ${priceWithGst.toLocaleString('en-IN')}`;
     }
     return calculatePrice(product.weightInGrams || 0, product.category);
   };
@@ -609,20 +611,25 @@ export default function ProductsManagement() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Manual Price (₹) <span className="text-red-500">*</span>
+                        Manual Base Price (₹) <span className="text-red-500">*</span>
                       </label>
                       <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium select-none pointer-events-none">₹</span>
                         <input 
                           type="number" 
                           step="1"
                           value={editingProduct ? (editingProduct.price ?? '') : ''}
                           onChange={(e) => editingProduct && setEditingProduct({...editingProduct, price: parseFloat(e.target.value) || 0})}
-                          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#0B5E64] focus:outline-none font-medium" 
+                          className="w-full border border-gray-300 rounded-lg pl-8 pr-4 py-2 focus:ring-2 focus:ring-[#0B5E64] focus:outline-none font-medium text-gray-900" 
                           placeholder="e.g. 2499" 
                         />
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-medium">₹</span>
                       </div>
-                      <p className="text-[11px] text-gray-500 mt-1">Direct manual price entered for this product</p>
+                      <div className="flex justify-between items-center text-[11px] text-gray-600 mt-1.5">
+                        <span>+{gstPercentage}% GST: ₹{Math.round((Number(editingProduct?.price || 0) * gstPercentage) / 100).toLocaleString('en-IN')}</span>
+                        <span className="font-semibold text-[#0B5E64]">
+                          Final: ₹{Math.round(Number(editingProduct?.price || 0) * (1 + gstPercentage / 100)).toLocaleString('en-IN')}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 )}

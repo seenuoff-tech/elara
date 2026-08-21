@@ -31,7 +31,7 @@ export async function GET(request: Request) {
       const weight = p.weightInGrams ?? 0;
       const isManual = (p as any).pricingType === 'manual';
       const computedPrice = isManual 
-        ? (p.price || 0)
+        ? (p.price > 0 ? Math.round(p.price * (1 + gstPercentage / 100)) : p.price)
         : (weight > 0 ? Math.round(weight * rate * (1 + gstPercentage / 100)) : p.price);
       return {
         ...p,
