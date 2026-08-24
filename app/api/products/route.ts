@@ -48,6 +48,7 @@ export async function GET(request: Request) {
       return {
         ...p,
         price: computedPrice,
+        basePrice: p.price,
         category: categoryName,
         pricingType: (p as any).pricingType || 'weight_based',
         customBadge: (p as any).customBadge || null,
@@ -134,10 +135,18 @@ export async function PUT(request: Request) {
     const parsedStock = stock !== undefined ? parseInt(stock) : (oldProduct?.stock ?? 0);
     const finalStatus = parsedStock === 0 ? 'Out of Stock' : (status || oldProduct?.status || 'Active');
 
+    let finalCategoryId = categoryId;
+    if (body.category) {
+      const cat = await prisma.category.findFirst({
+        where: { name: { equals: body.category } }
+      });
+      if (cat) finalCategoryId = cat.id;
+    }
+
     const product = await prisma.product.update({
       where: { id },
       data: { 
-        name, categoryId, price: price ? parseFloat(price) : 0, 
+        name, categoryId: finalCategoryId, price: price ? parseFloat(price) : 0, 
         stock: parsedStock, 
         status: finalStatus, 
         image, 

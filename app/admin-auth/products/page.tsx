@@ -113,7 +113,7 @@ export default function ProductsManagement() {
 
   const formatDisplayPrice = (product: any) => {
     if (product.pricingType === 'manual') {
-      const basePrice = Number(product.price || 0);
+      const basePrice = Number(product.basePrice !== undefined ? product.basePrice : (product.price || 0));
       const priceWithGst = Math.round(basePrice * (1 + gstPercentage / 100));
       return `₹ ${priceWithGst.toLocaleString('en-IN')}`;
     }
@@ -301,6 +301,7 @@ export default function ProductsManagement() {
                     <button 
                       onClick={() => setEditingProduct({
                         ...product,
+                        price: product.basePrice !== undefined ? product.basePrice : product.price,
                         pricingType: product.pricingType || (product.price && !product.weightInGrams ? 'manual' : 'weight_based')
                       })}
                       className="text-[#0B5E64] hover:underline font-medium"
