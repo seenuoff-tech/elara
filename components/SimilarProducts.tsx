@@ -103,7 +103,7 @@ export default function SimilarProducts({ currentProductId }: SimilarProductsPro
                     {product.newPrice ? `₹${product.newPrice}` : `₹${String(product.price ? product.price : calculatePrice(product.weightInGrams || 0, product.category)).replace('₹', '')}`}
                   </span>
                   <span className="text-xs text-gray-400 line-through font-light">
-                    ₹{(product.oldPrice || Math.round((parseFloat(String(product.newPrice || product.price || calculatePrice(product.weightInGrams || 0, product.category)).replace(/[^\d.]/g, '')) || 0) * 1.1)).toLocaleString('en-IN')}
+                    ₹{(product.mrpPrice || product.oldPrice || Math.round((parseFloat(String(product.newPrice || product.price || calculatePrice(product.weightInGrams || 0, product.category)).replace(/[^\d.]/g, '')) || 0) * 1.1)).toLocaleString('en-IN')}
                   </span>
                 </div>
 
@@ -111,7 +111,7 @@ export default function SimilarProducts({ currentProductId }: SimilarProductsPro
               
               <p className="text-xs text-gray-600 truncate mb-1">{product.name}</p>
               
-              {product.oldPrice > product.newPrice && (
+              {((product.mrpPrice || product.oldPrice) > (product.newPrice || product.price)) && (
                 <p className="text-[10px] font-bold text-[#0B5E64] mb-3">PRICE DROP!</p>
               )}
               
