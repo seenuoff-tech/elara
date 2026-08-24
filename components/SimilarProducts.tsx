@@ -9,7 +9,7 @@ import { useCart } from '../context/CartContext';
 import { usePricing } from './PricingProvider';
 
 interface SimilarProductsProps {
-  currentProductId: number;
+  currentProductId: number | string;
 }
 
 export default function SimilarProducts({ currentProductId }: SimilarProductsProps) {
@@ -37,8 +37,8 @@ export default function SimilarProducts({ currentProductId }: SimilarProductsPro
   };
 
   // Filter out the current product and grab up to 4 similar items
-  const similarProducts = products.filter(p => Number(p.id) !== currentProductId).slice(0, 4);
-  const displayProducts = products.filter(p => Number(p.id) !== currentProductId).slice(0, 4);
+  const similarProducts = products.filter(p => String(p.id) !== String(currentProductId)).slice(0, 4);
+  const displayProducts = products.filter(p => String(p.id) !== String(currentProductId)).slice(0, 4);
 
   return (
     <div id="similar-products" className="max-w-7xl mx-auto px-4 md:px-8 mt-24 border-t border-gray-200 pt-16">

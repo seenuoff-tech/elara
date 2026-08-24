@@ -68,7 +68,18 @@ export default function ProductClient() {
   const subGallery = product.gallery && product.gallery.length > 0 ? product.gallery : [];
   const gallery = [mainImageEntry, ...subGallery];
     
-  const finishes = product.finishes || [];
+  let parsedFinishes = product.finishes || [];
+  if (typeof parsedFinishes === 'string') {
+    try {
+      parsedFinishes = JSON.parse(parsedFinishes);
+    } catch (e) {
+      parsedFinishes = [];
+    }
+  }
+  if (!Array.isArray(parsedFinishes)) {
+    parsedFinishes = [];
+  }
+  const finishes = parsedFinishes;
   
   // Handle case where description is a JSON string or an object
   let parsedDescription = product.description;
@@ -261,18 +272,22 @@ export default function ProductClient() {
               <div className="mb-6">
                 <p className="text-sm font-semibold text-gray-700 mb-3">Choose Your Finish</p>
                 <div className="flex gap-4 flex-wrap">
-                  {finishes.map((finish, idx) => (
-                    <button 
-                      key={idx}
-                      onClick={() => setSelectedFinish(idx)}
-                      className={`flex flex-col items-center p-3 border rounded-xl transition-all ${selectedFinish === idx ? 'border-black shadow-md bg-black/5' : 'border-gray-200 hover:border-gray-300'}`}
-                    >
-                      <div className="w-14 h-14 relative mb-2">
-                        <Image src={finish.image} alt={finish.name} fill className="object-contain" />
-                      </div>
-                      <span className="text-[10px] font-bold tracking-widest uppercase">{finish.name}</span>
-                    </button>
-                  ))}
+                  {finishes.map((finish: any, idx: number) => {
+                    const finishName = typeof finish === 'string' ? finish : finish.name;
+                    const finishImage = typeof finish === 'string' ? (product.image || '/images/org.png') : finish.image;
+                    return (
+                      <button 
+                        key={idx}
+                        onClick={() => setSelectedFinish(idx)}
+                        className={`flex flex-col items-center p-3 border rounded-xl transition-all ${selectedFinish === idx ? 'border-black shadow-md bg-black/5' : 'border-gray-200 hover:border-gray-300'}`}
+                      >
+                        <div className="w-14 h-14 relative mb-2">
+                          <Image src={finishImage || '/images/org.png'} alt={finishName || 'Finish'} fill className="object-contain" />
+                        </div>
+                        <span className="text-[10px] font-bold tracking-widest uppercase">{finishName}</span>
+                      </button>
+                    )
+                  })}
                 </div>
               </div>
             )}
