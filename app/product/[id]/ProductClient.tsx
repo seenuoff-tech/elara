@@ -21,7 +21,30 @@ export default function ProductClient() {
   );
   const { wishlist, toggleWishlist } = useWishlist();
   const { calculatePrice } = usePricing();
-  const { triggerPackagingAnimation, setIsGiftWrap } = useCart();
+  const { triggerPackagingAnimation, setIsGiftWrap, addToCartDirect, cartItems } = useCart();
+
+  const handleBuyNow = () => {
+    const size = selectedSize || 'Standard';
+    const existingItem = cartItems.find((item) => item.id === String(product.id) && item.size === size);
+    if (existingItem && existingItem.quantity >= (product.stock || 0)) {
+      alert(`Only ${product.stock} quantity available in stock.`);
+      router.push('/checkout');
+      return;
+    }
+
+    addToCartDirect({
+      id: String(product.id),
+      name: product.name,
+      price: product.newPrice ? `₹${product.newPrice}` : (product.price ? `₹${product.price}` : calculatePrice(product.weightInGrams || 0, product.category)),
+      image: product.image,
+      stock: product.stock
+    }, size);
+    
+    if (isGift) {
+      setIsGiftWrap(true);
+    }
+    router.push('/checkout');
+  };
   
   const [selectedFinish, setSelectedFinish] = useState(0);
   const [selectedSize, setSelectedSize] = useState<string>('');
@@ -137,6 +160,12 @@ export default function ProductClient() {
   };
 
   const handleAddToCart = () => {
+    const size = selectedSize || 'Standard';
+    const existingItem = cartItems.find((item) => item.id === String(product.id) && item.size === size);
+    if (existingItem && existingItem.quantity >= (product.stock || 0)) {
+      alert(`Only ${product.stock} quantity available in stock.`);
+      return;
+    }
     // We mock the shop product structure for the animation
     const mockProduct = {
       id: product.id.toString(),

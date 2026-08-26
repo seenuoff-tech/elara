@@ -31,6 +31,7 @@ export default function SimilarProducts({ currentProductId }: SimilarProductsPro
         name: product.name,
         price: product.newPrice ? `₹${product.newPrice}` : (product.price ? `₹${product.price}` : calculatePrice(product.weightInGrams || 0, product.category)),
         image: product.image,
+        stock: product.stock
       } as any,
       'Standard'
     );
