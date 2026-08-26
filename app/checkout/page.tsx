@@ -121,7 +121,7 @@ export default function CheckoutPage() {
         if (!data.success) throw new Error(data.error);
 
         const options = {
-          key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_live_TCc7d7U3qTs9gd",
+          key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_live_s4Mh9Z2A7fDbz6",
           amount: data.order.amount,
           currency: "INR",
           name: "Elara Silver",
