@@ -35,6 +35,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true, order });
   } catch (error: any) {
     console.error('Error creating Razorpay order:', error);
-    return NextResponse.json({ success: false, error: error.message || 'Server error' }, { status: 500 });
+    
+    // Razorpay often nests the error message in error.error.description
+    const errorMsg = error?.error?.description || error?.message || 'Server error - check Vercel logs';
+    
+    return NextResponse.json({ success: false, error: errorMsg }, { status: 500 });
   }
 }
