@@ -155,7 +155,8 @@ export default function LuxuryButton({
     // Sparkles generator
     const startSparkling = () => {
       if (sparkleIntervalRef.current) return;
-      
+      return; // Disable sparkles per user request
+
       const spawnSparkle = () => {
         const pContainer = particleContainerRef.current;
         if (!pContainer || !button) return;

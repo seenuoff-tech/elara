@@ -6,7 +6,7 @@ import ShopByCategory from '../components/ShopByCategory';
 import CuratedForYou from '../components/CuratedForYou';
 
 // Import newly integrated premium luxury experience modules
-import AtmosphereBackground from '../components/luxury/AtmosphereBackground';
+
 import NewArrivals from '../components/NewArrivals';
 import Testimonials from '../components/Testimonials';
 import StoreFront from '../components/luxury/StoreFront';
@@ -21,8 +21,7 @@ import ElaraPromises from '../components/ElaraPromises';
 export default function Home() {
   return (
     <div className="bg-[#ffffff] text-black selection:bg-black/10 selection:text-black relative min-h-screen">
-      {/* Immersive Background Atmosphere (Subtle floating silver dust and sparkles) */}
-      <AtmosphereBackground />
+      {/* Immersive Background Atmosphere (Subtle floating silver dust and sparkles) removed per user request */}
 
       {/* Hero Section */}
       <HeroSlider />
