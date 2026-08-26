@@ -69,7 +69,11 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
       });
       const data = await res.json();
       if (data.success) {
-        setProducts(prev => prev.map(p => String(p.id) === String(id) ? { ...p, ...updates } : p));
+        const fetchRes = await fetch('/api/products', { cache: 'no-store' });
+        const fetchResData = await fetchRes.json();
+        if (fetchResData.success) {
+          setProducts(fetchResData.products);
+        }
         return { success: true };
       }
       return { success: false, error: data.error, details: data.details };
@@ -88,7 +92,11 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
       });
       const data = await res.json();
       if (data.success) {
-        setProducts(prev => [data.product, ...prev]);
+        const fetchRes = await fetch('/api/products', { cache: 'no-store' });
+        const fetchResData = await fetchRes.json();
+        if (fetchResData.success) {
+          setProducts(fetchResData.products);
+        }
         return { success: true };
       }
       return { success: false, error: data.error, details: data.details };

@@ -40,18 +40,35 @@ export default function NewArrivals() {
         {products.slice(0, 8).map((product, index) => (
           <div key={product.id} className="relative flex flex-col group">
             {/* Badge Ribbon (Custom Badge or Best Seller) */}
-            {(product.customBadge || product.isBestSeller) && (
-              <div className="absolute top-4 -left-2 z-20 flex flex-col items-start">
-                <div 
-                  className="bg-[#0B5E64] text-white text-[10px] md:text-xs font-semibold py-1 pl-3 pr-5 shadow-sm uppercase tracking-wider" 
-                  style={{ clipPath: 'polygon(0 0, 100% 0, 85% 50%, 100% 100%, 0 100%)' }}
-                >
-                  {product.customBadge || 'Bestseller'}
-                </div>
-                <div 
-                  className="w-2 h-2 bg-[#07474B]" 
-                  style={{ clipPath: 'polygon(100% 0, 100% 100%, 0 0)' }} 
-                />
+            {(product.customBadge || product.isBestSeller || (product.stock !== undefined && product.stock <= 0) || product.status === 'Out of Stock') && (
+              <div className="absolute top-4 -left-2 z-20 flex flex-col items-start gap-2">
+                {((product.stock !== undefined && product.stock <= 0) || product.status === 'Out of Stock') ? (
+                  <>
+                    <div 
+                      className="bg-red-600 text-white text-[10px] md:text-xs font-semibold py-1 pl-3 pr-5 shadow-sm uppercase tracking-wider" 
+                      style={{ clipPath: 'polygon(0 0, 100% 0, 85% 50%, 100% 100%, 0 100%)' }}
+                    >
+                      Out of Stock
+                    </div>
+                    <div 
+                      className="w-2 h-2 bg-red-800 -mt-2" 
+                      style={{ clipPath: 'polygon(100% 0, 100% 100%, 0 0)' }} 
+                    />
+                  </>
+                ) : (
+                  <>
+                    <div 
+                      className="bg-[#0B5E64] text-white text-[10px] md:text-xs font-semibold py-1 pl-3 pr-5 shadow-sm uppercase tracking-wider" 
+                      style={{ clipPath: 'polygon(0 0, 100% 0, 85% 50%, 100% 100%, 0 100%)' }}
+                    >
+                      {product.customBadge || 'Bestseller'}
+                    </div>
+                    <div 
+                      className="w-2 h-2 bg-[#07474B] -mt-2" 
+                      style={{ clipPath: 'polygon(100% 0, 100% 100%, 0 0)' }} 
+                    />
+                  </>
+                )}
               </div>
             )}
             

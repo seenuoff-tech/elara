@@ -32,9 +32,9 @@ export default function ElaraPromises() {
           Elara Promise
         </h2>
         
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-12 lg:gap-8">
+        <div className="flex gap-6 overflow-x-auto snap-x snap-mandatory md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-12 lg:gap-8 pb-4" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           {promises.map((promise, index) => (
-            <div key={index} className="flex flex-col items-center text-center px-4 relative">
+            <div key={index} className="flex flex-col items-center text-center px-4 relative min-w-[220px] snap-center md:min-w-0">
               {/* Divider for desktop */}
               {index !== promises.length - 1 && (
                 <div className="hidden lg:block absolute right-0 top-1/2 -translate-y-1/2 h-24 w-[1px] bg-[#D4AF37]/20" />

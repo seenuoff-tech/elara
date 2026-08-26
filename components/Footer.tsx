@@ -77,7 +77,7 @@ export default function Footer() {
           <ul className="space-y-3 text-sm text-white/80 font-light">
             <li><a href="#" className="hover:text-white transition-colors duration-300">Secure Payments</a></li>
             <li><Link href="/refund-return-policy" className="hover:text-white transition-colors duration-300">Refund & Return Policy</Link></li>
-            <li><a href="#" className="hover:text-white transition-colors duration-300">Jewellery Care Guide</a></li>
+            <li><Link href="/jewellery-care" className="hover:text-white transition-colors duration-300">Jewellery Care Guide</Link></li>
             <li><Link href="/contact" className="hover:text-white transition-colors duration-300">Contact Us</Link></li>
             <li><Link href="/track-order" className="hover:text-white transition-colors duration-300">Track Your Order</Link></li>
           </ul>
