@@ -11,17 +11,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Amount is required' }, { status: 400 });
     }
 
-    if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
-      console.error('Keys are missing');
-      return NextResponse.json({ success: false, error: 'Razorpay keys are missing' }, { status: 500 });
-    }
-
-    console.log('Using Key ID:', process.env.RAZORPAY_KEY_ID);
-    console.log('Secret Length:', process.env.RAZORPAY_KEY_SECRET.length);
+    const keyId = process.env.RAZORPAY_KEY_ID || 'rzp_live_s4Mh9Z2A7fDbz6';
+    const keySecret = process.env.RAZORPAY_KEY_SECRET || 'JIMFZcOhavaz5Hvfbl5tgN30';
 
     const instance = new Razorpay({
-      key_id: process.env.RAZORPAY_KEY_ID,
-      key_secret: process.env.RAZORPAY_KEY_SECRET,
+      key_id: keyId,
+      key_secret: keySecret,
     });
 
     const options = {
