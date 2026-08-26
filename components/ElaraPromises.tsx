@@ -32,7 +32,7 @@ export default function ElaraPromises() {
           Elara Promise
         </h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-12 lg:gap-8">
           {promises.map((promise, index) => (
             <div key={index} className="flex flex-col items-center text-center px-4 relative">
               {/* Divider for desktop */}

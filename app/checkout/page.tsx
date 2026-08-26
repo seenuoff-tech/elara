@@ -140,7 +140,7 @@ export default function CheckoutPage() {
                 body: JSON.stringify({
                   orderId: generatedOrderId,
                   customerData: formData,
-                  items: cartItems.map(item => ({ name: item.name, quantity: item.quantity, price: item.price })),
+                  items: cartItems.map(item => ({ id: item.id, name: item.name, quantity: item.quantity, price: item.price })),
                   total: formattedGrandTotal,
                   date: new Date().toLocaleDateString()
                 })
@@ -551,33 +551,18 @@ export default function CheckoutPage() {
                   )}
 
                   <div className="space-y-4">
-                    <label className={`flex items-start gap-4 p-4 border rounded-xl cursor-pointer transition-all ${paymentMethod === 'razorpay' ? 'border-[#0B5E64] bg-[#0B5E64]/5 shadow-sm' : 'border-gray-200 hover:border-gray-300'}`}>
+                    <label className={`flex items-start gap-4 p-4 border rounded-xl cursor-pointer transition-all border-[#0B5E64] bg-[#0B5E64]/5 shadow-sm`}>
                       <input 
                         type="radio" 
                         name="payment_method" 
                         value="razorpay" 
                         checked={paymentMethod === 'razorpay'} 
-                        onChange={() => setPaymentMethod('razorpay')}
+                        readOnly
                         className="mt-1 w-4 h-4 accent-[#0B5E64]" 
                       />
                       <div>
                         <span className="block text-sm font-semibold tracking-wide text-gray-900">Pay Online (Razorpay)</span>
                         <p className="text-xs text-gray-500 mt-1">Securely pay via UPI, Credit/Debit Cards, or NetBanking.</p>
-                      </div>
-                    </label>
-
-                    <label className={`flex items-start gap-4 p-4 border rounded-xl cursor-pointer transition-all ${paymentMethod === 'cod' ? 'border-[#0B5E64] bg-[#0B5E64]/5 shadow-sm' : 'border-gray-200 hover:border-gray-300'}`}>
-                      <input 
-                        type="radio" 
-                        name="payment_method" 
-                        value="cod" 
-                        checked={paymentMethod === 'cod'} 
-                        onChange={() => setPaymentMethod('cod')}
-                        className="mt-1 w-4 h-4 accent-[#0B5E64]" 
-                      />
-                      <div>
-                        <span className="block text-sm font-semibold tracking-wide text-gray-900">Cash On Delivery (COD)</span>
-                        <p className="text-xs text-gray-500 mt-1">Pay conveniently at your doorstep when the product arrives.</p>
                       </div>
                     </label>
                   </div>

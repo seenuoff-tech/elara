@@ -99,14 +99,14 @@ export default function ShopByCategory() {
         <div 
           ref={scrollContainerRef}
           onScroll={handleScroll}
-          className="grid grid-cols-4 gap-x-2 gap-y-6 md:flex md:gap-10 md:overflow-x-auto scrollbar-hide md:snap-x md:snap-mandatory pb-4 pt-2 px-1"
+          className="flex gap-4 md:gap-10 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-4 pt-2 px-4"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {activeCategories.map((category, index) => (
             <Link 
               key={category.id}
               href={`/shop?category=${encodeURIComponent(category.name.toLowerCase())}`}
-              className="flex flex-col items-center gap-2 md:gap-4 md:snap-start shrink-0 group/item w-full md:w-auto"
+              className="flex flex-col items-center gap-2 md:gap-4 snap-start shrink-0 group/item w-[75px] sm:w-[90px] md:w-auto"
             >
               {/* Image Container (Squircle) */}
               <div className="w-full aspect-square md:w-[130px] md:h-[130px] rounded-[1.2rem] md:rounded-[2rem] bg-gray-50 overflow-hidden relative shadow-sm group-hover/item:shadow-md transition-all">

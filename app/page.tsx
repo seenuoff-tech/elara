@@ -33,13 +33,13 @@ export default function Home() {
       {/* Elara Promise Section (Directly below Shop by Category) */}
       <ElaraPromises />
 
-      {/* Affordable Elegance (Luxury Within Reach) Section */}
-      <LuxuryWithinReach />
-
       {/* New Arrivals Section */}
       <div className="relative z-10">
         <NewArrivals />
       </div>
+
+      {/* Affordable Elegance (Luxury Within Reach) Section */}
+      <LuxuryWithinReach />
 
       {/* Hot Right Now Banner */}
       <HotRightNowBanner />

@@ -26,11 +26,25 @@ export default function ProductClient() {
   const [selectedFinish, setSelectedFinish] = useState(0);
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
   const [pincode, setPincode] = useState('');
   const [deliveryMessage, setDeliveryMessage] = useState('');
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [isGift, setIsGift] = useState(false);
   const [activePolicyTab, setActivePolicyTab] = useState<'terms' | 'refund' | 'return' | null>('terms');
+
+
+  const handleTouchStart = (e: React.TouchEvent) => setTouchStart(e.targetTouches[0].clientX);
+  const handleTouchMove = (e: React.TouchEvent) => setTouchEnd(e.targetTouches[0].clientX);
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    if (distance > 50 && activeImageIndex < gallery.length - 1) setActiveImageIndex(activeImageIndex + 1);
+    if (distance < -50 && activeImageIndex > 0) setActiveImageIndex(activeImageIndex - 1);
+    setTouchStart(0);
+    setTouchEnd(0);
+  };
 
   // Parse sizes
   const productSizes: string[] = Array.isArray(product?.sizes) 
@@ -178,9 +192,14 @@ export default function ProductClient() {
           
           {/* Left Column: Image Gallery */}
           <div className="w-full md:w-1/2 flex flex-col gap-4">
-            <div className="aspect-[4/5] md:aspect-square relative bg-gray-50 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-center overflow-hidden">
+            <div 
+              className="aspect-[4/5] md:aspect-square relative bg-gray-50 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-center overflow-hidden"
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+            >
               <Image 
-                src={gallery[activeImageIndex]?.url || gallery[0]?.url}
+                src={ (finishes[selectedFinish] && finishes[selectedFinish].image && activeImageIndex === 0) ? finishes[selectedFinish].image : (gallery[activeImageIndex]?.url || gallery[0]?.url) }
                 alt={gallery[activeImageIndex]?.alt || product.name || 'Product Image'}
                 fill
                 className="object-cover"
@@ -392,10 +411,45 @@ export default function ProductClient() {
               </div>
             </div>
 
-            {/* Policy Dropdowns (Terms & Conditions, Refund Policy, Return Policy) */}
+            {/* Product Description Expandable */}
+            <div className="mb-12 bg-[#fafafa]">
+              <div className="bg-[#fce4e9]/30 py-3 px-4 rounded-t-xl border border-b-0 border-[#fce4e9]">
+                <span className="text-gray-700 text-lg font-medium">Product Description</span>
+              </div>
+              <div className="border border-[#fce4e9] rounded-b-xl p-6 bg-white">
+                <div className="text-sm text-gray-700 space-y-4">
+                  <div>
+                    <h4 className="font-bold text-black mb-1">{descDesign ? 'The Inspiration:' : 'Details:'}</h4>
+                    <p className="leading-relaxed whitespace-pre-line">
+                      {isDescriptionExpanded 
+                        ? descInspiration 
+                        : `${descInspiration.substring(0, 100)}...`}
+                    </p>
+                  </div>
+                  
+                  {isDescriptionExpanded && descDesign && (
+                    <div className="mt-4">
+                      <h4 className="font-bold text-black mb-1">The Design:</h4>
+                      <p className="leading-relaxed whitespace-pre-line">{descDesign}</p>
+                    </div>
+                  )}
+                  
+                  {descInspiration.length > 100 && (
+                    <button 
+                      onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+                      className="text-[#849fb4] text-sm hover:underline font-medium mt-2 focus:outline-none"
+                    >
+                      {isDescriptionExpanded ? 'Show Less' : 'Show More'}
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+
+{/* Policy Dropdowns (Terms & Conditions, Refund Policy, Return Policy) */}
             <div className="mb-10 bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
               {/* Tabs / Accordion Header Buttons */}
-              <div className="grid grid-cols-3 border-b border-gray-200 bg-gray-50/80">
+              <div className="grid grid-cols-4 border-b border-gray-200 bg-gray-50/80">
                 <button
                   onClick={() => setActivePolicyTab(activePolicyTab === 'terms' ? null : 'terms')}
                   className={`py-3 px-2 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors border-r border-gray-200 ${
@@ -412,6 +466,21 @@ export default function ProductClient() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
+
+                <button
+                  onClick={() => setActivePolicyTab(activePolicyTab === 'care' ? null : 'care')}
+                  className={`py-3 px-2 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors border-l border-gray-200 ${
+                    activePolicyTab === 'care'
+                      ? 'bg-white text-[#0B5E64] shadow-sm'
+                      : 'text-gray-600 hover:text-black hover:bg-gray-100/50'
+                  }`}
+                >
+                  <svg className="w-4 h-4 shrink-0 text-[#0B5E64]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                  </svg>
+                  <span className="truncate">Jewellery Care</span>
+                </button>
+
 
                 <button
                   onClick={() => setActivePolicyTab(activePolicyTab === 'refund' ? null : 'refund')}
@@ -510,43 +579,19 @@ export default function ProductClient() {
                       </div>
                     </div>
                   )}
-                </div>
-              )}
-            </div>
 
-            {/* Product Description Expandable */}
-            <div className="mb-12 bg-[#fafafa]">
-              <div className="bg-[#fce4e9]/30 py-3 px-4 rounded-t-xl border border-b-0 border-[#fce4e9]">
-                <span className="text-gray-700 text-lg font-medium">Product Description</span>
-              </div>
-              <div className="border border-[#fce4e9] rounded-b-xl p-6 bg-white">
-                <div className="text-sm text-gray-700 space-y-4">
-                  <div>
-                    <h4 className="font-bold text-black mb-1">{descDesign ? 'The Inspiration:' : 'Details:'}</h4>
-                    <p className="leading-relaxed whitespace-pre-line">
-                      {isDescriptionExpanded 
-                        ? descInspiration 
-                        : `${descInspiration.substring(0, 100)}...`}
-                    </p>
-                  </div>
-                  
-                  {isDescriptionExpanded && descDesign && (
-                    <div className="mt-4">
-                      <h4 className="font-bold text-black mb-1">The Design:</h4>
-                      <p className="leading-relaxed whitespace-pre-line">{descDesign}</p>
+                  {activePolicyTab === 'care' && (
+                    <div className="space-y-3">
+                      <ul className="space-y-2 list-disc list-inside text-gray-700">
+                        <li>Store your silver jewellery in a cool, dry place, preferably in an airtight zip lock bag.</li>
+                        <li>Avoid direct contact with perfumes, lotions, and harsh chemicals.</li>
+                        <li>Clean gently with a soft polishing cloth to maintain its shine.</li>
+                      </ul>
                     </div>
                   )}
-                  
-                  {descInspiration.length > 100 && (
-                    <button 
-                      onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
-                      className="text-[#849fb4] text-sm hover:underline font-medium mt-2 focus:outline-none"
-                    >
-                      {isDescriptionExpanded ? 'Show Less' : 'Show More'}
-                    </button>
-                  )}
+
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>

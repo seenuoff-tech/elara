@@ -45,7 +45,7 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch('/api/products');
+        const res = await fetch('/api/products', { cache: 'no-store' });
         const data = await res.json();
         if (data.success && data.products) {
           setProducts(data.products);
@@ -117,7 +117,7 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
       const data = await res.json();
       if (data.success) {
         // Refresh all products to get DB generated ones
-        const fetchRes = await fetch('/api/products');
+        const fetchRes = await fetch('/api/products', { cache: 'no-store' });
         const fetchResData = await fetchRes.json();
         if (fetchResData.success) {
           setProducts(fetchResData.products);
