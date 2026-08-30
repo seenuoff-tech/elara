@@ -130,6 +130,44 @@ export async function POST(request: NextRequest) {
 
       await transporter.sendMail(mailOptions);
       console.log('Order confirmation email sent to', customerData.email);
+
+      // Send Notification Email to Admin
+      const adminMailOptions = {
+        from: `"Elara Silver Store" <${process.env.EMAIL_USER || 'noreply@elarasilver.com'}>`,
+        to: process.env.EMAIL_USER || 'elarasilver2024@gmail.com', // Admin email
+        subject: `🚨 NEW ORDER RECEIVED: ${orderId}`,
+        html: `
+          <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; line-height: 1.6;">
+            <h2 style="color: #0B5E64; border-bottom: 2px solid #0B5E64; padding-bottom: 10px;">New Order Placed! 🎉</h2>
+            <p><strong>Order No:</strong> ${orderId}</p>
+            <p><strong>Customer Name:</strong> ${customerData.fullName || 'Guest'}</p>
+            <p><strong>Phone:</strong> ${customerData.phone || 'N/A'}</p>
+            <p><strong>Total Price:</strong> ₹${total}</p>
+            <p><strong>Payment Method:</strong> ${body.paymentMethod === 'cod' ? 'Cash on Delivery (COD)' : 'Online Payment'}</p>
+            
+            <h3 style="margin-top: 25px; background: #f5f5f5; padding: 10px;">Order Items:</h3>
+            <table style="width: 100%; border-collapse: collapse; text-align: left;">
+              <tr>
+                <th style="border-bottom: 2px solid #ddd; padding: 10px;">Product</th>
+                <th style="border-bottom: 2px solid #ddd; padding: 10px;">Qty</th>
+                <th style="border-bottom: 2px solid #ddd; padding: 10px;">Size</th>
+              </tr>
+              ${items.map((item: any) => `
+                <tr>
+                  <td style="padding: 10px; border-bottom: 1px solid #eee;">${item.name || 'Unknown Item'}</td>
+                  <td style="padding: 10px; border-bottom: 1px solid #eee;">${item.quantity || 1}</td>
+                  <td style="padding: 10px; border-bottom: 1px solid #eee;">${item.size || item.selectedSize || '-'}</td>
+                </tr>
+              `).join('')}
+            </table>
+            <p style="margin-top: 30px; font-weight: bold; color: #0B5E64;">Please login to the Admin Dashboard to view full order details.</p>
+          </div>
+        `
+      };
+      
+      await transporter.sendMail(adminMailOptions);
+      console.log('Admin notification email sent');
+
     } catch (mailError) {
       console.error('Error sending confirmation email:', mailError);
       // We don't fail the checkout if email fails, just log it.
