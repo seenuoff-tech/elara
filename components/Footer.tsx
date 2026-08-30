@@ -38,7 +38,7 @@ export default function Footer() {
   };
 
   return (
-    <footer id="contact" className="bg-[#0B5E64] border-t border-white/10 text-white py-20 px-8 md:px-16 relative z-10 overflow-hidden">
+    <footer id="contact" className="bg-[#0B5E64] border-t border-white/10 text-white pt-10 pb-12 px-8 md:px-16 relative z-10 overflow-hidden">
       {/* Decorative subtle gradient background */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent" />
       
