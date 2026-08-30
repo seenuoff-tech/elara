@@ -49,7 +49,7 @@ export default function Footer() {
             <img 
               src="/images/footerlogo.PNG" 
               alt="Elara Silver Logo" 
-              className="w-auto h-40 md:h-48 object-contain drop-shadow-md brightness-0 invert -ml-12 md:-ml-14" 
+              className="w-auto h-16 md:h-20 object-contain drop-shadow-md brightness-0 invert -ml-2" 
             />
           </div>
           <p className="text-white/80 text-sm leading-relaxed font-light">
