@@ -16,6 +16,7 @@ interface CategoriesContextType {
   addCategory: (category: Omit<Category, 'id' | 'productsCount'>) => void;
   updateCategory: (id: string, category: Partial<Category>) => void;
   deleteCategory: (id: string) => void;
+  isLoaded: boolean;
 }
 
 const CategoriesContext = createContext<CategoriesContextType | undefined>(undefined);
@@ -85,7 +86,7 @@ export function CategoriesProvider({ children }: { children: React.ReactNode }) 
   };
 
   return (
-    <CategoriesContext.Provider value={{ categories, addCategory, updateCategory, deleteCategory }}>
+    <CategoriesContext.Provider value={{ categories, addCategory, updateCategory, deleteCategory, isLoaded }}>
       {children}
     </CategoriesContext.Provider>
   );
