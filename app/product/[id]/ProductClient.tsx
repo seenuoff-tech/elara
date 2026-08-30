@@ -199,7 +199,7 @@ export default function ProductClient() {
   const strikePriceNum = (product as any).mrpPrice ? Number((product as any).mrpPrice) : Math.round(sellingPriceNum * 1.10);
 
   return (
-    <div className="min-h-screen bg-[#fafafa] pt-48 md:pt-56 pb-12">
+    <div className="min-h-screen bg-[#fafafa] pt-28 md:pt-48 pb-12">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         
         {/* Breadcrumb (Optional, basic implementation) */}
@@ -246,7 +246,7 @@ export default function ProductClient() {
               </button>
               <div className="absolute bottom-4 left-4 flex items-center gap-1 text-xs font-semibold text-gray-600 bg-white/80 backdrop-blur px-2 py-1 rounded-full border border-black/5">
                 <span className="text-amber-400">★</span>
-                <span>{product.rating || '4.8'} | {product.reviewsCount || '154'}</span>
+                <span>{product.rating ? product.rating.toFixed(1) : '4.5'} | {product.reviews || Math.floor(Math.random() * 20 + 10)}</span>
               </div>
             </div>
             
@@ -611,11 +611,28 @@ export default function ProductClient() {
 
                   {activePolicyTab === 'care' && (
                     <div className="space-y-3">
+                      <p className="mb-2">Silver jewels have a soft luster, and so they can get tarnished easily if not taken care of. Follow these simple steps to care your jewellery just like how you care for yourself :)</p>
                       <ul className="space-y-2 list-disc list-inside text-gray-700">
-                        <li>Store your silver jewellery in a cool, dry place, preferably in an airtight zip lock bag.</li>
-                        <li>Avoid direct contact with perfumes, lotions, and harsh chemicals.</li>
-                        <li>Clean gently with a soft polishing cloth to maintain its shine.</li>
+                        <li>Do not wear when sweating.</li>
+                        <li>Avoid perfume, lotion or sunscreen after wearing the jewel.</li>
+                        <li>Do not wear when washing.</li>
+                        <li>Avoid collide, grind or fire.</li>
+                        <li>Do not wear when sleeping.</li>
+                        <li>Put inside a plastic box when not in use. Avoid velvet box.</li>
+                        <li>Do not clean with chemicals.</li>
+                        <li>Use soft cloth to clean.</li>
                       </ul>
+                      <div className="pt-2 border-t border-gray-100 flex justify-end">
+                        <Link 
+                          href="/jewellery-care" 
+                          className="inline-flex items-center gap-1 text-[#0B5E64] font-semibold hover:underline"
+                        >
+                          Read Full Care Guide
+                          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                          </svg>
+                        </Link>
+                      </div>
                     </div>
                   )}
 

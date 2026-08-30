@@ -74,10 +74,10 @@ export default function MensCollection() {
               
               {/* Rating Badge */}
               <div className="absolute bottom-2 left-2 z-20 bg-gray-100/90 text-gray-700 text-[10px] font-medium px-2 py-1 rounded flex items-center gap-1 shadow-sm backdrop-blur-sm pointer-events-none">
-                <span>4.8</span>
+                <span>{product.rating ? product.rating.toFixed(1) : '4.5'}</span>
                 <span className="text-[#f59e0b] text-[10px] leading-none mb-0.5">★</span>
                 <span className="text-gray-400 mx-0.5">|</span>
-                <span>{300 + ((index * 47) % 200)}</span>
+                <span>{product.reviews || Math.floor(Math.random() * 20 + 10)}</span>
               </div>
               
               {/* Wishlist Button */}

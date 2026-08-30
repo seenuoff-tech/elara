@@ -7,7 +7,7 @@ import { useCategories } from '@/context/CategoriesContext';
 
 export default function ShopByCategory() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const { categories } = useCategories();
+  const { categories, isLoaded } = useCategories();
   const preferredOrder = ["earring", "toe ring", "ring", "minimalist", "bracelet", "anklet", "men"];
   
   const activeCategories = [...categories]
@@ -73,80 +73,43 @@ export default function ShopByCategory() {
         </div>
       </div>
 
-      <div className="relative group max-w-6xl mx-auto">
-        
-        {/* Left Arrow */}
-        <button 
-          onClick={scrollLeft}
-          className="absolute left-0 top-[40%] -translate-y-1/2 -translate-x-4 md:-translate-x-12 z-10 w-8 h-8 md:w-10 md:h-10 bg-gray-100 hover:bg-gray-200 border border-gray-200 rounded-full flex items-center justify-center shadow-sm text-gray-600 transition-colors hidden md:flex"
-        >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-
-        {/* Right Arrow */}
-        <button 
-          onClick={scrollRight}
-          className="absolute right-0 top-[40%] -translate-y-1/2 translate-x-4 md:translate-x-12 z-10 w-8 h-8 md:w-10 md:h-10 bg-gray-100 hover:bg-gray-200 border border-gray-200 rounded-full flex items-center justify-center shadow-sm text-gray-600 transition-colors hidden md:flex"
-        >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
-
-        {/* Scroll Container */}
-        <div 
-          ref={scrollContainerRef}
-          onScroll={handleScroll}
-          className="flex gap-4 md:gap-10 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-4 pt-2 px-4"
-          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-        >
-          {activeCategories.map((category, index) => (
-            <Link 
-              key={category.id}
-              href={`/shop?category=${encodeURIComponent(category.name.toLowerCase())}`}
-              className="flex flex-col items-center gap-2 md:gap-4 snap-start shrink-0 group/item w-[75px] sm:w-[90px] md:w-auto"
-            >
-              {/* Image Container (Squircle) */}
-              <div className="w-full aspect-square md:w-[130px] md:h-[130px] rounded-[1.2rem] md:rounded-[2rem] bg-gray-50 overflow-hidden relative shadow-sm group-hover/item:shadow-md transition-all">
-                <Image
-                  src={category.image}
-                  alt={category.name}
-                  fill
-                  className="object-cover object-center group-hover/item:scale-105 transition-transform duration-500"
-                  sizes="130px"
-                />
+      <div className="relative group max-w-5xl mx-auto">
+        <div className="grid grid-cols-5 gap-3 md:gap-8 pb-4 pt-2 px-2 md:px-0">
+          {!isLoaded ? (
+            // Skeleton loader while fetching
+            Array.from({ length: 10 }).map((_, i) => (
+              <div key={i} className="flex flex-col items-center gap-1.5 md:gap-4 w-full animate-pulse">
+                <div className="w-full aspect-square rounded-[0.8rem] md:rounded-[2rem] bg-gray-200"></div>
+                <div className="w-16 h-3 md:h-4 bg-gray-200 rounded mt-1"></div>
               </div>
-              
-              {/* Category Name */}
-              <span className="text-[10px] sm:text-xs md:text-sm text-gray-800 font-medium tracking-wide text-center leading-tight">
-                {category.name}
-              </span>
-            </Link>
-          ))}
+            ))
+          ) : (
+            activeCategories.map((category, idx) => (
+              <Link 
+                key={category.id}
+                href={`/shop?category=${encodeURIComponent(category.name.toLowerCase())}`}
+                className="flex flex-col items-center gap-1.5 md:gap-4 group/item w-full"
+              >
+                {/* Image Container (Squircle) */}
+                <div className="w-full aspect-square rounded-[0.8rem] md:rounded-[2rem] bg-gray-50 overflow-hidden relative shadow-sm group-hover/item:shadow-md transition-all">
+                  <Image
+                    src={category.image}
+                    alt={category.name}
+                    fill
+                    priority={idx < 5} // Priority for the first row
+                    className="object-cover object-center group-hover/item:scale-105 transition-transform duration-500"
+                    sizes="(max-width: 768px) 20vw, 150px"
+                  />
+                </div>
+                
+                {/* Category Name */}
+                <span className="text-[10px] md:text-sm text-gray-800 font-medium tracking-wide text-center leading-tight mt-1">
+                  {category.name}
+                </span>
+              </Link>
+            ))
+          )}
         </div>
-      </div>
-
-      {/* Pagination Stars */}
-      <div className="hidden md:flex items-center justify-center gap-3 mt-8">
-        {Array.from({ length: maxIndex + 1 }).map((_, index) => (
-          <button
-            key={index}
-            onClick={() => scrollTo(index)}
-            aria-label={`Go to slide ${index + 1}`}
-            className="p-1 transition-all duration-300 focus:outline-none"
-          >
-            <svg 
-              className={`w-4 h-4 transition-colors duration-500 ${activeIndex === index ? 'text-[#0B5E64]' : 'text-gray-300'}`} 
-              viewBox="0 0 24 24" 
-              fill="currentColor"
-            >
-              {/* Curved Sparkle / Diamond shape */}
-              <path d="M12 0 C12 6.627 6.627 12 0 12 C6.627 12 12 17.373 12 24 C12 17.373 17.373 12 24 12 C17.373 12 12 6.627 12 0 Z" />
-            </svg>
-          </button>
-        ))}
       </div>
       
       <style dangerouslySetInnerHTML={{__html: `

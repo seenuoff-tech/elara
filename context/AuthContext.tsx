@@ -8,6 +8,7 @@ export interface User {
   firstName: string;
   lastName: string;
   email: string;
+  points: number;
   orders: any[]; // Mock orders array
 }
 
@@ -16,6 +17,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<{ success: boolean; message?: string }>;
   register: (firstName: string, lastName: string, email: string, password: string) => Promise<{ success: boolean; message?: string }>;
   logout: () => void;
+  updateUser: (updatedUser: User) => void;
   isLoading: boolean;
 }
 
@@ -68,6 +70,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       lastName,
       email,
       password, // Mock db stores password in plain text, do NOT do this in real app!
+      points: 0,
       orders: [
         // Let's give them a mock order for demonstration
         {
@@ -92,8 +95,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     router.push('/');
   };
 
+  const updateUser = (updatedUser: User) => {
+    setUser(updatedUser);
+    localStorage.setItem('elara_current_user', JSON.stringify(updatedUser));
+    
+    // Also update in DB array
+    const usersStr = localStorage.getItem('elara_users_db');
+    if (usersStr) {
+      const users = JSON.parse(usersStr);
+      const index = users.findIndex((u: any) => u.id === updatedUser.id);
+      if (index !== -1) {
+        users[index] = { ...users[index], ...updatedUser };
+        localStorage.setItem('elara_users_db', JSON.stringify(users));
+      }
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, isLoading }}>
+    <AuthContext.Provider value={{ user, login, register, logout, updateUser, isLoading }}>
       {children}
     </AuthContext.Provider>
   );

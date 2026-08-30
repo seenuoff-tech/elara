@@ -7,6 +7,7 @@ import Footer from './Footer';
 import AddToCartAnimation from './AddToCartAnimation';
 import CartDrawer from './CartDrawer';
 import ConciergeAssistant from './luxury/ConciergeAssistant';
+import Preloader from './Preloader';
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -18,18 +19,32 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
 
   return (
     <div className="flex flex-col min-h-screen">
+      <Preloader />
       <Navbar />
       <div className="flex-grow">{children}</div>
       <Footer />
       <AddToCartAnimation />
       <CartDrawer />
       
+      {/* Floating Sleet Jewellery Button */}
+      <a
+        href="/sleet"
+        className="fixed bottom-[256px] md:bottom-[168px] right-6 z-[99] w-14 h-14 flex items-center justify-center bg-gradient-to-tr from-cyan-400 to-blue-600 rounded-full shadow-[0_8px_20px_rgba(0,0,0,0.25)] hover:scale-110 active:scale-95 transition-transform duration-300 group"
+      >
+        <span className="absolute right-16 bg-white text-black text-xs font-bold px-3 py-1.5 rounded shadow-lg whitespace-nowrap opacity-0 group-hover:opacity-100 group-active:opacity-100 transition-opacity pointer-events-none uppercase tracking-wider">
+          Visit Sleet Jewellery
+        </span>
+        <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
+        </svg>
+      </a>
+
       {/* Floating WhatsApp Button */}
       <a
         href="https://wa.me/919876543210"
         target="_blank"
         rel="noopener noreferrer"
-        className="fixed bottom-[96px] right-6 z-[99] w-14 h-14 flex items-center justify-center bg-[#0B5E64] rounded-full shadow-[0_8px_20px_rgba(0,0,0,0.25)] hover:scale-110 transition-transform duration-300"
+        className="fixed bottom-[176px] md:bottom-24 right-6 z-[99] w-14 h-14 flex items-center justify-center bg-[#25D366] rounded-full shadow-[0_8px_20px_rgba(0,0,0,0.25)] hover:scale-110 transition-transform duration-300"
         title="Chat with us on WhatsApp"
       >
         <svg

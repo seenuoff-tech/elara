@@ -51,6 +51,9 @@ model Product {
   pricingType   String   @default("weight_based")
   targetAudience String  @default("Women")
   mrpPrice      Float?
+  rating        Float    @default(4.5)
+  reviews       Int      @default(30)
+  baseSilverRate Float?
   category      Category @relation(fields: [categoryId], references: [id])
 
   @@index([categoryId], map: "Product_categoryId_fkey")
@@ -75,4 +78,56 @@ model Setting {
   value     Json
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Order {
+  id            String      @id @default(uuid())
+  orderNumber   String      @unique
+  customerName  String
+  email         String
+  phone         String?
+  address       String?     @db.Text
+  city          String?
+  state         String?
+  pincode       String?
+  totalAmount   Float
+  discountAmount Float?     @default(0)
+  couponCode    String?
+  paymentMethod String      @default("cod")
+  paymentStatus String      @default("Pending")
+  orderStatus   String      @default("Processing")
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  items         OrderItem[]
+}
+
+model OrderItem {
+  id        String   @id @default(uuid())
+  orderId   String
+  productId String
+  name      String
+  price     Float
+  quantity  Int
+  size      String?
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model Coupon {
+  id            String   @id @default(uuid())
+  code          String   @unique
+  discountType  String   // "percentage" or "flat"
+  discountValue Float
+  startDate     DateTime
+  endDate       DateTime
+  status        String   @default("Active") // Active, Inactive
+  maxUses       Int?     // Optional limit on total uses
+  currentUses   Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model NewsletterSubscriber {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
 }

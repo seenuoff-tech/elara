@@ -1,5 +1,14 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
-prisma.category.findMany().then(c => {
-    console.log(JSON.stringify(c, null, 2));
-}).finally(() => prisma.$disconnect());
+
+async function main() {
+  const orders = await prisma.order.findMany();
+  console.log('Orders in DB:', orders.length);
+  if (orders.length > 0) {
+    console.log(orders[0]);
+  }
+}
+
+main()
+  .catch(e => console.error(e))
+  .finally(async () => await prisma.$disconnect());

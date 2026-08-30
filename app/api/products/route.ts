@@ -30,9 +30,29 @@ export async function GET(request: Request) {
       const rate = silverRates[categoryName] ?? defaultRate;
       const weight = p.weightInGrams ?? 0;
       const isManual = (p as any).pricingType === 'manual';
-      const computedPrice = isManual 
-        ? (p.price > 0 ? Math.round(p.price * (1 + gstPercentage / 100)) : p.price)
-        : (weight > 0 ? Math.round(weight * rate * (1 + gstPercentage / 100)) : p.price);
+      let computedPrice = p.price;
+      let computedMrp = (p as any).mrpPrice || null;
+
+      if (isManual) {
+        if (p.price > 0) {
+          let basePrice = p.price;
+          // Apply dynamic weight-based adjustment for manual products
+          if ((p as any).baseSilverRate !== null && (p as any).baseSilverRate !== undefined && weight > 0) {
+            const rateDiff = rate - (p as any).baseSilverRate;
+            basePrice = p.price + (weight * rateDiff);
+            
+            // Adjust MRP similarly if it exists
+            if (computedMrp) {
+               computedMrp = computedMrp + (weight * rateDiff);
+            }
+          }
+          basePrice = Math.max(0, basePrice);
+          computedPrice = Math.round(basePrice * (1 + gstPercentage / 100));
+        }
+      } else {
+        computedPrice = (weight > 0 ? Math.round(weight * rate * (1 + gstPercentage / 100)) : p.price);
+      }
+
       
       let parsedSizes = [];
       try {
@@ -45,6 +65,15 @@ export async function GET(request: Request) {
         parsedSizes = [];
       }
 
+      let parsedDescription = { inspiration: '', design: '' };
+      try {
+        if (p.description) {
+          parsedDescription = typeof p.description === 'string' ? JSON.parse(p.description) : p.description;
+        }
+      } catch (e) {
+        parsedDescription = { inspiration: '', design: '' };
+      }
+
       return {
         ...p,
         price: computedPrice,
@@ -53,8 +82,10 @@ export async function GET(request: Request) {
         pricingType: (p as any).pricingType || 'weight_based',
         customBadge: (p as any).customBadge || null,
         targetAudience: (p as any).targetAudience || 'Women',
-        mrpPrice: (p as any).mrpPrice || null,
-        sizes: parsedSizes
+        mrpPrice: computedMrp,
+        baseSilverRate: (p as any).baseSilverRate || null,
+        sizes: parsedSizes,
+        description: parsedDescription
       };
     });
     
@@ -68,7 +99,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    let { name, categoryId, category, price, stock, status, image, gallery, description, isNew, isBestSeller, customBadge, weightInGrams, finishes, sizes, ringSizes, pricingType, targetAudience, mrpPrice } = body;
+    let { name, categoryId, category, price, stock, status, image, gallery, description, isNew, isBestSeller, customBadge, weightInGrams, finishes, sizes, ringSizes, pricingType, targetAudience, mrpPrice, baseSilverRate } = body;
     
     if (!categoryId && category) {
       const cat = await prisma.category.findFirst({
@@ -103,7 +134,8 @@ export async function POST(request: Request) {
         weightInGrams: weightInGrams ? parseFloat(weightInGrams) : 0,
         pricingType: pricingType || 'weight_based',
         targetAudience: targetAudience || 'Women',
-        mrpPrice: mrpPrice ? parseFloat(mrpPrice) : null
+        mrpPrice: mrpPrice ? parseFloat(mrpPrice) : null,
+        baseSilverRate: baseSilverRate ? parseFloat(baseSilverRate) : null
       } as any
     });
     
@@ -123,7 +155,7 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   try {
     const body = await request.json();
-    const { id, name, categoryId, price, stock, status, image, gallery, description, isNew, isBestSeller, customBadge, weightInGrams, finishes, sizes, ringSizes, pricingType, targetAudience, mrpPrice } = body;
+    const { id, name, categoryId, price, stock, status, image, gallery, description, isNew, isBestSeller, customBadge, weightInGrams, finishes, sizes, ringSizes, pricingType, targetAudience, mrpPrice, baseSilverRate } = body;
     
     if (!id) {
       return NextResponse.json({ success: false, error: 'ID is required' }, { status: 400 });
@@ -160,7 +192,8 @@ export async function PUT(request: Request) {
         weightInGrams: weightInGrams ? parseFloat(weightInGrams) : 0,
         pricingType: pricingType || 'weight_based',
         targetAudience: targetAudience || 'Women',
-        mrpPrice: mrpPrice !== undefined ? (mrpPrice ? parseFloat(mrpPrice) : null) : undefined
+        mrpPrice: mrpPrice !== undefined ? (mrpPrice ? parseFloat(mrpPrice) : null) : undefined,
+        baseSilverRate: baseSilverRate !== undefined ? (baseSilverRate ? parseFloat(baseSilverRate) : null) : undefined
       } as any
     });
     

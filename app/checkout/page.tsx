@@ -4,6 +4,9 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext';
+import { jsPDF } from "jspdf";
+import "jspdf-autotable";
 import LuxuryButton from '../../components/luxury/LuxuryButton';
 import Image from 'next/image';
 import Script from 'next/script';
@@ -37,6 +40,17 @@ export default function CheckoutPage() {
     cvv: '',
   });
 
+  // Coupon states
+  const [couponCode, setCouponCode] = useState('');
+  const [couponError, setCouponError] = useState('');
+  const [discountAmount, setDiscountAmount] = useState(0);
+  const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
+  const [appliedCouponCode, setAppliedCouponCode] = useState('');
+
+  // Points state
+  const { user, updateUser } = useAuth();
+  const [isUsingPoints, setIsUsingPoints] = useState(false);
+
   // Calculate Totals
   const subtotal = cartItems.reduce((acc, item) => {
     const numericPrice = parseFloat(String(item.price).replace(/[^\d]/g, ''));
@@ -48,8 +62,11 @@ export default function CheckoutPage() {
   const shippingFee = (subtotal > 0 && isOutsideTN) ? 150 : 0;
   const giftWrapFee = isGiftWrap ? 50 : 0;
   
-  const grandTotal = subtotal > 0 ? (subtotal + shippingFee + giftWrapFee) : 0;
+  const pointsDiscount = isUsingPoints ? 1000 : 0;
+  const grandTotal = subtotal > 0 ? Math.max(0, subtotal + shippingFee + giftWrapFee - discountAmount - pointsDiscount) : 0;
   const formattedGrandTotal = `₹${grandTotal.toLocaleString('en-IN')}`;
+  
+  const earnedPoints = Math.floor(subtotal * 0.05);
 
   useEffect(() => {
     // If cart is empty and not on success step, redirect home
@@ -57,6 +74,42 @@ export default function CheckoutPage() {
       router.push('/');
     }
   }, [cartItems.length, router, step]);
+
+  const handleApplyCoupon = async () => {
+    setCouponError('');
+    if (!couponCode.trim()) return;
+    
+    setIsApplyingCoupon(true);
+    try {
+      const res = await fetch('/api/coupons/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: couponCode, subtotal })
+      });
+      const data = await res.json();
+      
+      if (data.success) {
+        setDiscountAmount(data.discountAmount);
+        setAppliedCouponCode(data.couponCode);
+      } else {
+        setCouponError(data.error);
+        setDiscountAmount(0);
+        setAppliedCouponCode('');
+      }
+    } catch (error) {
+      console.error('Error applying coupon:', error);
+      setCouponError('Failed to apply coupon. Please try again.');
+    } finally {
+      setIsApplyingCoupon(false);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setCouponCode('');
+    setDiscountAmount(0);
+    setAppliedCouponCode('');
+    setCouponError('');
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -84,30 +137,55 @@ export default function CheckoutPage() {
         setOrderId(generatedOrderId);
 
         try {
-          await fetch('/api/checkout', {
+          let invoiceBase64 = null;
+          try {
+             const doc = await generateInvoiceDoc(generatedOrderId, cartItems);
+             invoiceBase64 = doc.output('datauristring');
+          } catch(e) {
+             console.error("Failed to generate PDF for email", e);
+          }
+
+          const response = await fetch('/api/checkout', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               orderId: generatedOrderId,
               customerData: formData,
               items: cartItems.map(item => ({
+                id: item.id,
                 name: item.name,
                 quantity: item.quantity,
-                price: item.price
+                price: item.price,
+                size: item.size || ''
               })),
-              total: formattedGrandTotal,
-              date: new Date().toLocaleDateString()
+              total: grandTotal,
+              discountAmount,
+              couponCode: appliedCouponCode,
+              date: new Date().toLocaleDateString(),
+              invoiceBase64
             })
           });
-        } catch (err) {
-          console.error("Failed to trigger emails", err);
-        }
+          const data = await response.json();
+          if (!data.success) throw new Error(data.error);
+          
+          setIsProcessing(false);
+          setOrderedItems([...cartItems]);
+          
+          if (user) {
+            updateUser({
+              ...user,
+              points: (user.points || 0) - (isUsingPoints ? 1000 : 0) + earnedPoints
+            });
+          }
 
-        setIsProcessing(false);
-        setOrderedItems([...cartItems]);
-        clearCart();
-        setStep(3);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+          clearCart();
+          setStep(3);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } catch (err) {
+          console.error("Failed to place order", err);
+          alert("Order placement failed. Please try again or contact support.");
+          setIsProcessing(false);
+        }
       }, 800);
     } else {
       try {
@@ -121,7 +199,7 @@ export default function CheckoutPage() {
         if (!data.success) throw new Error(data.error);
 
         const options = {
-          key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_live_s4Mh9Z2A7fDbz6",
+          key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_live_TVTmsBuqCm25Fw",
           amount: data.order.amount,
           currency: "INR",
           name: "Elara Silver",
@@ -140,15 +218,26 @@ export default function CheckoutPage() {
                 body: JSON.stringify({
                   orderId: generatedOrderId,
                   customerData: formData,
-                  items: cartItems.map(item => ({ id: item.id, name: item.name, quantity: item.quantity, price: item.price })),
-                  total: formattedGrandTotal,
-                  date: new Date().toLocaleDateString()
+                  items: cartItems.map(item => ({ id: item.id, name: item.name, quantity: item.quantity, price: item.price, size: item.size || '' })),
+                  total: grandTotal,
+                  discountAmount,
+                  couponCode: appliedCouponCode,
+                  date: new Date().toLocaleDateString(),
+                  invoiceBase64: null // Not easily available here synchronously, could generate in razorpay flow but optional.
                 })
               });
             } catch (err) {}
 
             setIsProcessing(false);
             setOrderedItems([...cartItems]);
+            
+            if (user) {
+              updateUser({
+                ...user,
+                points: (user.points || 0) - (isUsingPoints ? 1000 : 0) + earnedPoints
+              });
+            }
+
             clearCart();
             setStep(3);
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -174,31 +263,53 @@ export default function CheckoutPage() {
     }
   };
 
-    const downloadInvoice = async () => {
+    const generateInvoiceDoc = async (currentOrderId = orderId, currentCartItems = cartItems) => {
     const { jsPDF } = await import("jspdf");
     const { default: autoTable } = await import("jspdf-autotable");
     const doc = new jsPDF();
+
     
-    // Header text on top left
-    doc.setFontSize(16);
-    doc.setFont("helvetica", "bold");
+    let currY = 50;
+
+    try {
+      const logoImg = new window.Image();
+      logoImg.src = "/images/org.png";
+      await new Promise((resolve, reject) => {
+        logoImg.onload = resolve;
+        logoImg.onerror = reject;
+      });
+      
+      // Draw a dark green header background
+      doc.setFillColor(11, 94, 100); // #0B5E64
+      doc.rect(0, 0, 210, 40, 'F');
+      
+      // Add logo
+      doc.addImage(logoImg, 'PNG', 14, 8, 45, 24); 
+      
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(24);
+      doc.setFont("helvetica", "bold");
+      doc.text("TAX INVOICE", 140, 26);
+    } catch (e) {
+      doc.setFontSize(16);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(0, 0, 0);
+      doc.text("TAX INVOICE", 14, 20);
+      doc.setFontSize(14);
+      doc.text("ELARA SILVER", 14, 30);
+    }
+    
     doc.setTextColor(0, 0, 0);
-    doc.text("TAX INVOICE (Sales)", 14, 20);
-    
     doc.setFontSize(12);
-    doc.setFont("helvetica", "normal");
-    doc.text("Branch", 14, 30);
-    
-    doc.setFontSize(14);
     doc.setFont("helvetica", "bold");
-    doc.text("ELARA SILVER", 14, 40);
+    doc.text("ELARA SILVER", 14, currY);
     
+    currY += 6;
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     
     const startX = 14;
-    const colonX = 45;
-    let currY = 48;
+    const colonX = 40;
     
     doc.text("GSTIN", startX, currY);
     doc.text(`: 33HTQPS8640C1Z8`, colonX, currY);
@@ -207,27 +318,11 @@ export default function CheckoutPage() {
     doc.text("Address", startX, currY);
     doc.text(`: 130/134 A North Car Street,`, colonX, currY);
     currY += 5;
-    doc.text(`  Srivilliputtur - 626125`, colonX, currY);
-    
-    currY += 5;
-    doc.text("State", startX, currY);
-    doc.text(`: Tamil Nadu`, colonX, currY);
-    
-    currY += 5;
-    doc.text("State Code", startX, currY);
-    doc.text(`: 33`, colonX, currY);
-    
-    currY += 5;
-    doc.text("Country", startX, currY);
-    doc.text(`: India`, colonX, currY);
-    
-    currY += 5;
-    doc.text("Pin Code", startX, currY);
-    doc.text(`: 626125`, colonX, currY);
+    doc.text(`  Srivilliputtur - 626125, Tamil Nadu`, colonX, currY);
     
     currY += 5;
     doc.text("Phone", startX, currY);
-    doc.text(`: 6369825925`, colonX, currY);
+    doc.text(`: +91 6369825925`, colonX, currY);
     
     currY += 10;
     const now = new Date();
@@ -237,7 +332,7 @@ export default function CheckoutPage() {
     const timeStr = now.toLocaleTimeString('en-GB', { hour12: false });
     
     doc.text(`Date : ${dateStr} Time : ${timeStr}`, startX, currY);
-    doc.text(`Order ID : ${orderId}`, startX + 90, currY);
+    doc.text(`Order ID : ${currentOrderId}`, startX + 90, currY);
     
     // Billed To
     currY += 10;
@@ -269,7 +364,7 @@ export default function CheckoutPage() {
     const tableColumn = ["Item", "Size", "Qty", "Price", "Total"];
     const tableRows: any[] = [];
     
-    orderedItems.forEach(item => {
+    currentCartItems.forEach(item => {
       const price = parseFloat(String(item.price).replace(/[^\d]/g, ''));
       const total = price * item.quantity;
       tableRows.push([
@@ -291,7 +386,7 @@ export default function CheckoutPage() {
     
     let afterTableY = (doc as any).lastAutoTable.finalY || 105;
     
-    const currentSubtotal = orderedItems.reduce((acc, item) => {
+    const currentSubtotal = currentCartItems.reduce((acc, item) => {
       const numericPrice = parseFloat(String(item.price).replace(/[^\d]/g, ''));
       return acc + numericPrice * item.quantity;
     }, 0);
@@ -383,7 +478,16 @@ export default function CheckoutPage() {
     doc.setFont("helvetica", "bold");
     doc.text("Thanks for preferring to shop at Elara Silver.", 105, afterTableY + 4, { align: "center" });
     
-    doc.save(`Invoice_${orderId}.pdf`);
+    return doc;
+  };
+
+  const downloadInvoice = async () => {
+    try {
+      const doc = await generateInvoiceDoc();
+      doc.save(`Invoice_${orderId}.pdf`);
+    } catch (e) {
+      console.error("Failed to download invoice", e);
+    }
   };
 
   if (cartItems.length === 0 && step !== 3) {
@@ -656,6 +760,27 @@ export default function CheckoutPage() {
           <div className="lg:col-span-5 h-fit bg-white border border-black/5 shadow-[0_10px_40px_rgba(0,0,0,0.02)] p-8">
             <h3 className="text-xs font-bold tracking-[0.2em] uppercase text-black mb-8 pb-4 border-b border-black/10">Order Summary</h3>
             
+            {user && (user.points || 0) >= 1000 && (
+                <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center justify-between">
+                  <div>
+                    <p className="font-bold text-green-800 text-xs flex items-center gap-2">💎 Loyalty Points (Available: {user.points})</p>
+                    <p className="text-[10px] text-green-700">Use 1000 points to get ₹1000 off!</p>
+                  </div>
+                  <label className="flex items-center cursor-pointer">
+                    <div className="relative">
+                      <input 
+                        type="checkbox" 
+                        className="sr-only" 
+                        checked={isUsingPoints}
+                        onChange={() => setIsUsingPoints(!isUsingPoints)}
+                      />
+                      <div className={`block w-10 h-6 rounded-full transition-colors ${isUsingPoints ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+                      <div className={`dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${isUsingPoints ? 'transform translate-x-4' : ''}`}></div>
+                    </div>
+                  </label>
+                </div>
+              )}
+
             <div className="space-y-6 mb-8 max-h-[400px] overflow-y-auto scrollbar-none">
               {cartItems.map((item) => (
                 <div key={`${item.id}-${item.size}`} className="flex gap-4">
@@ -681,6 +806,41 @@ export default function CheckoutPage() {
               ))}
             </div>
 
+            {/* Coupon Section */}
+            <div className="py-6 border-t border-black/10">
+              <label className="text-[10px] tracking-widest uppercase text-black/60 font-semibold block mb-3">Gift Card or Discount Code</label>
+              
+              {appliedCouponCode ? (
+                <div className="flex items-center justify-between p-3 bg-green-50 border border-green-200 text-green-800 text-xs rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="font-bold tracking-widest">{appliedCouponCode}</span>
+                  </div>
+                  <button onClick={handleRemoveCoupon} className="text-green-800 hover:text-green-900 font-semibold underline">Remove</button>
+                </div>
+              ) : (
+                <div className="flex gap-3">
+                  <input 
+                    type="text" 
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                    placeholder="Enter code" 
+                    className="flex-grow bg-[#F5F5F7] border border-transparent focus:border-[#0B5E64] px-4 py-3 text-sm outline-none transition-colors uppercase tracking-widest"
+                  />
+                  <button 
+                    onClick={handleApplyCoupon}
+                    disabled={isApplyingCoupon || !couponCode.trim()}
+                    className="px-6 py-3 bg-black text-white text-[10px] font-bold tracking-widest uppercase hover:bg-gray-800 transition-colors disabled:opacity-50"
+                  >
+                    {isApplyingCoupon ? '...' : 'Apply'}
+                  </button>
+                </div>
+              )}
+              {couponError && <p className="text-red-500 text-[10px] tracking-widest uppercase mt-2 font-semibold">{couponError}</p>}
+            </div>
+
             <div className="space-y-4 pt-6 border-t border-black/10 text-xs tracking-widest uppercase text-black/60">
               <div className="flex justify-between">
                 <span>Subtotal</span>
@@ -698,9 +858,28 @@ export default function CheckoutPage() {
                   {shippingFee > 0 ? `+₹${shippingFee}` : 'FREE'}
                 </span>
               </div>
+              {isUsingPoints && (
+                <div className="flex justify-between text-green-600">
+                  <span>Points Redeemed (1000)</span>
+                  <span className="font-bold">-₹1,000</span>
+                </div>
+              )}
+              {discountAmount > 0 && (
+                <div className="flex justify-between pb-4 border-b border-black/10 text-[#0B5E64]">
+                  <span>Discount ({appliedCouponCode})</span>
+                  <span className="font-bold">-₹{discountAmount.toLocaleString('en-IN')}</span>
+                </div>
+              )}
               <div className="flex justify-between text-sm font-bold text-black pt-2">
                 <span>Grand Total</span>
                 <span className="text-[#0B5E64]">{formattedGrandTotal}</span>
+              </div>
+              
+              <div className="mt-4 pt-4 border-t border-black/10">
+                <div className="flex justify-between items-center text-green-700 bg-green-50/50 p-3 rounded text-xs mb-2 border border-green-100/50">
+                  <span className="font-semibold uppercase tracking-widest">✨ Points to Earn</span>
+                  <span className="font-bold">+{earnedPoints} Points</span>
+                </div>
               </div>
             </div>
 

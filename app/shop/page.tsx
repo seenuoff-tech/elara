@@ -27,6 +27,7 @@ function ShopContent() {
   // Filters State
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState('featured'); // 'featured', 'price-asc', 'price-desc'
+  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -149,27 +150,46 @@ function ShopContent() {
         {/* Sidebar Filters */}
         <aside className="w-full md:w-64 shrink-0 space-y-8">
           <div>
-            <h3 className="text-lg font-bold tracking-widest uppercase text-black border-b border-gray-200 pb-2 mb-4">Categories</h3>
-            <div className="space-y-3">
-              {allCategories.map(cat => {
-                const lowerCat = cat.toLowerCase();
-                const isSelected = selectedCategories.includes(lowerCat);
-                return (
-                  <label key={cat} className="flex items-center gap-3 cursor-pointer group">
-                    <input 
-                      type="checkbox" 
-                      className="hidden" 
-                      checked={isSelected}
-                      onChange={() => toggleCategory(cat)}
-                    />
-                    <div className={`w-4 h-4 border rounded-sm flex items-center justify-center transition-colors ${isSelected ? 'bg-[#0B5E64] border-[#0B5E64]' : 'border-gray-300 group-hover:border-[#0B5E64]'}`}>
-                      {isSelected && <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>}
-                    </div>
-                    <span className="text-sm text-gray-700 group-hover:text-black">{cat.replace('-', ' ')}</span>
-                  </label>
-                );
-              })}
-            </div>
+            <button 
+              onClick={() => setIsCategoryOpen(!isCategoryOpen)} 
+              className="w-full flex justify-between items-center text-lg font-bold tracking-widest uppercase text-black border-b border-gray-200 pb-2 mb-4"
+            >
+              Categories
+              <svg className={`w-5 h-5 transition-transform duration-300 ${isCategoryOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            <AnimatePresence>
+              {isCategoryOpen && (
+                <motion.div 
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="overflow-hidden"
+                >
+                  <div className="space-y-3 pb-2">
+                    {allCategories.map(cat => {
+                      const lowerCat = cat.toLowerCase();
+                      const isSelected = selectedCategories.includes(lowerCat);
+                      return (
+                        <label key={cat} className="flex items-center gap-3 cursor-pointer group">
+                          <input 
+                            type="checkbox" 
+                            className="hidden" 
+                            checked={isSelected}
+                            onChange={() => toggleCategory(cat)}
+                          />
+                          <div className={`w-4 h-4 border rounded-sm flex items-center justify-center transition-colors ${isSelected ? 'bg-[#0B5E64] border-[#0B5E64]' : 'border-gray-300 group-hover:border-[#0B5E64]'}`}>
+                            {isSelected && <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>}
+                          </div>
+                          <span className="text-sm text-gray-700 group-hover:text-black">{cat.replace('-', ' ')}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </aside>
 
@@ -192,7 +212,7 @@ function ShopContent() {
           </div>
 
           {filteredProducts.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
               {filteredProducts.map((product, index) => (
                 <div key={product.id} className="relative flex flex-col group">
                   <Link href={`/product/${product.name.toLowerCase().replace(/\s+/g, '-')}`} className="block relative aspect-square bg-gray-100 mb-3 overflow-hidden rounded-md">
@@ -237,10 +257,10 @@ function ShopContent() {
                     
                     {/* Rating Badge */}
                     <div className="absolute bottom-2 left-2 z-20 bg-gray-100/90 text-gray-700 text-[10px] font-medium px-2 py-1 rounded flex items-center gap-1 shadow-sm backdrop-blur-sm pointer-events-none">
-                      <span>4.8</span>
+                      <span>{product.rating ? product.rating.toFixed(1) : '4.5'}</span>
                       <span className="text-[#f59e0b] text-[10px] leading-none mb-0.5">★</span>
                       <span className="text-gray-400 mx-0.5">|</span>
-                      <span>{300 + ((index * 47) % 200)}</span>
+                      <span>{product.reviews || Math.floor(Math.random() * 20 + 10)}</span>
                     </div>
                     
                     {/* Wishlist Button */}

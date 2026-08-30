@@ -7,12 +7,33 @@ import LuxuryButton from './luxury/LuxuryButton';
 export default function Footer() {
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     if (email) {
-      setSubscribed(true);
-      setEmail('');
+      setIsLoading(true);
+      setErrorMsg('');
+      try {
+        const res = await fetch('/api/newsletter', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email }),
+        });
+
+        if (res.ok) {
+          setSubscribed(true);
+          setEmail('');
+        } else {
+          setErrorMsg('Failed to subscribe. Please try again.');
+        }
+      } catch (error) {
+        console.error('Subscription failed', error);
+        setErrorMsg('Network error. Please try again.');
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -28,7 +49,7 @@ export default function Footer() {
             <img 
               src="/images/footerlogo.PNG" 
               alt="Elara Silver Logo" 
-              className="w-auto h-40 md:h-48 object-contain drop-shadow-md brightness-0 invert" 
+              className="w-auto h-40 md:h-48 object-contain drop-shadow-md brightness-0 invert -ml-12 md:-ml-14" 
             />
           </div>
           <p className="text-white/80 text-sm leading-relaxed font-light">
@@ -75,8 +96,6 @@ export default function Footer() {
         <div className="space-y-6">
           <h4 className="text-xs font-semibold tracking-[0.25em] uppercase text-white">Services</h4>
           <ul className="space-y-3 text-sm text-white/80 font-light">
-            <li><a href="#" className="hover:text-white transition-colors duration-300">Secure Payments</a></li>
-            <li><Link href="/refund-return-policy" className="hover:text-white transition-colors duration-300">Refund & Return Policy</Link></li>
             <li><Link href="/jewellery-care" className="hover:text-white transition-colors duration-300">Jewellery Care Guide</Link></li>
             <li><Link href="/contact" className="hover:text-white transition-colors duration-300">Contact Us</Link></li>
             <li><Link href="/track-order" className="hover:text-white transition-colors duration-300">Track Your Order</Link></li>
@@ -101,16 +120,19 @@ export default function Footer() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="bg-transparent border-none text-white placeholder-white/50 text-sm py-2 w-full focus:outline-none"
+                  disabled={isLoading}
                 />
               </div>
               <LuxuryButton isCTA={true}>
                 <button
                   type="submit"
-                  className="mt-2 py-2 px-4 text-xs font-medium tracking-[0.2em] uppercase border border-white/40 text-white hover:bg-white hover:text-[#0B5E64] transition-all duration-300 text-center cursor-pointer"
+                  disabled={isLoading}
+                  className="mt-2 py-2 px-4 text-xs font-medium tracking-[0.2em] uppercase border border-white/40 text-white hover:bg-white hover:text-[#0B5E64] transition-all duration-300 text-center cursor-pointer disabled:opacity-50"
                 >
-                  Subscribe
+                  {isLoading ? 'Subscribing...' : 'Subscribe'}
                 </button>
               </LuxuryButton>
+              {errorMsg && <p className="text-red-300 text-xs mt-1">{errorMsg}</p>}
             </form>
           )}
         </div>

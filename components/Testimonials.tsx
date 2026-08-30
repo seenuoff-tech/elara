@@ -2,6 +2,7 @@
 
 import React from 'react';
 
+
 const testimonials = [
   {
     name: "Karthi Chidambaram",
@@ -41,7 +42,7 @@ export default function Testimonials() {
       
       <div className="text-center mb-16 relative z-10 flex flex-col items-center justify-center">
         <span className="text-sm md:text-base font-semibold tracking-[0.3em] uppercase text-gray-500 mb-1">Our</span>
-        <h2 className="text-4xl md:text-5xl font-serif font-bold text-[#E05A87] tracking-wide drop-shadow-sm">Love Letters</h2>
+        <h2 className="text-4xl md:text-5xl font-medium text-[#E05A87]" style={{ fontFamily: "'Outfit', sans-serif" }}>Love Letters</h2>
       </div>
 
       {/* Infinite Marquee Container */}

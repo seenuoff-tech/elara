@@ -4,18 +4,41 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { PricingProvider } from '@/components/PricingProvider';
+import { 
+  LayoutDashboard, 
+  Package, 
+  ShoppingCart, 
+  Users, 
+  Settings, 
+  LogOut, 
+  Menu, 
+  X,
+  Edit3,
+  Tag,
+  ImageIcon,
+  Layers,
+  FileImage,
+  BarChart3,
+  Receipt,
+  Trash2,
+  MessageSquare
+} from 'lucide-react';
 
 const navLinks = [
-  { name: 'Dashboard', href: '/admin-auth', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
-  { name: 'Hero Slider', href: '/admin-auth/hero', icon: 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z' },
-  { name: 'Categories', href: '/admin-auth/categories', icon: 'M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z' },
-  { name: 'Products', href: '/admin-auth/products', icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4' },
-  { name: 'Media', href: '/admin-auth/media', icon: 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z' },
-  { name: 'Orders', href: '/admin-auth/orders', icon: 'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z' },
-  { name: 'Reports', href: '/admin-auth/reports', icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' },
-  { name: 'Invoices', href: '/admin-auth/invoices', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
-  { name: 'Trash', href: '/admin-auth/trash', icon: 'M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16' },
-  { name: 'Chatbot FAQs', href: '/admin-auth/chatbot-faq', icon: 'M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z' },
+  { name: 'Dashboard', href: '/admin-auth', icon: LayoutDashboard },
+  { name: 'Hero Slider', href: '/admin-auth/hero', icon: ImageIcon },
+  { name: 'Categories', href: '/admin-auth/categories', icon: Layers },
+  { name: 'Products', href: '/admin-auth/products', icon: Package },
+  { name: 'Media', href: '/admin-auth/media', icon: FileImage },
+  { name: 'Orders', href: '/admin-auth/orders', icon: ShoppingCart },
+  { name: 'Reports', href: '/admin-auth/reports', icon: BarChart3 },
+  { name: 'Invoices', href: '/admin-auth/invoices', icon: Receipt },
+  { name: 'Coupons', href: '/admin-auth/coupons', icon: Tag },
+  { name: 'Customers', href: '/admin-auth/customers', icon: Users },
+  { name: 'Chatbot FAQs', href: '/admin-auth/chatbot-faq', icon: MessageSquare },
+  { name: 'Trash', href: '/admin-auth/trash', icon: Trash2 },
+  { name: 'Homepage Editor', href: '/admin-auth/homepage', icon: Edit3 },
+  { name: 'Settings', href: '/admin-auth/settings', icon: Settings },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -142,14 +165,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <span className="text-sm font-bold tracking-widest text-[#0B5E64] text-center">ELARA SILVER ADMIN</span>
           </Link>
           <button className="lg:hidden text-gray-500 absolute top-4 right-4" onClick={() => setIsSidebarOpen(false)}>
-            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <X className="w-6 h-6" />
           </button>
         </div>
 
         <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
           {navLinks.map((link) => {
+            const Icon = link.icon;
             const isActive = pathname === link.href || (pathname?.startsWith(link.href) && link.href !== '/admin-auth');
             return (
               <Link 
@@ -162,15 +184,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 }`}
                 onClick={() => setIsSidebarOpen(false)}
               >
-                <svg 
-                  className={`w-5 h-5 mr-3 flex-shrink-0 ${isActive ? 'text-white' : 'text-gray-400 group-hover:text-gray-600'}`} 
-                  fill="none" 
-                  viewBox="0 0 24 24" 
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d={link.icon} />
-                </svg>
+                <Icon className={`w-5 h-5 mr-3 flex-shrink-0 ${isActive ? 'text-white' : 'text-gray-400 group-hover:text-gray-600'}`} />
                 {link.name}
               </Link>
             );
@@ -179,9 +193,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         <div className="p-4 border-t border-gray-200">
           <button onClick={handleLogout} className="flex items-center text-sm text-gray-600 hover:text-red-600 transition-colors w-full">
-            <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
+            <LogOut className="w-4 h-4 mr-2" />
             Logout
           </button>
         </div>
@@ -196,9 +208,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 className="lg:hidden p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
                 onClick={() => setIsSidebarOpen(true)}
               >
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
+                <Menu className="w-6 h-6" />
               </button>
               <h2 className="text-xl font-semibold text-gray-800 hidden sm:block">
                 {navLinks.find(link => link.href === pathname)?.name || 'Dashboard'}

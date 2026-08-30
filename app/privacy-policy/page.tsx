@@ -149,6 +149,24 @@ const sections = [
       <p>Should you have any questions about our privacy practices or this Privacy Policy, or if you would like to exercise any of the rights available to you, please call <strong>+91 6369825925</strong>, email us at <a href="mailto:info@elarasilver.com" className="text-[#0B5E64] underline">info@elarasilver.com</a>, or write to us at: <strong>ELARA SILVER, 130/134 A North car street, srivilliputtur 626125 tamilnadu, India</strong>.</p>
     ),
   },
+  {
+    title: '15. Jewellery Care',
+    content: (
+      <div className="space-y-4">
+        <p>Silver jewels have a soft luster, and so they can get tarnished easily if not taken care of. Follow these simple steps to care your jewellery just like how you care for yourself :)</p>
+        <ul className="list-disc pl-5 space-y-2">
+          <li>Do not wear when sweating.</li>
+          <li>Avoid perfume, lotion or sunscreen after wearing the jewel.</li>
+          <li>Do not wear when washing.</li>
+          <li>Avoid collide, grind or fire.</li>
+          <li>Do not wear when sleeping.</li>
+          <li>Put inside a plastic box when not in use. Avoid velvet box.</li>
+          <li>Do not clean with chemicals.</li>
+          <li>Use soft cloth to clean.</li>
+        </ul>
+      </div>
+    ),
+  },
 ];
 
 export default function PrivacyPolicyPage() {

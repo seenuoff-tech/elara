@@ -48,6 +48,24 @@ const sections = [
     title: '10. Contact Information',
     content: `If you have any questions regarding these Terms and Conditions, please reach out to us at info@elarasilver.com or call us at +91 6369825925, or write to us at ELARA SILVER, 130/134 A North car street, srivilliputtur 626125 tamilnadu. Our client services team is available Monday through Saturday, 10:00–19:00 IST.`,
   },
+  {
+    title: '11. Jewellery Care',
+    content: (
+      <div className="space-y-4">
+        <p>Silver jewels have a soft luster, and so they can get tarnished easily if not taken care of. Follow these simple steps to care your jewellery just like how you care for yourself :)</p>
+        <ul className="list-disc pl-5 space-y-2">
+          <li>Do not wear when sweating.</li>
+          <li>Avoid perfume, lotion or sunscreen after wearing the jewel.</li>
+          <li>Do not wear when washing.</li>
+          <li>Avoid collide, grind or fire.</li>
+          <li>Do not wear when sleeping.</li>
+          <li>Put inside a plastic box when not in use. Avoid velvet box.</li>
+          <li>Do not clean with chemicals.</li>
+          <li>Use soft cloth to clean.</li>
+        </ul>
+      </div>
+    ),
+  },
 ];
 
 export default function TermsAndConditionsPage() {
@@ -86,9 +104,9 @@ export default function TermsAndConditionsPage() {
             <h2 className="text-sm font-bold tracking-[0.2em] uppercase text-black mb-3 group-hover:text-[#0B5E64] transition-colors duration-300">
               {section.title}
             </h2>
-            <p className="text-black/60 font-light leading-relaxed text-sm md:text-base">
+            <div className="text-black/60 font-light leading-relaxed text-sm md:text-base">
               {section.content}
-            </p>
+            </div>
           </div>
         ))}
       </section>

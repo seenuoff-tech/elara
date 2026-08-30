@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 
-const colors = [
+const defaultColors = [
   {
     name: 'Pure 925 Silver',
     href: '/shop?color=silver',
@@ -38,6 +38,19 @@ const colors = [
 ];
 
 export default function ShopByColour() {
+  const [colors, setColors] = useState(defaultColors);
+
+  useEffect(() => {
+    fetch('/api/settings/homepage')
+      .then(res => res.json())
+      .then(json => {
+        if (json.success && json.data?.colors) {
+          setColors(json.data.colors);
+        }
+      })
+      .catch(console.error);
+  }, []);
+
   return (
     <section className="py-16 px-4 md:px-12 bg-white max-w-7xl mx-auto z-10 relative">
       <div className="flex flex-col items-center text-center mb-10 gap-2">

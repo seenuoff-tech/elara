@@ -1,14 +1,36 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 export default function InvoicesPage() {
-  const [invoices, setInvoices] = useState([
-    { id: 'INV-2026-001', orderId: 'ORD-1023', customer: 'Rahul Sharma', date: 'Oct 24, 2026', amount: '₹4,500', status: 'Paid' },
-    { id: 'INV-2026-002', orderId: 'ORD-1022', customer: 'Priya Patel', date: 'Oct 23, 2026', amount: '₹12,000', status: 'Paid' },
-    { id: 'INV-2026-003', orderId: 'ORD-1021', customer: 'Arun Kumar', date: 'Oct 22, 2026', amount: '₹3,200', status: 'Paid' },
-    { id: 'INV-2026-004', orderId: 'ORD-1020', customer: 'Sneha Reddy', date: 'Oct 21, 2026', amount: '₹8,900', status: 'Refunded' },
-  ]);
+  const [invoices, setInvoices] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchInvoices = async () => {
+      try {
+        const res = await fetch('/api/orders');
+        const data = await res.json();
+        if (data.success) {
+          const formattedInvoices = data.orders.map((order: any) => ({
+            id: `INV-${order.orderNumber?.split('-')[1] || order.id.toString().substring(0,6)}`,
+            orderId: order.orderNumber,
+            customer: order.customerName,
+            date: new Date(order.createdAt).toLocaleDateString(),
+            amount: `₹${order.totalAmount}`,
+            status: order.paymentStatus === 'Completed' || order.paymentStatus === 'Paid' ? 'Paid' : (order.paymentStatus || 'Pending'),
+            rawOrder: order
+          }));
+          setInvoices(formattedInvoices);
+        }
+      } catch (error) {
+        console.error('Failed to fetch orders for invoices', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchInvoices();
+  }, []);
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
 
   const handleDownloadPdf = (invoice: any) => {
@@ -46,58 +68,64 @@ export default function InvoicesPage() {
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="text-xs text-gray-500 uppercase bg-gray-50 border-b border-gray-100">
-              <tr>
-                <th className="px-6 py-4">Invoice ID</th>
-                <th className="px-6 py-4">Order ID</th>
-                <th className="px-6 py-4">Customer</th>
-                <th className="px-6 py-4">Date</th>
-                <th className="px-6 py-4">Amount</th>
-                <th className="px-6 py-4">Status</th>
-                <th className="px-6 py-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {invoices.map((invoice) => (
-                <tr key={invoice.id} className="border-b border-gray-50 last:border-0 hover:bg-gray-50/50 transition-colors">
-                  <td className="px-6 py-4 font-medium text-gray-900">{invoice.id}</td>
-                  <td className="px-6 py-4 text-[#0B5E64] hover:underline cursor-pointer">{invoice.orderId}</td>
-                  <td className="px-6 py-4 text-gray-600">{invoice.customer}</td>
-                  <td className="px-6 py-4 text-gray-500">{invoice.date}</td>
-                  <td className="px-6 py-4 font-medium text-gray-900">{invoice.amount}</td>
-                  <td className="px-6 py-4">
-                    <span className={`px-2.5 py-1 text-xs font-medium rounded-full ${
-                      invoice.status === 'Paid' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                    }`}>
-                      {invoice.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-right flex items-center justify-end gap-3">
-                    <button 
-                      onClick={() => setSelectedInvoice(invoice)} 
-                      className="text-gray-500 hover:text-gray-900 flex items-center gap-1 transition-colors"
-                    >
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                      </svg>
-                      Preview
-                    </button>
-                    <button 
-                      onClick={() => handleDownloadPdf(invoice)} 
-                      className="text-[#0B5E64] hover:text-[#084A4F] flex items-center gap-1 transition-colors font-medium"
-                    >
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                      </svg>
-                      PDF
-                    </button>
-                  </td>
+          {loading ? (
+            <div className="p-8 text-center text-gray-500">Loading invoices...</div>
+          ) : invoices.length === 0 ? (
+            <div className="p-8 text-center text-gray-500">No invoices found.</div>
+          ) : (
+            <table className="w-full text-sm text-left">
+              <thead className="text-xs text-gray-500 uppercase bg-gray-50 border-b border-gray-100">
+                <tr>
+                  <th className="px-6 py-4">Invoice ID</th>
+                  <th className="px-6 py-4">Order ID</th>
+                  <th className="px-6 py-4">Customer</th>
+                  <th className="px-6 py-4">Date</th>
+                  <th className="px-6 py-4">Amount</th>
+                  <th className="px-6 py-4">Status</th>
+                  <th className="px-6 py-4 text-right">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {invoices.map((invoice) => (
+                  <tr key={invoice.id} className="border-b border-gray-50 last:border-0 hover:bg-gray-50/50 transition-colors">
+                    <td className="px-6 py-4 font-medium text-gray-900">{invoice.id}</td>
+                    <td className="px-6 py-4 text-[#0B5E64] hover:underline cursor-pointer">{invoice.orderId}</td>
+                    <td className="px-6 py-4 text-gray-600">{invoice.customer}</td>
+                    <td className="px-6 py-4 text-gray-500">{invoice.date}</td>
+                    <td className="px-6 py-4 font-medium text-gray-900">{invoice.amount}</td>
+                    <td className="px-6 py-4">
+                      <span className={`px-2.5 py-1 text-xs font-medium rounded-full ${
+                        invoice.status === 'Paid' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                      }`}>
+                        {invoice.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-right flex items-center justify-end gap-3">
+                      <button 
+                        onClick={() => setSelectedInvoice(invoice)} 
+                        className="text-gray-500 hover:text-gray-900 flex items-center gap-1 transition-colors"
+                      >
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                        Preview
+                      </button>
+                      <button 
+                        onClick={() => handleDownloadPdf(invoice)} 
+                        className="text-[#0B5E64] hover:text-[#084A4F] flex items-center gap-1 transition-colors font-medium"
+                      >
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        PDF
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
 

@@ -84,10 +84,10 @@ export default function NewArrivals() {
               
               {/* Rating Badge */}
               <div className="absolute bottom-2 left-2 z-20 bg-gray-100/90 text-gray-700 text-[10px] font-medium px-2 py-1 rounded flex items-center gap-1 shadow-sm backdrop-blur-sm pointer-events-none">
-                <span>4.8</span>
+                <span>{product.rating ? product.rating.toFixed(1) : '4.5'}</span>
                 <span className="text-[#f59e0b] text-[10px] leading-none mb-0.5">★</span>
                 <span className="text-gray-400 mx-0.5">|</span>
-                <span>{300 + ((index * 47) % 200)}</span>
+                <span>{product.reviews || Math.floor(Math.random() * 20 + 10)}</span>
               </div>
               
               {/* Wishlist Button */}
@@ -146,6 +146,18 @@ export default function NewArrivals() {
             </div>
           </div>
         ))}
+      </div>
+
+      <div className="flex justify-end mt-8 md:mt-12">
+        <Link 
+          href="/shop" 
+          className="inline-flex items-center gap-2 text-sm font-semibold tracking-widest uppercase text-[#0B5E64] hover:text-black transition-colors group"
+        >
+          View all
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 group-hover:translate-x-1 transition-transform">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+          </svg>
+        </Link>
       </div>
     </section>
   );

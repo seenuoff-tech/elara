@@ -47,7 +47,7 @@ export default function ConciergeAssistant() {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-[99] select-none">
+    <div className="fixed bottom-24 md:bottom-6 right-6 z-[99] select-none">
       {/* Concierge Window */}
       <AnimatePresence>
         {isOpen && (
@@ -56,7 +56,7 @@ export default function ConciergeAssistant() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute bottom-20 right-0 w-[320px] md:w-[380px] h-[450px] border border-black/10 bg-neutral-50/90 backdrop-blur-2xl flex flex-col justify-between shadow-[0_30px_60px_rgba(0,0,0,0.85)]"
+            className="absolute bottom-20 right-0 w-[300px] md:w-[380px] h-[450px] border border-black/10 bg-neutral-50/90 backdrop-blur-2xl flex flex-col justify-between shadow-[0_30px_60px_rgba(0,0,0,0.85)]"
           >
             {/* Header */}
             <div className="p-5 border-b border-black/10 flex justify-between items-center bg-[#ffffff]/40">

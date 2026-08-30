@@ -11,8 +11,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Amount is required' }, { status: 400 });
     }
 
-    const keyId = process.env.RAZORPAY_KEY_ID || 'rzp_live_s4Mh9Z2A7fDbz6';
-    const keySecret = process.env.RAZORPAY_KEY_SECRET || 'JIMFZcOhavaz5Hvfbl5tgN30';
+    const keyId = process.env.RAZORPAY_KEY_ID || 'rzp_live_TVTmsBuqCm25Fw';
+    const keySecret = process.env.RAZORPAY_KEY_SECRET || 'Y0aE1zjoYdz8A27HpzQiCqJ1';
 
     const instance = new Razorpay({
       key_id: keyId,

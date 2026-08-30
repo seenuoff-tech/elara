@@ -94,13 +94,25 @@ export default function ProductsManagement() {
     }
   };
 
-  const handleSaveProduct = async () => {
+    const handleSaveProduct = async () => {
     if (editingProduct) {
       let result;
+      
+      const productToSave = { ...editingProduct };
+      if (productToSave.pricingType === 'manual') {
+         let categoryName = 'Rings';
+         if (productToSave.category) categoryName = productToSave.category;
+         else if (productToSave.categoryId) {
+           const cat = categories.find(c => c.id === productToSave.categoryId);
+           if (cat) categoryName = cat.name;
+         }
+         productToSave.baseSilverRate = silverRates[categoryName] || silverRates['Rings'] || 85;
+      }
+
       if (editingProduct.id === '') {
-        result = await addProduct(editingProduct);
+        result = await addProduct(productToSave);
       } else {
-        result = await updateProduct(editingProduct.id, editingProduct);
+        result = await updateProduct(editingProduct.id, productToSave);
       }
       
       if (result && result.success === false) {
