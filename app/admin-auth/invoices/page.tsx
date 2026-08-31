@@ -118,183 +118,30 @@ export default function InvoicesPage() {
     return str.trim() ? `${str.trim()} RUPEES ONLY` : 'ZERO RUPEES ONLY';
   };
 
-  const handleDownloadPdf = (invoice: any) => {
-    const doc = new jsPDF();
+  const handleDownloadPdf = async (invoice: any) => {
+    const element = document.getElementById('invoice-printable-area');
+    if (!element) return;
 
-    // Top Header - Compressed Vector/Raster Logo
-    const logoImg = new Image();
-    logoImg.src = invoiceSettings.logoUrl || '/images/footerlogo.PNG';
-    
     try {
-      const canvas = document.createElement('canvas');
-      canvas.width = 240;
-      canvas.height = 90;
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        ctx.fillStyle = '#FFFFFF';
-        ctx.fillRect(0, 0, 240, 90);
-        ctx.drawImage(logoImg, 0, 0, 240, 90);
-        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
-        doc.addImage(compressedDataUrl, 'JPEG', 85, 8, 40, 15, undefined, 'FAST');
-      } else {
-        doc.addImage(logoImg, 'PNG', 85, 8, 40, 15, undefined, 'FAST');
-      }
-    } catch (e) {
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(22);
-      doc.setTextColor(11, 94, 100);
-      doc.text('ELARA SILVER', 105, 20, { align: 'center' });
+      const html2canvas = (await import('html2canvas')).default;
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff'
+      });
+
+      const imgData = canvas.toDataURL('image/jpeg', 0.85);
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+      pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
+      pdf.save(`${invoice.id}_ElaraSilver.pdf`);
+    } catch (err) {
+      console.error('Error generating PDF:', err);
+      alert('Failed to download PDF');
     }
-
-    // Document Title
-    doc.setFontSize(11);
-    doc.setTextColor(0, 0, 0);
-    doc.text('TAX INVOICE (Sales)', 14, 34);
-
-    // Branch & Customer Info Columns
-    doc.setFontSize(9);
-    doc.text('Branch', 14, 42);
-    doc.text('Customer :', 110, 42);
-
-    doc.setFont('helvetica', 'bold');
-    doc.text(invoiceSettings.branchName || 'ELARA SILVER', 14, 48);
-
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
-
-    // Left Column (Branch Info)
-    let curY = 53;
-    doc.text('GSTIN', 14, curY); doc.text(`: ${invoiceSettings.gstin}`, 40, curY); curY += 4;
-    doc.text('Address', 14, curY); doc.text(`: ${invoiceSettings.address}`, 40, curY); curY += 4;
-    doc.text('State', 14, curY); doc.text(`: ${invoiceSettings.state}`, 40, curY); curY += 4;
-    doc.text('State Code', 14, curY); doc.text(`: ${invoiceSettings.stateCode}`, 40, curY); curY += 4;
-    doc.text('Country', 14, curY); doc.text(`: ${invoiceSettings.country}`, 40, curY); curY += 4;
-    doc.text('Pin Code', 14, curY); doc.text(`: ${invoiceSettings.pinCode}`, 40, curY); curY += 4;
-    doc.text('Phone', 14, curY); doc.text(`: ${invoiceSettings.phone}`, 40, curY);
-
-    // Right Column (Customer Info)
-    curY = 48;
-    doc.setFont('helvetica', 'bold');
-    doc.text('Billed To', 110, curY); curY += 5;
-    doc.setFont('helvetica', 'normal');
-    doc.text('GSTIN', 110, curY); doc.text(':', 138, curY); curY += 4;
-    doc.text('Name', 110, curY); doc.text(`: ${invoice.customer || ''}`, 138, curY); curY += 4;
-    doc.text('State', 110, curY); doc.text(`: ${invoiceSettings.state}`, 138, curY); curY += 4;
-    doc.text('State Code', 110, curY); doc.text(`: ${invoiceSettings.stateCode}`, 138, curY); curY += 4;
-    doc.text('Country', 110, curY); doc.text(`: ${invoiceSettings.country}`, 138, curY); curY += 4;
-    doc.text('Pin Code', 110, curY); doc.text(`: ${invoice.rawOrder?.pincode || invoiceSettings.pinCode}`, 138, curY); curY += 4;
-    doc.text('Phone', 110, curY); doc.text(`: ${invoice.phone}`, 138, curY); curY += 4;
-    doc.text('Invoice Number', 110, curY); doc.text(`: ${invoice.id}`, 138, curY);
-
-    // Date Line
-    doc.setFontSize(8.5);
-    doc.text(`Date : ${invoice.date} Time : ${invoice.time}`, 14, 88);
-
-    // Simplified Clean Table Structure
-    const tableItems = (invoice.items && invoice.items.length > 0)
-      ? invoice.items.map((item: any, idx: number) => {
-          const itemTotal = item.price * (item.quantity || 1);
-          const cgstVal = (itemTotal * 0.015).toFixed(2);
-          const sgstVal = (itemTotal * 0.015).toFixed(2);
-          return [
-            idx + 1,
-            item.name + (item.size ? ` (${item.size})` : ''),
-            `₹${cgstVal} (1.5%)`,
-            `₹${sgstVal} (1.5%)`,
-            `₹${itemTotal.toLocaleString('en-IN')}.00`
-          ];
-        })
-      : [
-          [1, 'Jewellery Item', '₹0.00 (1.5%)', '₹0.00 (1.5%)', `₹${invoice.rawAmount.toLocaleString('en-IN')}.00`]
-        ];
-
-    autoTable(doc, {
-      startY: 92,
-      head: [['S.NO', 'Item Name', 'CGST (1.5%)', 'SGST (1.5%)', 'Amount']],
-      body: tableItems,
-      headStyles: {
-        fillColor: [240, 240, 240],
-        textColor: [0, 0, 0],
-        fontStyle: 'bold',
-        fontSize: 8,
-        lineColor: [200, 200, 200],
-        lineWidth: 0.1
-      },
-      bodyStyles: {
-        fontSize: 8,
-        textColor: [0, 0, 0],
-      },
-      styles: {
-        cellPadding: 2,
-        valign: 'middle'
-      },
-      columnStyles: {
-        0: { cellWidth: 15, halign: 'center' },
-        1: { cellWidth: 'auto' },
-        2: { cellWidth: 35, halign: 'center' },
-        3: { cellWidth: 35, halign: 'center' },
-        4: { cellWidth: 40, halign: 'right' }
-      }
-    });
-
-    const finalY = (doc as any).lastAutoTable.finalY || 140;
-
-    // Payable Amount Section (No Round Off line)
-    doc.line(14, finalY + 4, 196, finalY + 4);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(9);
-    doc.text('PAYABLE NET AMOUNT :', 140, finalY + 11, { align: 'right' });
-    doc.text(`₹${invoice.rawAmount.toLocaleString('en-IN')}.00`, 196, finalY + 11, { align: 'right' });
-    doc.line(14, finalY + 14, 196, finalY + 14);
-
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
-    doc.text(`RUPEES : ${numberToWords(invoice.rawAmount)}`, 14, finalY + 20);
-
-    // Disclaimer
-    doc.setFontSize(7);
-    doc.text('(Price includes GST 3%, hallmarking charges, consumable and packing material)', 105, finalY + 28, { align: 'center' });
-    doc.text('E. & O. E.', 196, finalY + 28, { align: 'right' });
-
-    // Terms & Conditions Block
-    let termY = finalY + 34;
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(7.5);
-    doc.text('Terms & Conditions', 14, termY); termY += 4;
-
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(6.5);
-    invoiceSettings.terms.forEach((t: string) => {
-      const splitT = doc.splitTextToSize(t, 182);
-      doc.text(splitT, 14, termY);
-      termY += (splitT.length * 3.2);
-    });
-
-    // Declaration Block
-    termY += 1;
-    doc.setFont('helvetica', 'bold');
-    doc.text('Declaration', 14, termY); termY += 3.5;
-    doc.setFont('helvetica', 'normal');
-    const splitDec = doc.splitTextToSize(invoiceSettings.declarationText, 182);
-    doc.text(splitDec, 14, termY);
-    termY += (splitDec.length * 3.2);
-
-    // Signatures
-    termY += 6;
-    doc.setFontSize(7);
-    doc.text('Customer Signature', 14, termY);
-    doc.text(`for ${invoiceSettings.companyName || 'ELARA SILVER'}`, 196, termY, { align: 'right' });
-    doc.text('Authorised Signatory', 196, termY + 4, { align: 'right' });
-
-    // Footer Consent
-    doc.setFillColor(180, 225, 220);
-    doc.rect(0, 285, 210, 12, 'F');
-    doc.setTextColor(0, 0, 0);
-    doc.setFontSize(6.5);
-    doc.text(invoiceSettings.consentText, 14, 290);
-    doc.text('Thanks for preferring to shop at Elara Silver', 196, 290, { align: 'right' });
-
-    doc.save(`${invoice.id}_ElaraSilver.pdf`);
   };
 
   const handlePrint = () => {
