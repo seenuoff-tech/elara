@@ -16,6 +16,7 @@ function ShopContent() {
   const urlCategory = searchParams.get('category');
   const urlGender = searchParams.get('gender');
   const urlPrice = searchParams.get('price');
+  const urlColor = searchParams.get('color');
 
   const [mounted, setMounted] = useState(false);
   
@@ -69,6 +70,40 @@ function ShopContent() {
   const filteredProducts = useMemo(() => {
     let filtered = [...products];
 
+    // Filter by Color / Finish from URL
+    if (urlColor) {
+      const targetColor = urlColor.toLowerCase();
+      filtered = filtered.filter(p => {
+        let pFinishes: string[] = [];
+        if (Array.isArray(p.finishes)) {
+          pFinishes = p.finishes;
+        } else if (typeof p.finishes === 'string') {
+          try {
+            pFinishes = JSON.parse(p.finishes);
+          } catch {
+            pFinishes = [p.finishes];
+          }
+        }
+        
+        // Normalize strings for comparison
+        const normalized = pFinishes.map(f => String(f).toLowerCase());
+
+        if (targetColor === 'silver') {
+          return normalized.some(f => f.includes('pure 925 silver') || f.includes('silver'));
+        }
+        if (targetColor === 'gold') {
+          return normalized.some(f => f.includes('gold plated') && !f.includes('rose'));
+        }
+        if (targetColor === 'rosegold') {
+          return normalized.some(f => f.includes('rose gold'));
+        }
+        if (targetColor === 'oxidised' || targetColor === 'oxidized') {
+          return normalized.some(f => f.includes('oxidised') || f.includes('oxidized'));
+        }
+        return normalized.some(f => f.includes(targetColor));
+      });
+    }
+
     // Filter by Gender logic
     if (urlGender) {
       if (urlGender === 'women') {
@@ -119,7 +154,7 @@ function ShopContent() {
     }
 
     return filtered;
-  }, [products, urlGender, selectedCategories, sortBy]);
+  }, [products, urlColor, urlGender, urlPrice, selectedCategories, sortBy]);
 
   const allCategories = ['Rings', 'Necklace', 'Bracelet', 'Earings', 'Anklets', 'Chains', 'Toe rings', 'Mens-Rings', 'Mens-Chains', 'Mens-Bracelet', 'Kids-Earings'];
 
@@ -138,7 +173,9 @@ function ShopContent() {
       {/* Header */}
       <section className="py-12 px-6 md:px-12 text-center bg-white border-b border-gray-200 mt-8">
         <h1 className="text-3xl md:text-5xl font-bold tracking-widest uppercase text-black">
-          {urlGender ? `${urlGender}'s Jewellery` : 'Our Collection'}
+          {urlColor 
+            ? `${urlColor === 'silver' ? 'Pure 925 Silver' : urlColor === 'gold' ? 'Gold Plated' : urlColor === 'rosegold' ? 'Rose Gold Plated' : urlColor === 'oxidised' ? 'Oxidised Silver' : urlColor}` 
+            : urlGender ? `${urlGender}'s Jewellery` : 'Our Collection'}
         </h1>
         <p className="mt-4 text-gray-500 max-w-2xl mx-auto text-sm">
           Discover our finely crafted pieces designed for timeless elegance. Use the filters to find your perfect match.

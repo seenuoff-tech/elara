@@ -74,6 +74,15 @@ export async function GET(request: Request) {
         parsedDescription = { inspiration: '', design: '' };
       }
 
+      let parsedFinishes = [];
+      try {
+        if (p.finishes) {
+          parsedFinishes = typeof p.finishes === 'string' ? JSON.parse(p.finishes) : p.finishes;
+        }
+      } catch (e) {
+        parsedFinishes = [];
+      }
+
       return {
         ...p,
         price: computedPrice,
@@ -85,6 +94,7 @@ export async function GET(request: Request) {
         mrpPrice: computedMrp,
         baseSilverRate: (p as any).baseSilverRate || null,
         sizes: parsedSizes,
+        finishes: parsedFinishes,
         description: parsedDescription
       };
     });
