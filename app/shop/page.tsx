@@ -85,6 +85,10 @@ function ShopContent() {
           }
         }
         
+        if (!Array.isArray(pFinishes)) {
+          pFinishes = pFinishes ? [String(pFinishes)] : [];
+        }
+
         // Normalize strings for comparison
         const normalized = pFinishes.map(f => String(f).toLowerCase());
 
