@@ -119,28 +119,51 @@ export default function InvoicesPage() {
   };
 
   const handleDownloadPdf = async (invoice: any) => {
-    const element = document.getElementById('invoice-printable-area');
-    if (!element) return;
+    let element = document.getElementById('invoice-printable-area');
+    
+    // If preview modal isn't open, open it briefly or use printable area
+    if (!element && invoice) {
+      setSelectedInvoice(invoice);
+      await new Promise(r => setTimeout(r, 100));
+      element = document.getElementById('invoice-printable-area');
+    }
+
+    if (!element) {
+      alert('Please open preview first');
+      return;
+    }
 
     try {
-      const html2canvas = (await import('html2canvas')).default;
-      const canvas = await html2canvas(element, {
+      const html2canvasModule = await import('html2canvas');
+      const html2canvas = html2canvasModule.default || html2canvasModule;
+      
+      const canvas = await html2canvas(element as HTMLElement, {
         scale: 2,
         useCORS: true,
+        allowTaint: true,
         logging: false,
-        backgroundColor: '#ffffff'
+        backgroundColor: '#ffffff',
+        imageTimeout: 15000,
       });
 
-      const imgData = canvas.toDataURL('image/jpeg', 0.85);
-      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgData = canvas.toDataURL('image/jpeg', 0.90);
+      const pdf = new jsPDF({
+        orientation: 'p',
+        unit: 'mm',
+        format: 'a4',
+        compress: true
+      });
+
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
 
       pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
-      pdf.save(`${invoice.id}_ElaraSilver.pdf`);
+      const safeId = (invoice.id || 'INVOICE').replace(/[^a-zA-Z0-9_-]/g, '_');
+      pdf.save(`${safeId}_ElaraSilver.pdf`);
     } catch (err) {
       console.error('Error generating PDF:', err);
-      alert('Failed to download PDF');
+      // Fallback method
+      window.print();
     }
   };
 
