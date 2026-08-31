@@ -483,30 +483,48 @@ export default function InvoicesPage() {
 
       {/* Exact Physical Receipt Preview Modal */}
       {selectedInvoice && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 overflow-y-auto">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl overflow-hidden my-6 border border-gray-200 text-black font-sans text-xs">
+        <div 
+          className="fixed inset-0 z-50 flex items-start justify-center bg-black/70 backdrop-blur-xs p-4 overflow-y-auto"
+          onClick={() => setSelectedInvoice(null)}
+        >
+          <div 
+            className="bg-white rounded-xl shadow-2xl w-full max-w-3xl overflow-hidden my-6 border border-gray-200 text-black font-sans text-xs relative"
+            onClick={(e) => e.stopPropagation()}
+          >
             
-            {/* Control Bar */}
-            <div className="px-6 py-3 border-b border-gray-200 flex justify-between items-center bg-gray-100 print:hidden">
-              <span className="font-bold text-gray-800">TAX INVOICE (Sales) - Preview</span>
-              <div className="flex items-center gap-2">
+            {/* Sticky Control Bar */}
+            <div className="sticky top-0 z-20 px-6 py-3 border-b border-gray-200 flex justify-between items-center bg-gray-900 text-white print:hidden shadow-md">
+              <span className="font-bold text-sm tracking-wide flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                TAX INVOICE (Sales) - Preview
+              </span>
+              <div className="flex items-center gap-3">
                 <button 
                   onClick={handlePrint}
-                  className="px-3 py-1.5 bg-[#0B5E64] text-white text-xs font-semibold rounded hover:bg-[#084A4F] transition-colors flex items-center gap-1"
+                  className="px-3.5 py-1.5 bg-[#0B5E64] hover:bg-[#084A4F] text-white text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5 shadow-sm"
                 >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                  </svg>
                   Print Invoice
                 </button>
                 <button 
                   onClick={() => handleDownloadPdf(selectedInvoice)}
-                  className="px-3 py-1.5 bg-gray-800 text-white text-xs font-semibold rounded hover:bg-black transition-colors"
+                  className="px-3.5 py-1.5 bg-gray-700 hover:bg-gray-600 text-white text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5 shadow-sm"
                 >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
                   Download PDF
                 </button>
                 <button 
                   onClick={() => setSelectedInvoice(null)}
-                  className="p-1 text-gray-500 hover:text-black"
+                  className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-lg transition-colors flex items-center gap-1 shadow-sm ml-2"
                 >
-                  ✕
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  Close
                 </button>
               </div>
             </div>
