@@ -10,13 +10,44 @@ export default function InvoicesPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
 
+  // Settings State
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isSavingSettings, setIsSavingSettings] = useState(false);
+  const [invoiceSettings, setInvoiceSettings] = useState({
+    companyName: 'ELARA SILVER',
+    tagline: 'Fine 925 Sterling Silver Jewellery',
+    logoUrl: '/images/footerlogo.PNG',
+    websiteUrl: 'www.elarasilver.com',
+    supportEmail: 'support@elarasilver.com',
+    gstin: '',
+    pan: '',
+    currencySymbol: 'INR',
+    showStatusBadge: false,
+    showPan: false,
+    showGstin: false,
+    termsText: '• Goods once sold can be returned within 7 days per return policy.\n• Pure 925 Sterling Silver certified products.',
+    signatoryText: 'ELARA SILVER AUTHORIZED SIGNATORY',
+    signatorySubtext: ''
+  });
+
   useEffect(() => {
-    const fetchInvoices = async () => {
+    const fetchData = async () => {
       try {
-        const res = await fetch('/api/orders');
-        const data = await res.json();
-        if (data.success) {
-          const formattedInvoices = data.orders.map((order: any) => ({
+        const [ordersRes, settingsRes] = await Promise.all([
+          fetch('/api/orders'),
+          fetch('/api/settings/invoice')
+        ]);
+        
+        const ordersData = await ordersRes.json();
+        const settingsData = await settingsRes.json();
+
+        if (settingsData.success && settingsData.data) {
+          setInvoiceSettings(prev => ({ ...prev, ...settingsData.data }));
+        }
+
+        if (ordersData.success) {
+          const symbol = settingsData.data?.currencySymbol || 'INR';
+          const formattedInvoices = ordersData.orders.map((order: any) => ({
             id: `INV-${order.orderNumber?.split('-')[1] || order.id.toString().substring(0, 6)}`,
             orderId: order.orderNumber,
             customer: order.customerName,
@@ -24,7 +55,8 @@ export default function InvoicesPage() {
             phone: order.phone || 'N/A',
             address: `${order.address || ''}, ${order.city || ''}, ${order.state || ''} ${order.pincode || ''}`.trim().replace(/^,|,$/g, ''),
             date: new Date(order.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
-            amount: `INR ${order.totalAmount?.toLocaleString('en-IN') || '0'}`,
+            rawAmount: order.totalAmount || 0,
+            amount: `${symbol} ${(order.totalAmount || 0).toLocaleString('en-IN')}`,
             status: order.paymentStatus === 'Completed' || order.paymentStatus === 'Paid' ? 'Paid' : (order.paymentStatus || 'Pending'),
             items: order.items || [],
             rawOrder: order
@@ -32,13 +64,41 @@ export default function InvoicesPage() {
           setInvoices(formattedInvoices);
         }
       } catch (error) {
-        console.error('Failed to fetch orders for invoices', error);
+        console.error('Failed to fetch data for invoices', error);
       } finally {
         setLoading(false);
       }
     };
-    fetchInvoices();
+    fetchData();
   }, []);
+
+  const handleSaveSettings = async () => {
+    setIsSavingSettings(true);
+    try {
+      const res = await fetch('/api/settings/invoice', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(invoiceSettings)
+      });
+      const data = await res.json();
+      if (data.success) {
+        // Update formatted amount for existing list
+        setInvoices(prev => prev.map(inv => ({
+          ...inv,
+          amount: `${invoiceSettings.currencySymbol} ${inv.rawAmount.toLocaleString('en-IN')}`
+        })));
+        setIsSettingsOpen(false);
+        alert('Invoice settings saved successfully!');
+      } else {
+        alert('Failed to save settings.');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error saving settings.');
+    } finally {
+      setIsSavingSettings(false);
+    }
+  };
 
   const handleDownloadPdf = (invoice: any) => {
     const doc = new jsPDF();
@@ -53,15 +113,23 @@ export default function InvoicesPage() {
 
     // Title / Brand Name
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(22);
+    doc.setFontSize(20);
     doc.setTextColor(...tealColor);
-    doc.text('ELARA SILVER', 14, 25);
+    doc.text(invoiceSettings.companyName || 'ELARA SILVER', 14, 25);
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(9);
     doc.setTextColor(120, 120, 120);
-    doc.text('Fine 925 Sterling Silver Jewellery', 14, 31);
-    doc.text('www.elarasilver.com | Instagram: @elarasilver_jewellery', 14, 36);
+    doc.text(invoiceSettings.tagline || 'Fine 925 Sterling Silver Jewellery', 14, 31);
+    
+    let subline = invoiceSettings.websiteUrl ? `${invoiceSettings.websiteUrl}` : '';
+    if (invoiceSettings.showGstin && invoiceSettings.gstin) {
+      subline += ` | GSTIN: ${invoiceSettings.gstin}`;
+    }
+    if (invoiceSettings.showPan && invoiceSettings.pan) {
+      subline += ` | PAN: ${invoiceSettings.pan}`;
+    }
+    if (subline) doc.text(subline, 14, 36);
 
     // Invoice Meta Right-aligned
     doc.setFont('helvetica', 'bold');
@@ -106,21 +174,25 @@ export default function InvoicesPage() {
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(10);
     doc.setTextColor(...tealColor);
-    doc.text('PAYMENT METHOD:', 196, statusY, { align: 'right' });
+    doc.text('PAYMENT DETAILS:', 196, statusY, { align: 'right' });
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(9);
     doc.setTextColor(100, 100, 100);
-    doc.text(`${invoice.rawOrder?.paymentMethod?.toUpperCase() || 'ONLINE'}`, 196, statusY + 6, { align: 'right' });
+    doc.text(`Method: ${invoice.rawOrder?.paymentMethod?.toUpperCase() || 'ONLINE'}`, 196, statusY + 6, { align: 'right' });
+    if (invoiceSettings.showStatusBadge) {
+      doc.text(`Status: ${invoice.status}`, 196, statusY + 11, { align: 'right' });
+    }
 
     // Items Table
+    const currSym = invoiceSettings.currencySymbol || 'INR';
     const tableItems = (invoice.items && invoice.items.length > 0)
       ? invoice.items.map((item: any, idx: number) => [
           idx + 1,
           item.name + (item.size ? ` (Size: ${item.size})` : ''),
-          `INR ${item.price?.toLocaleString('en-IN')}`,
+          `${currSym} ${item.price?.toLocaleString('en-IN')}`,
           item.quantity || 1,
-          `INR ${(item.price * (item.quantity || 1)).toLocaleString('en-IN')}`
+          `${currSym} ${(item.price * (item.quantity || 1)).toLocaleString('en-IN')}`
         ])
       : [[1, `Jewellery Items (${invoice.orderId})`, invoice.amount, 1, invoice.amount]];
 
@@ -177,12 +249,18 @@ export default function InvoicesPage() {
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(9);
     doc.setTextColor(...tealColor);
-    doc.text('ELARA SILVER AUTHORIZED SIGNATORY', 196, footerY, { align: 'right' });
+    doc.text(invoiceSettings.signatoryText || 'ELARA SILVER AUTHORIZED SIGNATORY', 196, footerY, { align: 'right' });
+    if (invoiceSettings.signatorySubtext) {
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8);
+      doc.setTextColor(150, 150, 150);
+      doc.text(invoiceSettings.signatorySubtext, 196, footerY + 5, { align: 'right' });
+    }
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(8);
     doc.setTextColor(150, 150, 150);
-    doc.text('Thank you for shopping with Elara Silver | www.elarasilver.com', 105, footerY + 18, { align: 'center' });
+    doc.text(`Thank you for shopping with ${invoiceSettings.companyName || 'Elara Silver'} | ${invoiceSettings.websiteUrl || 'www.elarasilver.com'}`, 105, footerY + 18, { align: 'center' });
 
     doc.save(`${invoice.id}_ElaraSilver.pdf`);
   };
@@ -199,12 +277,23 @@ export default function InvoicesPage() {
 
   return (
     <div className="space-y-6">
+      {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Invoices</h1>
-          <p className="text-sm text-gray-500 mt-1">View, print & download luxury tax invoices.</p>
+          <p className="text-sm text-gray-500 mt-1">View, print, customize & download luxury tax invoices.</p>
         </div>
         <div className="flex items-center gap-3">
+          <button 
+            onClick={() => setIsSettingsOpen(true)}
+            className="px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-semibold rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2 shadow-xs"
+          >
+            <svg className="w-4 h-4 text-[#0B5E64]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            Invoice Settings
+          </button>
           <div className="relative w-full sm:w-64">
             <input 
               type="text" 
@@ -220,6 +309,7 @@ export default function InvoicesPage() {
         </div>
       </div>
 
+      {/* Invoices Table */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="overflow-x-auto">
           {loading ? (
@@ -275,6 +365,177 @@ export default function InvoicesPage() {
         </div>
       </div>
 
+      {/* Invoice Customization Settings Modal */}
+      {isSettingsOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-xl overflow-hidden border border-gray-100 my-8">
+            <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+              <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#0B5E64]" />
+                Invoice Layout & Brand Settings
+              </h3>
+              <button 
+                onClick={() => setIsSettingsOpen(false)}
+                className="p-1.5 text-gray-400 hover:text-gray-700 transition-colors rounded-full hover:bg-gray-200"
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="p-6 space-y-4 text-sm max-h-[75vh] overflow-y-auto">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Company Name</label>
+                  <input 
+                    type="text" 
+                    value={invoiceSettings.companyName}
+                    onChange={(e) => setInvoiceSettings({ ...invoiceSettings, companyName: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#0B5E64] focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Tagline</label>
+                  <input 
+                    type="text" 
+                    value={invoiceSettings.tagline}
+                    onChange={(e) => setInvoiceSettings({ ...invoiceSettings, tagline: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#0B5E64] focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Logo Image URL</label>
+                  <input 
+                    type="text" 
+                    value={invoiceSettings.logoUrl}
+                    onChange={(e) => setInvoiceSettings({ ...invoiceSettings, logoUrl: e.target.value })}
+                    placeholder="/images/footerlogo.PNG"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#0B5E64] focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Currency Format / Symbol</label>
+                  <select 
+                    value={invoiceSettings.currencySymbol}
+                    onChange={(e) => setInvoiceSettings({ ...invoiceSettings, currencySymbol: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#0B5E64] focus:outline-none bg-white"
+                  >
+                    <option value="INR">INR (INR 2,499)</option>
+                    <option value="₹">Rupee (₹ 2,499)</option>
+                    <option value="USD">USD ($ 2,499)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Website URL</label>
+                  <input 
+                    type="text" 
+                    value={invoiceSettings.websiteUrl}
+                    onChange={(e) => setInvoiceSettings({ ...invoiceSettings, websiteUrl: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#0B5E64] focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Support Email</label>
+                  <input 
+                    type="text" 
+                    value={invoiceSettings.supportEmail}
+                    onChange={(e) => setInvoiceSettings({ ...invoiceSettings, supportEmail: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#0B5E64] focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Checkbox Toggles */}
+              <div className="bg-gray-50 p-4 rounded-xl space-y-2 border border-gray-200">
+                <span className="block text-xs font-bold text-gray-800 uppercase tracking-wider mb-1">Display Options</span>
+                <label className="flex items-center gap-2 cursor-pointer text-xs text-gray-700 font-medium">
+                  <input 
+                    type="checkbox"
+                    checked={invoiceSettings.showStatusBadge}
+                    onChange={(e) => setInvoiceSettings({ ...invoiceSettings, showStatusBadge: e.target.checked })}
+                    className="w-4 h-4 text-[#0B5E64] rounded border-gray-300 focus:ring-[#0B5E64]"
+                  />
+                  Show Payment Status Badge (Paid / Pending)
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer text-xs text-gray-700 font-medium">
+                  <input 
+                    type="checkbox"
+                    checked={invoiceSettings.showGstin}
+                    onChange={(e) => setInvoiceSettings({ ...invoiceSettings, showGstin: e.target.checked })}
+                    className="w-4 h-4 text-[#0B5E64] rounded border-gray-300 focus:ring-[#0B5E64]"
+                  />
+                  Show GSTIN Number on Header
+                </label>
+                {invoiceSettings.showGstin && (
+                  <input 
+                    type="text" 
+                    value={invoiceSettings.gstin}
+                    onChange={(e) => setInvoiceSettings({ ...invoiceSettings, gstin: e.target.value })}
+                    placeholder="Enter GSTIN (e.g. 33AAAAA0000A1Z5)"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-xs focus:ring-2 focus:ring-[#0B5E64] focus:outline-none bg-white mt-1"
+                  />
+                )}
+                <label className="flex items-center gap-2 cursor-pointer text-xs text-gray-700 font-medium">
+                  <input 
+                    type="checkbox"
+                    checked={invoiceSettings.showPan}
+                    onChange={(e) => setInvoiceSettings({ ...invoiceSettings, showPan: e.target.checked })}
+                    className="w-4 h-4 text-[#0B5E64] rounded border-gray-300 focus:ring-[#0B5E64]"
+                  />
+                  Show PAN Number on Header
+                </label>
+                {invoiceSettings.showPan && (
+                  <input 
+                    type="text" 
+                    value={invoiceSettings.pan}
+                    onChange={(e) => setInvoiceSettings({ ...invoiceSettings, pan: e.target.value })}
+                    placeholder="Enter PAN Number"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-xs focus:ring-2 focus:ring-[#0B5E64] focus:outline-none bg-white mt-1"
+                  />
+                )}
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">Signatory Footer Text</label>
+                <input 
+                  type="text" 
+                  value={invoiceSettings.signatoryText}
+                  onChange={(e) => setInvoiceSettings({ ...invoiceSettings, signatoryText: e.target.value })}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#0B5E64] focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">Terms & Conditions Text</label>
+                <textarea 
+                  rows={3}
+                  value={invoiceSettings.termsText}
+                  onChange={(e) => setInvoiceSettings({ ...invoiceSettings, termsText: e.target.value })}
+                  className="w-full border border-gray-300 rounded-lg p-3 text-xs focus:ring-2 focus:ring-[#0B5E64] focus:outline-none"
+                />
+              </div>
+            </div>
+
+            <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3">
+              <button 
+                onClick={() => setIsSettingsOpen(false)}
+                className="px-4 py-2 text-xs font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleSaveSettings}
+                disabled={isSavingSettings}
+                className="px-4 py-2 text-xs font-semibold text-white bg-[#0B5E64] rounded-lg hover:bg-[#084A4F] transition-colors disabled:opacity-50"
+              >
+                {isSavingSettings ? 'Saving...' : 'Save Settings'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Luxury Invoice Preview Modal */}
       {selectedInvoice && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 overflow-y-auto">
@@ -322,13 +583,17 @@ export default function InvoicesPage() {
                 <div>
                   <div className="flex items-center gap-3 mb-2">
                     <img 
-                      src="/images/footerlogo.PNG" 
-                      alt="Elara Silver" 
+                      src={invoiceSettings.logoUrl || '/images/footerlogo.PNG'} 
+                      alt={invoiceSettings.companyName} 
                       className="h-12 object-contain" 
                     />
                   </div>
-                  <p className="text-gray-500 text-xs font-medium">Fine 925 Sterling Silver Jewellery</p>
-                  <p className="text-gray-400 text-[11px] mt-0.5">www.elarasilver.com</p>
+                  <p className="text-gray-500 text-xs font-medium">{invoiceSettings.tagline}</p>
+                  <p className="text-gray-400 text-[11px] mt-0.5">
+                    {invoiceSettings.websiteUrl}
+                    {invoiceSettings.showGstin && invoiceSettings.gstin ? ` | GSTIN: ${invoiceSettings.gstin}` : ''}
+                    {invoiceSettings.showPan && invoiceSettings.pan ? ` | PAN: ${invoiceSettings.pan}` : ''}
+                  </p>
                 </div>
                 <div className="text-right">
                   <span className="px-3 py-1 bg-[#0B5E64]/10 text-[#0B5E64] font-extrabold text-xs tracking-widest uppercase rounded-md inline-block mb-2">
@@ -354,6 +619,11 @@ export default function InvoicesPage() {
                   <p className="text-xs text-gray-700 font-medium">
                     Payment Method: <span className="font-bold text-gray-900">{selectedInvoice.rawOrder?.paymentMethod?.toUpperCase() || 'ONLINE'}</span>
                   </p>
+                  {invoiceSettings.showStatusBadge && (
+                    <p className="text-xs text-gray-700 font-medium mt-1">
+                      Status: <span className={`font-bold ${selectedInvoice.status === 'Paid' ? 'text-emerald-700' : 'text-amber-700'}`}>{selectedInvoice.status}</span>
+                    </p>
+                  )}
                 </div>
               </div>
               
@@ -374,9 +644,9 @@ export default function InvoicesPage() {
                         <td className="py-3 px-3 font-semibold text-gray-800">
                           {item.name} {item.size && <span className="text-gray-500 font-normal">({item.size})</span>}
                         </td>
-                        <td className="py-3 px-3 text-center text-gray-600">INR {item.price?.toLocaleString('en-IN')}</td>
+                        <td className="py-3 px-3 text-center text-gray-600">{invoiceSettings.currencySymbol} {item.price?.toLocaleString('en-IN')}</td>
                         <td className="py-3 px-3 text-center font-medium text-gray-900">{item.quantity || 1}</td>
-                        <td className="py-3 px-3 text-right font-bold text-gray-900">INR {(item.price * (item.quantity || 1)).toLocaleString('en-IN')}</td>
+                        <td className="py-3 px-3 text-right font-bold text-gray-900">{invoiceSettings.currencySymbol} {(item.price * (item.quantity || 1)).toLocaleString('en-IN')}</td>
                       </tr>
                     ))
                   ) : (
@@ -412,11 +682,13 @@ export default function InvoicesPage() {
               <div className="pt-6 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-end gap-4 text-xs">
                 <div className="text-gray-400 text-[11px] max-w-xs space-y-0.5">
                   <p className="font-semibold text-gray-600">Terms & Conditions:</p>
-                  <p>• Goods once sold can be returned within 7 days per return policy.</p>
-                  <p>• Pure 925 Sterling Silver certified products.</p>
+                  <p className="whitespace-pre-line">{invoiceSettings.termsText}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-[10px] font-bold text-[#0B5E64] uppercase tracking-wider">ELARA SILVER AUTHORIZED SIGNATORY</p>
+                  <p className="text-[10px] font-bold text-[#0B5E64] uppercase tracking-wider">{invoiceSettings.signatoryText}</p>
+                  {invoiceSettings.signatorySubtext && (
+                    <p className="text-gray-400 text-[10px] mt-0.5">{invoiceSettings.signatorySubtext}</p>
+                  )}
                 </div>
               </div>
             </div>
