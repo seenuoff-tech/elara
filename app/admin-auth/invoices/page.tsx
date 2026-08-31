@@ -121,12 +121,16 @@ export default function InvoicesPage() {
     const doc = new jsPDF();
 
     // Top Header - Logo
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(24);
-    doc.setTextColor(11, 94, 100);
-    doc.text('ELARA', 105, 18, { align: 'center' });
-    doc.setFontSize(10);
-    doc.text('◆  SILVER  ◆', 105, 24, { align: 'center' });
+    const logoImg = new Image();
+    logoImg.src = invoiceSettings.logoUrl || '/images/footerlogo.PNG';
+    try {
+      doc.addImage(logoImg, 'PNG', 85, 10, 40, 15);
+    } catch (e) {
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(22);
+      doc.setTextColor(11, 94, 100);
+      doc.text('ELARA SILVER', 105, 20, { align: 'center' });
+    }
 
     // Document Title
     doc.setFontSize(11);
@@ -514,14 +518,11 @@ export default function InvoicesPage() {
               
               {/* Header Logo */}
               <div className="flex flex-col items-center justify-center mb-4">
-                <div className="flex items-center gap-2 text-2xl font-bold tracking-wider text-[#0B5E64]">
-                  <span>❖</span>
-                  <span className="font-serif">ELARA</span>
-                  <span className="text-xs font-normal align-top">TM</span>
-                </div>
-                <span className="text-[10px] tracking-[0.3em] font-semibold text-[#0B5E64] uppercase mt-0.5">
-                  ✦ SILVER ✦
-                </span>
+                <img 
+                  src={invoiceSettings.logoUrl || "/images/footerlogo.PNG"} 
+                  alt="Elara Silver Logo" 
+                  className="h-14 object-contain mb-1" 
+                />
               </div>
 
               {/* Title */}
