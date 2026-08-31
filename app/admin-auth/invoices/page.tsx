@@ -24,7 +24,7 @@ export default function InvoicesPage() {
             phone: order.phone || 'N/A',
             address: `${order.address || ''}, ${order.city || ''}, ${order.state || ''} ${order.pincode || ''}`.trim().replace(/^,|,$/g, ''),
             date: new Date(order.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
-            amount: `₹${order.totalAmount?.toLocaleString('en-IN') || '0'}`,
+            amount: `INR ${order.totalAmount?.toLocaleString('en-IN') || '0'}`,
             status: order.paymentStatus === 'Completed' || order.paymentStatus === 'Paid' ? 'Paid' : (order.paymentStatus || 'Pending'),
             items: order.items || [],
             rawOrder: order
@@ -61,7 +61,7 @@ export default function InvoicesPage() {
     doc.setFontSize(9);
     doc.setTextColor(120, 120, 120);
     doc.text('Fine 925 Sterling Silver Jewellery', 14, 31);
-    doc.text('GSTIN: 33AAAAA0000A1Z5 | www.elarasilver.com', 14, 36);
+    doc.text('www.elarasilver.com | Instagram: @elarasilver_jewellery', 14, 36);
 
     // Invoice Meta Right-aligned
     doc.setFont('helvetica', 'bold');
@@ -101,27 +101,26 @@ export default function InvoicesPage() {
       doc.text(splitAddress, 14, 77);
     }
 
-    // Payment Status Box
+    // Payment Info
     const statusY = 55;
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(10);
     doc.setTextColor(...tealColor);
-    doc.text('PAYMENT DETAILS:', 196, statusY, { align: 'right' });
+    doc.text('PAYMENT METHOD:', 196, statusY, { align: 'right' });
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(9);
     doc.setTextColor(100, 100, 100);
-    doc.text(`Status: ${invoice.status}`, 196, statusY + 6, { align: 'right' });
-    doc.text(`Method: ${invoice.rawOrder?.paymentMethod?.toUpperCase() || 'ONLINE'}`, 196, statusY + 11, { align: 'right' });
+    doc.text(`${invoice.rawOrder?.paymentMethod?.toUpperCase() || 'ONLINE'}`, 196, statusY + 6, { align: 'right' });
 
     // Items Table
     const tableItems = (invoice.items && invoice.items.length > 0)
       ? invoice.items.map((item: any, idx: number) => [
           idx + 1,
           item.name + (item.size ? ` (Size: ${item.size})` : ''),
-          `Rs. ${item.price}`,
+          `INR ${item.price?.toLocaleString('en-IN')}`,
           item.quantity || 1,
-          `Rs. ${(item.price * (item.quantity || 1)).toLocaleString('en-IN')}`
+          `INR ${(item.price * (item.quantity || 1)).toLocaleString('en-IN')}`
         ])
       : [[1, `Jewellery Items (${invoice.orderId})`, invoice.amount, 1, invoice.amount]];
 
@@ -145,9 +144,9 @@ export default function InvoicesPage() {
       columnStyles: {
         0: { cellWidth: 12, halign: 'center' },
         1: { cellWidth: 'auto' },
-        2: { cellWidth: 32, halign: 'right' },
-        3: { cellWidth: 20, halign: 'center' },
-        4: { cellWidth: 35, halign: 'right' },
+        2: { cellWidth: 35, halign: 'right' },
+        3: { cellWidth: 18, halign: 'center' },
+        4: { cellWidth: 40, halign: 'right' },
       },
     });
 
@@ -161,7 +160,7 @@ export default function InvoicesPage() {
     doc.text('Subtotal:', 140, finalY + 12);
     doc.text(subtotal, 196, finalY + 12, { align: 'right' });
 
-    doc.text('GST (Included 3%):', 140, finalY + 18);
+    doc.text('Tax (GST 3%):', 140, finalY + 18);
     doc.text('Included', 196, finalY + 18, { align: 'right' });
 
     doc.setDrawColor(200, 200, 200);
@@ -173,7 +172,7 @@ export default function InvoicesPage() {
     doc.text('Grand Total:', 140, finalY + 29);
     doc.text(subtotal, 196, finalY + 29, { align: 'right' });
 
-    // Footer & Stamp
+    // Footer & Signatory
     const footerY = finalY + 50;
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(9);
@@ -183,8 +182,7 @@ export default function InvoicesPage() {
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(8);
     doc.setTextColor(150, 150, 150);
-    doc.text('This is a computer generated tax invoice and requires no signature.', 105, footerY + 15, { align: 'center' });
-    doc.text('Thank you for shopping with Elara Silver | For queries: support@elarasilver.com', 105, footerY + 20, { align: 'center' });
+    doc.text('Thank you for shopping with Elara Silver | www.elarasilver.com', 105, footerY + 18, { align: 'center' });
 
     doc.save(`${invoice.id}_ElaraSilver.pdf`);
   };
@@ -237,7 +235,6 @@ export default function InvoicesPage() {
                   <th className="px-6 py-4">Customer</th>
                   <th className="px-6 py-4">Date</th>
                   <th className="px-6 py-4">Amount</th>
-                  <th className="px-6 py-4">Status</th>
                   <th className="px-6 py-4 text-right">Actions</th>
                 </tr>
               </thead>
@@ -249,13 +246,6 @@ export default function InvoicesPage() {
                     <td className="px-6 py-4 text-gray-600">{invoice.customer}</td>
                     <td className="px-6 py-4 text-gray-500">{invoice.date}</td>
                     <td className="px-6 py-4 font-bold text-gray-900">{invoice.amount}</td>
-                    <td className="px-6 py-4">
-                      <span className={`px-2.5 py-1 text-xs font-semibold rounded-full ${
-                        invoice.status === 'Paid' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-amber-100 text-amber-800 border border-amber-200'
-                      }`}>
-                        {invoice.status}
-                      </span>
-                    </td>
                     <td className="px-6 py-4 text-right flex items-center justify-end gap-3">
                       <button 
                         onClick={() => setSelectedInvoice(invoice)} 
@@ -332,13 +322,13 @@ export default function InvoicesPage() {
                 <div>
                   <div className="flex items-center gap-3 mb-2">
                     <img 
-                      src="/images/org.png" 
+                      src="/images/footerlogo.PNG" 
                       alt="Elara Silver" 
-                      className="h-10 object-contain brightness-0" 
+                      className="h-12 object-contain" 
                     />
                   </div>
                   <p className="text-gray-500 text-xs font-medium">Fine 925 Sterling Silver Jewellery</p>
-                  <p className="text-gray-400 text-[11px] mt-0.5">GSTIN: 33AAAAA0000A1Z5 | www.elarasilver.com</p>
+                  <p className="text-gray-400 text-[11px] mt-0.5">www.elarasilver.com</p>
                 </div>
                 <div className="text-right">
                   <span className="px-3 py-1 bg-[#0B5E64]/10 text-[#0B5E64] font-extrabold text-xs tracking-widest uppercase rounded-md inline-block mb-2">
@@ -364,9 +354,6 @@ export default function InvoicesPage() {
                   <p className="text-xs text-gray-700 font-medium">
                     Payment Method: <span className="font-bold text-gray-900">{selectedInvoice.rawOrder?.paymentMethod?.toUpperCase() || 'ONLINE'}</span>
                   </p>
-                  <p className="text-xs text-gray-700 font-medium mt-1">
-                    Status: <span className={`font-bold ${selectedInvoice.status === 'Paid' ? 'text-emerald-700' : 'text-amber-700'}`}>{selectedInvoice.status}</span>
-                  </p>
                 </div>
               </div>
               
@@ -387,9 +374,9 @@ export default function InvoicesPage() {
                         <td className="py-3 px-3 font-semibold text-gray-800">
                           {item.name} {item.size && <span className="text-gray-500 font-normal">({item.size})</span>}
                         </td>
-                        <td className="py-3 px-3 text-center text-gray-600">₹{item.price?.toLocaleString('en-IN')}</td>
+                        <td className="py-3 px-3 text-center text-gray-600">INR {item.price?.toLocaleString('en-IN')}</td>
                         <td className="py-3 px-3 text-center font-medium text-gray-900">{item.quantity || 1}</td>
-                        <td className="py-3 px-3 text-right font-bold text-gray-900">₹{(item.price * (item.quantity || 1)).toLocaleString('en-IN')}</td>
+                        <td className="py-3 px-3 text-right font-bold text-gray-900">INR {(item.price * (item.quantity || 1)).toLocaleString('en-IN')}</td>
                       </tr>
                     ))
                   ) : (
@@ -430,7 +417,6 @@ export default function InvoicesPage() {
                 </div>
                 <div className="text-right">
                   <p className="text-[10px] font-bold text-[#0B5E64] uppercase tracking-wider">ELARA SILVER AUTHORIZED SIGNATORY</p>
-                  <p className="text-gray-400 text-[10px] mt-1">Computer Generated Invoice - No signature required</p>
                 </div>
               </div>
             </div>
