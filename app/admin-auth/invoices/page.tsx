@@ -23,6 +23,7 @@ export default function InvoicesPage() {
     country: 'India',
     pinCode: '626125',
     phone: '6369825925',
+    logoUrl: '/images/footerlogo.PNG',
     terms: [
       "1. The charges to make receive payment specified in here includes tax, hallmark, Procurement, Wastage, Making Charges, Imitation Stones, Precious Stones, Artisan Work, Logistics and other inclusive.",
       "2. Silver, wastage and making charges are calculated on gross weight only.",
@@ -176,86 +177,74 @@ export default function InvoicesPage() {
     doc.setFontSize(8.5);
     doc.text(`Date : ${invoice.date} Time : ${invoice.time}`, 14, 88);
 
-    // Items Table
+    // Simplified Clean Table Structure
     const tableItems = (invoice.items && invoice.items.length > 0)
-      ? invoice.items.map((item: any, idx: number) => [
-          idx + 1,
-          item.name + (item.size ? ` (${item.size})` : ''),
-          '-',
-          '-',
-          '-',
-          item.quantity || 1,
-          item.price?.toLocaleString('en-IN') || '-',
-          '-',
-          '-',
-          '-',
-          '-',
-          (item.price * (item.quantity || 1)).toLocaleString('en-IN')
-        ])
+      ? invoice.items.map((item: any, idx: number) => {
+          const itemTotal = item.price * (item.quantity || 1);
+          const cgstVal = (itemTotal * 0.015).toFixed(2);
+          const sgstVal = (itemTotal * 0.015).toFixed(2);
+          return [
+            idx + 1,
+            item.name + (item.size ? ` (${item.size})` : ''),
+            `₹${cgstVal} (1.5%)`,
+            `₹${sgstVal} (1.5%)`,
+            `₹${itemTotal.toLocaleString('en-IN')}.00`
+          ];
+        })
       : [
-          [1, 'MAKING CHARGES', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'],
-          ['', 'WASTAGE', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'],
-          ['', 'DISCOUNT', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'],
-          ['', 'Redemption Points', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'],
-          ['', 'CGST', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'],
-          ['', 'SGST', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'],
-          ['', 'IGST', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'],
-          ['', 'ROUND OFF', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'],
+          [1, 'Jewellery Item', '₹0.00 (1.5%)', '₹0.00 (1.5%)', `₹${invoice.rawAmount.toLocaleString('en-IN')}.00`]
         ];
 
     autoTable(doc, {
       startY: 92,
-      head: [['S.NO', 'Variant No / Description', 'HSN CODE', 'GS Wt. (grams)', 'Net Wt. (grams)', 'Pcs (No.)', 'RATE (Rs.)', 'VA (Rs.)', 'Wst Wt. (grams)', 'HM (Rs.)', 'DIS %', 'AMOUNT (Rs.)']],
+      head: [['S.NO', 'Item Name', 'CGST (1.5%)', 'SGST (1.5%)', 'Amount']],
       body: tableItems,
       headStyles: {
         fillColor: [240, 240, 240],
         textColor: [0, 0, 0],
         fontStyle: 'bold',
-        fontSize: 7,
+        fontSize: 8,
         lineColor: [200, 200, 200],
         lineWidth: 0.1
       },
       bodyStyles: {
-        fontSize: 7,
+        fontSize: 8,
         textColor: [0, 0, 0],
       },
       styles: {
-        cellPadding: 1.5,
+        cellPadding: 2,
         valign: 'middle'
       },
       columnStyles: {
-        0: { cellWidth: 10, halign: 'center' },
+        0: { cellWidth: 15, halign: 'center' },
         1: { cellWidth: 'auto' },
-        11: { halign: 'right' }
+        2: { cellWidth: 35, halign: 'center' },
+        3: { cellWidth: 35, halign: 'center' },
+        4: { cellWidth: 40, halign: 'right' }
       }
     });
 
-    const finalY = (doc as any).lastAutoTable.finalY || 160;
+    const finalY = (doc as any).lastAutoTable.finalY || 140;
 
-    // Summary Section
+    // Payable Amount Section (No Round Off line)
     doc.line(14, finalY + 4, 196, finalY + 4);
-    doc.setFontSize(8);
-    doc.text('Round Off', 130, finalY + 9);
-    doc.text(':', 155, finalY + 9);
-    doc.text('0.00', 196, finalY + 9, { align: 'right' });
-
-    doc.line(14, finalY + 12, 196, finalY + 12);
     doc.setFont('helvetica', 'bold');
-    doc.text('PAYABLE NET AMOUNT :', 155, finalY + 17, { align: 'right' });
-    doc.text(`${invoice.rawAmount.toLocaleString('en-IN')}.00`, 196, finalY + 17, { align: 'right' });
-    doc.line(14, finalY + 20, 196, finalY + 20);
+    doc.setFontSize(9);
+    doc.text('PAYABLE NET AMOUNT :', 140, finalY + 11, { align: 'right' });
+    doc.text(`₹${invoice.rawAmount.toLocaleString('en-IN')}.00`, 196, finalY + 11, { align: 'right' });
+    doc.line(14, finalY + 14, 196, finalY + 14);
 
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(7.5);
-    doc.text(`${numberToWords(invoice.rawAmount)}`, 14, finalY + 25);
+    doc.setFontSize(8);
+    doc.text(`RUPEES : ${numberToWords(invoice.rawAmount)}`, 14, finalY + 20);
 
     // Disclaimer
     doc.setFontSize(7);
-    doc.text('(Price includes hallmarking charges, consumable and packing material)', 105, finalY + 33, { align: 'center' });
-    doc.text('E. & O. E.', 196, finalY + 33, { align: 'right' });
+    doc.text('(Price includes GST 3%, hallmarking charges, consumable and packing material)', 105, finalY + 28, { align: 'center' });
+    doc.text('E. & O. E.', 196, finalY + 28, { align: 'right' });
 
     // Terms & Conditions Block
-    let termY = finalY + 38;
+    let termY = finalY + 34;
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(7.5);
     doc.text('Terms & Conditions', 14, termY); termY += 4;
@@ -461,6 +450,15 @@ export default function InvoicesPage() {
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#0B5E64] focus:outline-none"
                   />
                 </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Logo URL</label>
+                  <input 
+                    type="text" 
+                    value={invoiceSettings.logoUrl}
+                    onChange={(e) => setInvoiceSettings({ ...invoiceSettings, logoUrl: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#0B5E64] focus:outline-none"
+                  />
+                </div>
               </div>
             </div>
 
@@ -565,89 +563,57 @@ export default function InvoicesPage() {
                 Date : {selectedInvoice.date} Time : {selectedInvoice.time}
               </div>
 
-              {/* Exact Line Items Table */}
-              <table className="w-full border-collapse text-[10px] mb-2 border border-gray-300">
+              {/* Clean Streamlined Line Items Table */}
+              <table className="w-full border-collapse text-[11px] mb-3 border border-gray-300">
                 <thead>
                   <tr className="bg-gray-100 border-b border-gray-300 text-left font-bold">
-                    <th className="p-1 border-r border-gray-300">S.NO</th>
-                    <th className="p-1 border-r border-gray-300">Variant No / Description</th>
-                    <th className="p-1 border-r border-gray-300">HSN CODE</th>
-                    <th className="p-1 border-r border-gray-300">GS Wt. (grams)</th>
-                    <th className="p-1 border-r border-gray-300">Net Wt. (grams)</th>
-                    <th className="p-1 border-r border-gray-300">Pcs (No.)</th>
-                    <th className="p-1 border-r border-gray-300">RATE (Rs.)</th>
-                    <th className="p-1 border-r border-gray-300">VA (Rs.)</th>
-                    <th className="p-1 border-r border-gray-300">Wst Wt. (grams)</th>
-                    <th className="p-1 border-r border-gray-300">HM (Rs.)</th>
-                    <th className="p-1 border-r border-gray-300">DIS %</th>
-                    <th className="p-1 text-right">AMOUNT (Rs.)</th>
+                    <th className="p-2 border-r border-gray-300 text-center w-12">S.NO</th>
+                    <th className="p-2 border-r border-gray-300">Item Name</th>
+                    <th className="p-2 border-r border-gray-300 text-center w-28">CGST (1.5%)</th>
+                    <th className="p-2 border-r border-gray-300 text-center w-28">SGST (1.5%)</th>
+                    <th className="p-2 text-right w-36">Amount</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {selectedInvoice.items && selectedInvoice.items.length > 0 ? (
-                    selectedInvoice.items.map((item: any, idx: number) => (
-                      <tr key={idx}>
-                        <td className="p-1 border-r border-gray-200 text-center">{idx + 1}</td>
-                        <td className="p-1 border-r border-gray-200 font-semibold">{item.name} {item.size ? `(${item.size})` : ''}</td>
-                        <td className="p-1 border-r border-gray-200 text-center">-</td>
-                        <td className="p-1 border-r border-gray-200 text-center">-</td>
-                        <td className="p-1 border-r border-gray-200 text-center">-</td>
-                        <td className="p-1 border-r border-gray-200 text-center">{item.quantity || 1}</td>
-                        <td className="p-1 border-r border-gray-200 text-right">{item.price?.toLocaleString('en-IN')}</td>
-                        <td className="p-1 border-r border-gray-200 text-center">-</td>
-                        <td className="p-1 border-r border-gray-200 text-center">-</td>
-                        <td className="p-1 border-r border-gray-200 text-center">-</td>
-                        <td className="p-1 border-r border-gray-200 text-center">-</td>
-                        <td className="p-1 text-right font-bold">{(item.price * (item.quantity || 1)).toLocaleString('en-IN')}</td>
-                      </tr>
-                    ))
+                    selectedInvoice.items.map((item: any, idx: number) => {
+                      const itemTotal = item.price * (item.quantity || 1);
+                      const cgstVal = (itemTotal * 0.015).toFixed(2);
+                      const sgstVal = (itemTotal * 0.015).toFixed(2);
+                      return (
+                        <tr key={idx}>
+                          <td className="p-2 border-r border-gray-200 text-center">{idx + 1}</td>
+                          <td className="p-2 border-r border-gray-200 font-semibold">{item.name} {item.size ? `(${item.size})` : ''}</td>
+                          <td className="p-2 border-r border-gray-200 text-center text-gray-600">₹{cgstVal} <span className="text-[9px] text-gray-400">(1.5%)</span></td>
+                          <td className="p-2 border-r border-gray-200 text-center text-gray-600">₹{sgstVal} <span className="text-[9px] text-gray-400">(1.5%)</span></td>
+                          <td className="p-2 text-right font-bold">₹{itemTotal.toLocaleString('en-IN')}.00</td>
+                        </tr>
+                      );
+                    })
                   ) : (
-                    <>
-                      <tr>
-                        <td className="p-1 border-r border-gray-200 text-center">1</td>
-                        <td className="p-1 border-r border-gray-200 font-bold" colSpan={10}>MAKING CHARGES</td>
-                        <td className="p-1 text-right">-</td>
-                      </tr>
-                      <tr>
-                        <td className="p-1 border-r border-gray-200"></td>
-                        <td className="p-1 border-r border-gray-200 font-bold" colSpan={10}>WASTAGE</td>
-                        <td className="p-1 text-right">-</td>
-                      </tr>
-                      <tr>
-                        <td className="p-1 border-r border-gray-200"></td>
-                        <td className="p-1 border-r border-gray-200 font-bold" colSpan={10}>DISCOUNT</td>
-                        <td className="p-1 text-right">-</td>
-                      </tr>
-                      <tr>
-                        <td className="p-1 border-r border-gray-200"></td>
-                        <td className="p-1 border-r border-gray-200 font-bold" colSpan={10}>Redemption Points</td>
-                        <td className="p-1 text-right">-</td>
-                      </tr>
-                    </>
+                    <tr>
+                      <td className="p-2 border-r border-gray-200 text-center">1</td>
+                      <td className="p-2 border-r border-gray-200 font-semibold">Jewellery Item</td>
+                      <td className="p-2 border-r border-gray-200 text-center text-gray-600">₹0.00</td>
+                      <td className="p-2 border-r border-gray-200 text-center text-gray-600">₹0.00</td>
+                      <td className="p-2 text-right font-bold">₹{selectedInvoice.rawAmount.toLocaleString('en-IN')}.00</td>
+                    </tr>
                   )}
                 </tbody>
               </table>
 
-              {/* Total Calculation Row */}
-              <div className="border-t border-b border-gray-400 py-1 flex justify-between font-bold text-[11px] my-1">
-                <span></span>
-                <div className="flex gap-12">
-                  <span>Round Off :</span>
-                  <span>0.00</span>
-                </div>
-              </div>
-
-              <div className="border-b-2 border-gray-600 py-1.5 flex justify-between font-bold text-xs">
+              {/* Total Calculation Row (Round Off Removed) */}
+              <div className="border-t-2 border-b-2 border-gray-600 py-2 flex justify-between font-bold text-xs mb-2">
                 <span>RUPEES : {numberToWords(selectedInvoice.rawAmount)}</span>
-                <div className="flex gap-8">
+                <div className="flex gap-4">
                   <span>PAYABLE NET AMOUNT :</span>
-                  <span>{selectedInvoice.rawAmount.toLocaleString('en-IN')}.00</span>
+                  <span>₹{selectedInvoice.rawAmount.toLocaleString('en-IN')}.00</span>
                 </div>
               </div>
 
               {/* Disclaimer */}
               <div className="flex justify-between text-[9px] text-gray-600 my-2">
-                <span>(Price includes hallmarking charges, consumable and packing material)</span>
+                <span>(Price includes GST 3%, hallmarking charges, consumable and packing material)</span>
                 <span className="font-bold">E. & O. E.</span>
               </div>
 
