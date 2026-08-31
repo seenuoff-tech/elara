@@ -121,17 +121,13 @@ export default function InvoicesPage() {
   const handleDownloadPdf = async (invoice: any) => {
     let element = document.getElementById('invoice-printable-area');
     
-    // If preview modal isn't open, open it briefly or use printable area
     if (!element && invoice) {
       setSelectedInvoice(invoice);
-      await new Promise(r => setTimeout(r, 100));
+      await new Promise(r => setTimeout(r, 200));
       element = document.getElementById('invoice-printable-area');
     }
 
-    if (!element) {
-      alert('Please open preview first');
-      return;
-    }
+    if (!element) return;
 
     try {
       const html2canvasModule = await import('html2canvas');
@@ -143,10 +139,10 @@ export default function InvoicesPage() {
         allowTaint: true,
         logging: false,
         backgroundColor: '#ffffff',
-        imageTimeout: 15000,
+        ignoreElements: (el) => el.tagName === 'IFRAME',
       });
 
-      const imgData = canvas.toDataURL('image/jpeg', 0.90);
+      const imgData = canvas.toDataURL('image/jpeg', 0.95);
       const pdf = new jsPDF({
         orientation: 'p',
         unit: 'mm',
@@ -162,8 +158,7 @@ export default function InvoicesPage() {
       pdf.save(`${safeId}_ElaraSilver.pdf`);
     } catch (err) {
       console.error('Error generating PDF:', err);
-      // Fallback method
-      window.print();
+      alert('Could not download PDF. Please try again.');
     }
   };
 
