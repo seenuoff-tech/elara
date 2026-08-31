@@ -75,7 +75,7 @@ export default function AddToCartAnimation() {
           playsInline
           muted
           preload="auto"
-          className="w-full h-full object-cover scale-[1.12] transition-transform duration-300"
+          className="w-full h-full object-cover transition-transform duration-300"
           onTimeUpdate={handleTimeUpdate}
           onEnded={handleManualSkip}
           onError={handleManualSkip}
