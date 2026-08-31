@@ -121,11 +121,24 @@ export default function InvoicesPage() {
   const handleDownloadPdf = (invoice: any) => {
     const doc = new jsPDF();
 
-    // Top Header - Logo
+    // Top Header - Compressed Vector/Raster Logo
     const logoImg = new Image();
     logoImg.src = invoiceSettings.logoUrl || '/images/footerlogo.PNG';
+    
     try {
-      doc.addImage(logoImg, 'PNG', 85, 10, 40, 15);
+      const canvas = document.createElement('canvas');
+      canvas.width = 240;
+      canvas.height = 90;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, 240, 90);
+        ctx.drawImage(logoImg, 0, 0, 240, 90);
+        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+        doc.addImage(compressedDataUrl, 'JPEG', 85, 8, 40, 15, undefined, 'FAST');
+      } else {
+        doc.addImage(logoImg, 'PNG', 85, 8, 40, 15, undefined, 'FAST');
+      }
     } catch (e) {
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(22);
