@@ -865,7 +865,7 @@ export default function ProductsManagement() {
                       <label key={finish} className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
                         <input
                           type="checkbox"
-                          checked={editingProduct?.finishes?.includes(finish) || false}
+                          checked={(() => { const f = editingProduct?.finishes; const parsed = Array.isArray(f) ? f : (f ? (() => { try { return JSON.parse(f as string); } catch { return []; } })() : []); return parsed.includes(finish); })()}
                           onChange={(e) => {
                             if (!editingProduct) return;
                             const currentFinishes = Array.isArray(editingProduct.finishes) ? editingProduct.finishes : (editingProduct.finishes ? JSON.parse(editingProduct.finishes as string) : []);

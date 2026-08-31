@@ -31,7 +31,7 @@ export default function Navbar() {
 
   const navigationMenu = [
     {
-      name: 'New arrivals',
+      name: 'New Arrivals',
       href: '/shop'
     },
     {
@@ -165,14 +165,14 @@ export default function Navbar() {
                 <img 
                   src="/images/org.png" 
                   alt="Elara Silver Logo" 
-                  className="h-12 md:h-16 object-contain drop-shadow-sm transition-all duration-500 brightness-0" 
+                  className="h-9 md:h-16 object-contain drop-shadow-sm transition-all duration-500 brightness-0" 
                 />
               )}
             </Link>
           </div>
 
           {/* Right: Icons */}
-          <div className="flex items-center justify-end gap-6 w-1/3">
+          <div className="flex items-center justify-end gap-3 md:gap-6 w-1/3">
             {/* Search Icon */}
             <button onClick={() => setIsSearchOpen(true)} className="hidden md:block hover:opacity-60 transition-opacity" title="Search">
               <svg className="w-6 h-6 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -257,7 +257,7 @@ export default function Navbar() {
         {/* Mobile Search Bar (Visible only on mobile) */}
         <div 
           className={`md:hidden transition-all duration-500 ease-in-out relative ${
-            showLinks ? 'max-h-[500px] opacity-100 pb-4 overflow-visible' : 'max-h-0 opacity-0 pb-0 overflow-hidden'
+            showLinks ? 'max-h-[500px] opacity-100 py-2 overflow-visible' : 'max-h-0 opacity-0 pb-0 overflow-hidden'
           }`}
         >
           <div className="flex items-center border border-gray-300 rounded-md bg-white h-11 relative z-50 overflow-hidden">

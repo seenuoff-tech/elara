@@ -66,7 +66,7 @@ export default function ShopByCategory() {
   };
 
   return (
-    <section className="pt-8 pb-8 px-6 md:px-12 bg-white max-w-7xl mx-auto z-10 relative">
+    <section className="pt-3 pb-3 px-6 md:px-12 bg-white max-w-7xl mx-auto z-10 relative">
       <div className="flex flex-col items-center text-center mb-4 gap-6">
         <div className="space-y-4">
           <div className="w-24 h-[1px] bg-black/10 mx-auto mt-2" />
@@ -74,7 +74,7 @@ export default function ShopByCategory() {
       </div>
 
       <div className="relative group max-w-5xl mx-auto">
-        <div className="grid grid-cols-5 gap-3 md:gap-8 pb-4 pt-2 px-2 md:px-0">
+        <div className="grid grid-cols-4 gap-3 md:grid-cols-5 md:gap-8 pb-2 pt-1 px-2 md:px-0">
           {!isLoaded ? (
             // Skeleton loader while fetching
             Array.from({ length: 10 }).map((_, i) => (

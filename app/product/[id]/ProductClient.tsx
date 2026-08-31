@@ -418,6 +418,7 @@ export default function ProductClient() {
               <div className="flex gap-3">
                 <button 
                   disabled={isOutOfStock}
+                  onClick={handleBuyNow}
                   className={`flex-1 py-3 border font-bold tracking-widest uppercase rounded-lg transition-colors ${
                     isOutOfStock 
                       ? 'bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed'
@@ -472,6 +473,35 @@ export default function ProductClient() {
                     </button>
                   )}
                 </div>
+              </div>
+            </div>
+
+            {/* Mini Elara Promises Strip */}
+            <div className="mb-8 bg-[#0B5E64] rounded-xl px-4 py-4">
+              <div className="grid grid-cols-4 gap-2">
+                {[
+                  { title: '925 STERLING SILVER', desc: '& Certified' },
+                  { title: 'PREMIUM PACKAGING', desc: 'Perfect For Gifting' },
+                  { title: 'FREE SHIPPING', desc: 'Across Tamil Nadu' },
+                  { title: '7 DAY RETURNS', desc: 'Hassle-Free' },
+                ].map((item, i) => (
+                  <div key={i} className="flex flex-col items-center text-center px-1 relative">
+                    {i !== 3 && <div className="hidden md:block absolute right-0 top-1/2 -translate-y-1/2 h-10 w-[1px] bg-[#D4AF37]/20" />}
+                    <div className="mb-1.5">
+                      {i === 0 ? (
+                        <img src="/images/diamond.png" alt="Diamond" className="w-5 h-5 object-contain" />
+                      ) : i === 1 ? (
+                        <svg className="w-5 h-5 text-[#D4AF37]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10" /></svg>
+                      ) : i === 2 ? (
+                        <svg className="w-5 h-5 text-[#D4AF37]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" /></svg>
+                      ) : (
+                        <svg className="w-5 h-5 text-[#D4AF37]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+                      )}
+                    </div>
+                    <p className="text-[#D4AF37] text-[7px] md:text-[9px] tracking-widest uppercase font-semibold leading-tight mb-0.5">{item.title}</p>
+                    <p className="text-white/70 text-[7px] md:text-[9px] font-light leading-tight">{item.desc}</p>
+                  </div>
+                ))}
               </div>
             </div>
 

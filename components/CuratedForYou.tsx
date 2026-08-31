@@ -49,7 +49,7 @@ export default function CuratedForYou() {
               
               {/* MOBILE VIEW (Arched 3-column layout) */}
               <Link href={item.link} className="flex md:hidden relative group flex-col w-full">
-                <div className="w-full flex flex-col bg-[#A0154D] rounded-t-full rounded-b-lg overflow-hidden shadow-sm transition-transform hover:-translate-y-1">
+                <div className="w-full flex flex-col bg-[#0B5E64] rounded-t-full rounded-b-lg overflow-hidden shadow-sm transition-transform hover:-translate-y-1">
                   <div className="relative w-full aspect-[4/5] bg-gray-50">
                     <Image
                       src={item.image}

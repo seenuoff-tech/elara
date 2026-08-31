@@ -47,7 +47,7 @@ export default function ConciergeAssistant() {
   };
 
   return (
-    <div className="fixed bottom-24 md:bottom-6 right-6 z-[99] select-none">
+    <div className="fixed bottom-24 md:bottom-6 right-4 md:right-6 z-[99] select-none">
       {/* Concierge Window */}
       <AnimatePresence>
         {isOpen && (
@@ -136,12 +136,12 @@ export default function ConciergeAssistant() {
         onClick={() => setIsOpen(!isOpen)}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        className="w-14 h-14 rounded-full bg-[#0B5E64] border border-black/10 shadow-[0_10px_35px_rgba(0,0,0,0.7)] flex items-center justify-center cursor-pointer relative group"
+        className="w-10 h-10 md:w-14 md:h-14 rounded-full bg-[#0B5E64] border border-black/10 shadow-[0_10px_35px_rgba(0,0,0,0.7)] flex items-center justify-center cursor-pointer relative group"
       >
         {/* Pulsing halo */}
         <div className="absolute inset-0 rounded-full border border-silver-chrome opacity-20 group-hover:scale-115 transition-transform duration-700 animate-ping pointer-events-none" />
 
-        <svg className="w-6 h-6 text-white transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-4 h-4 md:w-6 md:h-6 text-white transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
         </svg>
       </motion.button>

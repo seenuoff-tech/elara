@@ -33,15 +33,15 @@ export default function NewArrivals() {
   };
 
   return (
-    <section className="pt-2 md:pt-8 pb-6 md:pb-20 px-6 md:px-12 bg-white max-w-7xl mx-auto z-10 relative border-t border-black/5">
-      <h2 className="text-2xl md:text-3xl font-medium mb-6 md:mb-8 text-left text-black">New arrivals</h2>
+    <section className="pt-8 md:pt-14 pb-6 md:pb-20 px-6 md:px-12 bg-white max-w-7xl mx-auto z-10 relative border-t border-black/5">
+      <h2 className="text-2xl md:text-3xl font-medium mb-6 md:mb-8 text-left text-black">New Arrivals</h2>
       
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
         {products.slice(0, 8).map((product, index) => (
           <div key={product.id} className="relative flex flex-col group">
             {/* Badge Ribbon (Custom Badge or Best Seller) */}
             {(product.customBadge || product.isBestSeller || (product.stock !== undefined && product.stock <= 0) || product.status === 'Out of Stock') && (
-              <div className="absolute top-4 -left-2 z-20 flex flex-col items-start gap-2">
+              <div className="absolute top-0 -left-2 z-20 flex flex-col items-start gap-2">
                 {((product.stock !== undefined && product.stock <= 0) || product.status === 'Out of Stock') ? (
                   <>
                     <div 

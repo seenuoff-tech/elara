@@ -5,7 +5,7 @@ const promises = [
   {
     icon: <img src="/images/diamond.png" alt="Diamond" className="w-7 h-7 md:w-8 md:h-8 mb-3 md:mb-6 object-contain" />,
     title: "925 STERLING SILVER",
-    description: "Hallmarked & Certified"
+    description: "& Certified"
   },
   {
     icon: <Gift className="w-7 h-7 md:w-8 md:h-8 text-[#D4AF37] mb-3 md:mb-6" strokeWidth={1.5} />,
@@ -26,7 +26,7 @@ const promises = [
 
 export default function ElaraPromises() {
   return (
-    <section className="bg-[#0B5E64] text-white py-6 md:py-12 border-y border-white/10">
+    <section className="bg-[#0B5E64] text-white pt-14 pb-6 md:pt-14 md:pb-12 border-y border-white/10">
       <div className="container mx-auto px-2 md:px-4">
         <div className="grid grid-cols-4 gap-1 md:gap-12 lg:gap-8 pb-4">
           {promises.map((promise, index) => (

@@ -72,7 +72,7 @@ export default function SimilarProducts({ currentProductId }: SimilarProductsPro
     <div key={product.id} className="relative flex flex-col group">
       {/* Badge Ribbon (Custom Badge or Best Seller) */}
       {(product.customBadge || product.isBestSeller || (product.stock !== undefined && product.stock <= 0) || product.status === 'Out of Stock') && (
-        <div className="absolute top-4 -left-2 z-20 flex flex-col items-start gap-2">
+        <div className="absolute top-0 -left-2 z-20 flex flex-col items-start gap-2">
           {((product.stock !== undefined && product.stock <= 0) || product.status === 'Out of Stock') ? (
             <>
               <div 

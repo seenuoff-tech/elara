@@ -16,7 +16,7 @@ const badgeItems = [
     )
   },
   {
-    title: "BIS Hallmarked",
+    title: "BIS",
     desc: "Assay office certified authenticity marking, laser etched onto every shank.",
     icon: (
       <svg className="w-12 h-12 text-silver-chrome group-hover:text-black transition-colors duration-300" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="1.5">
