@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+@config {
+  colorSpace: srgb;
+}
+
 @font-face {
   font-family: 'tan mon cheri';
   src: url('/fonts/TAN-Mon-Cheri/TAN-MON CHERI-Regular.woff2') format('woff2'),
