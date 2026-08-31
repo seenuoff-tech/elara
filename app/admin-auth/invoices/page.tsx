@@ -269,7 +269,7 @@ export default function InvoicesPage() {
 
       {/* Invoice Customization Settings Modal */}
       {isSettingsOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-xl overflow-hidden border border-gray-100 my-8">
             <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
               <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
@@ -367,7 +367,7 @@ export default function InvoicesPage() {
       {/* Exact Physical Receipt Preview Modal */}
       {selectedInvoice && (
         <div 
-          className="fixed inset-0 z-50 flex items-start justify-center bg-black/70 backdrop-blur-xs p-4 overflow-y-auto"
+          className="fixed inset-0 z-50 flex items-start justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto"
           onClick={() => setSelectedInvoice(null)}
         >
           <div 
