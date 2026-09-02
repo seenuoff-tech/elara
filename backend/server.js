@@ -10,8 +10,30 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors());
+app.use(cors({ origin: '*' })); // Allow mobile app requests
 app.use(express.json());
+
+// ---------------------------------------------------------
+// NEW ROUTE: MOBILE APP ADMIN LOGIN & AUTH CHECK
+// ---------------------------------------------------------
+app.post('/api/auth/login', (req, res) => {
+  const { secretKey } = req.body;
+  const configuredSecretKey = process.env.ADMIN_APP_SECRET_KEY || 'sec_key_xyz123';
+
+  if (!secretKey) {
+    return res.status(400).json({ success: false, error: 'Secret Key / Password is required' });
+  }
+
+  if (secretKey === configuredSecretKey) {
+    return res.json({
+      success: true,
+      message: 'Admin Authentication Successful!',
+      token: 'jwt_secure_token_elara_2026'
+    });
+  } else {
+    return res.status(401).json({ success: false, error: 'Invalid Secret Key / Password!' });
+  }
+});
 
 // ---------------------------------------------------------
 // ROUTE: RAZORPAY
